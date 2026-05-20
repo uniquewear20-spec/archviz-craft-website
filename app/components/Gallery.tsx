@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import GalleryItem, { type GalleryItemData } from "./GalleryItem";
 
 const galleryItems: GalleryItemData[] = [
@@ -51,7 +51,7 @@ const galleryItems: GalleryItemData[] = [
   },
 ];
 
-const headingVariants = {
+const headingVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
