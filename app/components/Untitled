@@ -1,0 +1,195 @@
+"use client";
+
+import { useRef } from "react";
+import Image from "next/image";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useSpring,
+  type Variants,
+} from "framer-motion";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface GalleryItemData {
+  id: string;
+  title: string;
+  category: string;
+  src: string;
+  alt: string;
+  area: string;
+  aspectClass?: string;
+}
+
+interface GalleryItemProps {
+  item: GalleryItemData;
+  index: number;
+}
+
+// ─── Luxury Easing ────────────────────────────────────────────────────────────
+
+const LUXURY_EASE: [number, number, number, number] = [0.25, 0.1, 0.0, 1.0];
+
+// ─── Variants — typed explicitly to satisfy Framer Motion ────────────────────
+
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 48,
+    filter: "blur(4px)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+  },
+};
+
+const overlayVariants: Variants = {
+  rest: { opacity: 0 },
+  hover: { opacity: 1 },
+};
+
+const textRevealVariants: Variants = {
+  rest: { opacity: 0, y: 14 },
+  hover: { opacity: 1, y: 0 },
+};
+
+const imageZoomVariants: Variants = {
+  rest: { scale: 1 },
+  hover: { scale: 1.06 },
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export default function GalleryItem({ item, index }: GalleryItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 60, stiffness: 120 };
+  const rotateX = useSpring(
+    useTransform(mouseY, [-0.5, 0.5], [1.5, -1.5]),
+    springConfig
+  );
+  const rotateY = useSpring(
+    useTransform(mouseX, [-0.5, 0.5], [-1.5, 1.5]),
+    springConfig
+  );
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const { left, top, width, height } = el.getBoundingClientRect();
+    mouseX.set((e.clientX - left) / width - 0.5);
+    mouseY.set((e.clientY - top) / height - 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      className="relative overflow-hidden cursor-pointer group"
+      style={{
+        gridArea: item.area,
+        rotateX,
+        rotateY,
+        transformPerspective: 1200,
+        transformStyle: "preserve-3d",
+      }}
+      variants={itemVariants}
+      // Scroll reveal transition — on the element, not in variants
+      transition={{
+        duration: 1.4,
+        ease: LUXURY_EASE,
+      }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-8%" }}
+      // Hover state — drives child variants via propagation
+      whileHover="hover"
+      animate="rest"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Image Container */}
+      <div
+        className={`relative w-full overflow-hidden ${item.aspectClass ?? "aspect-[4/3]"}`}
+      >
+        {/* Zooming image wrapper */}
+        <motion.div
+          className="absolute inset-0 w-full h-full"
+          variants={imageZoomVariants}
+          transition={{ duration: 1.8, ease: LUXURY_EASE }}
+        >
+          <Image
+            src={item.src}
+            alt={item.alt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
+            className="object-cover"
+            priority={index < 2}
+          />
+        </motion.div>
+
+        {/* Permanent cinematic vignette */}
+        <div
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%, rgba(0,0,0,0.08) 100%)",
+          }}
+        />
+
+        {/* Hover dark wash */}
+        <motion.div
+          className="absolute inset-0 bg-black/20 pointer-events-none z-20"
+          variants={overlayVariants}
+          transition={{ duration: 0.7, ease: LUXURY_EASE }}
+        />
+
+        {/* Text reveal — hover only, pinned to bottom */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 px-5 pb-5 z-30"
+          variants={textRevealVariants}
+          transition={{ duration: 0.6, ease: LUXURY_EASE, delay: 0.06 }}
+        >
+          <p
+            className="text-white/50 text-[9px] tracking-[0.24em] uppercase mb-1.5 font-light"
+            style={{ fontFamily: "var(--font-dm), sans-serif" }}
+          >
+            {item.category}
+          </p>
+          <h3
+            className="text-white text-xl md:text-2xl font-light tracking-wide leading-snug"
+            style={{ fontFamily: "var(--font-cormorant), serif" }}
+          >
+            {item.title}
+          </h3>
+        </motion.div>
+      </div>
+
+      {/* Below-image metadata — always visible */}
+      <div className="pt-4 pb-1">
+        <p
+          className="text-[9px] tracking-[0.22em] uppercase text-stone-500 font-light"
+          style={{ fontFamily: "var(--font-dm), sans-serif" }}
+        >
+          {item.category}
+        </p>
+        <h3
+          className="text-stone-300 text-base md:text-lg font-light tracking-wide mt-1"
+          style={{ fontFamily: "var(--font-cormorant), serif" }}
+        >
+          {item.title}
+        </h3>
+      </div>
+    </motion.div>
+  );
+}
