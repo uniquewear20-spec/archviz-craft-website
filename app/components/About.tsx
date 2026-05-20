@@ -1,13 +1,18 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
-const fadeUp = {
+// By adding ": Variants", we explicitly tell TypeScript this is valid Framer Motion configuration
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 32 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 1.4, ease: [0.25, 0.1, 0, 1], delay: i * 0.15 },
+    transition: { 
+      duration: 1.4, 
+      ease: [0.25, 0.1, 0, 1], 
+      delay: i * 0.15 
+    },
   }),
 };
 
@@ -22,7 +27,6 @@ export default function About() {
   return (
     <section className="bg-[#0a0a08] px-6 py-24 md:px-16 md:py-36">
       <div className="max-w-7xl mx-auto">
-
         {/* Top label */}
         <motion.p
           className="text-[9px] tracking-[0.28em] uppercase text-stone-600 mb-16 font-light font-sans"
@@ -37,7 +41,6 @@ export default function About() {
 
         {/* Main editorial layout */}
         <div className="grid md:grid-cols-12 gap-12 md:gap-0">
-
           {/* Left — large serif statement */}
           <motion.div
             className="md:col-span-7 md:pr-16"
@@ -97,7 +100,7 @@ export default function About() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              custom={i}
+              custom={i + 3} // Added offset to keep unique animation delays
               variants={fadeUp}
             >
               <p
@@ -112,7 +115,6 @@ export default function About() {
             </motion.div>
           ))}
         </div>
-
       </div>
     </section>
   );
