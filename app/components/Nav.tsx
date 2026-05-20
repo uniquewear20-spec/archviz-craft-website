@@ -19,9 +19,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         className="absolute inset-0 border-b border-white/5"
         animate={{
           backdropFilter: scrolled ? "blur(14px)" : "blur(0px)",
-          backgroundColor: scrolled
-            ? "rgba(10, 10, 8, 0.85)"
-            : "transparent",
+          backgroundColor: scrolled ? "rgba(10, 10, 8, 0.85)" : "rgba(10, 10, 8, 0)",
         }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
       />

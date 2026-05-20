@@ -78,8 +78,9 @@ export default function Hero() {
             className="absolute inset-0 w-full h-full"
           >
             <motion.div
-              animate={slides[index].motion}
-              transition={{
+  animate={slides[index].motion}
+  style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+  transition={{
                 duration: SLIDE_DURATION / 1000,
                 ease: "linear",
                 repeat: Infinity,
