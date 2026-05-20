@@ -1,106 +1,181 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
-import GalleryItem, { type GalleryItemData } from "./GalleryItem";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import GalleryItem from "./GalleryItem";
 
-const galleryItems: GalleryItemData[] = [
+const projects = [
   {
-    id: "01",
+    src: "/images/gallery/01.jpg",
     title: "Meridian Residence",
     category: "Residential",
-    src: "/hero-1.png",
-    alt: "Meridian Residence",
-    area: "dominant",
-    aspectClass: "aspect-[16/10]",
   },
   {
-    id: "02",
-    title: "The Obsidian Tower",
+    src: "/images/gallery/02.jpg",
+    title: "Solstice Tower",
     category: "Commercial",
-    src: "/hero-2.png",
-    alt: "The Obsidian Tower",
-    area: "tall",
-    aspectClass: "aspect-[3/4]",
   },
   {
-    id: "03",
-    title: "Solaris Pavilion",
-    category: "Cultural",
-    src: "/hero-3.png",
-    alt: "Solaris Pavilion",
-    area: "mid-a",
-    aspectClass: "aspect-[4/3]",
-  },
-  {
-    id: "04",
-    title: "Nordic Retreat",
+    src: "/images/gallery/03.jpg",
+    title: "The Atrium",
     category: "Interior",
-    src: "/hero-4.png",
-    alt: "Nordic Retreat",
-    area: "mid-b",
-    aspectClass: "aspect-[4/3]",
   },
   {
-    id: "05",
-    title: "Atlas Cultural Centre",
+    src: "/images/gallery/04.jpg",
+    title: "Coastal Pavilion",
+    category: "Landscape",
+  },
+  {
+    src: "/images/gallery/05.jpg",
+    title: "Void House",
+    category: "Residential",
+  },
+  {
+    src: "/images/gallery/06.jpg",
+    title: "Cultural Centre",
     category: "Civic",
-    src: "/hero-5.png",
-    alt: "Atlas Cultural Centre",
-    area: "wide",
-    aspectClass: "aspect-[21/9]",
+  },
+  {
+    src: "/images/gallery/07.jpg",
+    title: "Ember Terrace",
+    category: "Hospitality",
   },
 ];
 
-const headingVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1.2, ease: [0.25, 0.1, 0, 1] },
-  },
-};
-
 export default function Gallery() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start start"],
+  });
+
+  const headerY = useTransform(scrollYProgress, [0, 1], [40, 0]);
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+
   return (
-    <section className="bg-[#0a0a08] px-6 py-24 md:px-16 md:py-36">
+    <section
+      ref={sectionRef}
+      className="bg-[#0a0a08] py-28 md:py-40 px-6 md:px-12 lg:px-20 xl:px-28"
+    >
+      {/* Section header */}
       <motion.div
-        className="mb-20"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={headingVariants}
+        style={{ y: headerY, opacity: headerOpacity }}
+        className="mb-20 md:mb-28 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
       >
-        <p className="text-[9px] tracking-[0.28em] uppercase text-stone-600 mb-6 font-light font-sans">
-          Selected Works
-        </p>
-        <h2 className="text-stone-100 text-4xl md:text-6xl font-serif italic font-light">
-          Visual Narratives
-        </h2>
+        <div>
+          <p className="text-[10px] tracking-[0.28em] uppercase text-stone-500 font-sans font-light mb-5">
+            Portfolio
+          </p>
+          <h2 className="font-serif text-4xl md:text-5xl xl:text-6xl text-stone-100 font-light leading-[1.1] tracking-tight">
+            Selected
+            <br />
+            <em className="not-italic text-stone-400">Works</em>
+          </h2>
+        </div>
+
+        <div className="md:max-w-[340px]">
+          <p className="text-stone-500 font-sans text-sm leading-relaxed font-light tracking-wide">
+            A curated selection of architectural visualisations spanning residential,
+            commercial, and civic commissions across three continents.
+          </p>
+          <div className="mt-6 flex items-center gap-3 group cursor-pointer">
+            <span className="text-stone-400 font-sans text-xs tracking-[0.16em] uppercase font-light group-hover:text-stone-200 transition-colors duration-300">
+              View all projects
+            </span>
+            <div className="h-px w-10 bg-stone-600 group-hover:w-16 group-hover:bg-stone-400 transition-all duration-500" />
+          </div>
+        </div>
       </motion.div>
 
+      {/* ── EDITORIAL GRID ── */}
+      {/*
+        Layout philosophy:
+        Row 1: Large hero (8 cols) | Tall portrait (4 cols)
+        Row 2: Inset portrait (3 cols) | Wide landscape (9 cols)
+        Row 3: Medium square (5 cols) | Medium landscape (7 cols)
+        Row 4: Full-width cinematic
+      */}
+
       {/* Desktop asymmetric grid */}
-      <div
-        className="hidden md:grid gap-5"
-        style={{
-          gridTemplateColumns: "repeat(12, 1fr)",
-          gridTemplateAreas: `
-            "dominant dominant dominant dominant dominant dominant dominant tall tall tall tall tall"
-            "mid-a    mid-a    mid-a    mid-a    mid-a    mid-b    mid-b    mid-b    mid-b    mid-b    mid-b    mid-b"
-            "wide     wide     wide     wide     wide     wide     wide     wide     wide     wide     wide     wide"
-          `,
-        }}
-      >
-        {galleryItems.map((item, i) => (
-          <GalleryItem key={item.id} item={item} index={i} />
+      <div className="hidden md:grid grid-cols-12 gap-3 lg:gap-4">
+
+        {/* Row 1 — hero piece + portrait */}
+        <div className="col-span-8 h-[520px] lg:h-[600px] xl:h-[660px]">
+          <GalleryItem {...projects[0]} index={0} className="h-full" priority />
+        </div>
+        <div className="col-span-4 h-[520px] lg:h-[600px] xl:h-[660px]">
+          <GalleryItem {...projects[1]} index={1} className="h-full" />
+        </div>
+
+        {/* Breathing space between rows */}
+        <div className="col-span-12 h-1" />
+
+        {/* Row 2 — inset portrait + wide landscape */}
+        <div className="col-start-1 col-span-4 h-[420px] lg:h-[480px]">
+          <GalleryItem {...projects[2]} index={2} className="h-full" />
+        </div>
+        <div className="col-span-8 h-[420px] lg:h-[480px]">
+          <GalleryItem {...projects[3]} index={3} className="h-full" />
+        </div>
+
+        {/* Breathing space */}
+        <div className="col-span-12 h-1" />
+
+        {/* Row 3 — medium + wide */}
+        <div className="col-span-5 h-[380px] lg:h-[440px]">
+          <GalleryItem {...projects[4]} index={4} className="h-full" />
+        </div>
+        <div className="col-span-7 h-[380px] lg:h-[440px]">
+          <GalleryItem {...projects[5]} index={5} className="h-full" />
+        </div>
+
+        {/* Breathing space */}
+        <div className="col-span-12 h-1" />
+
+        {/* Row 4 — cinematic full-width */}
+        <div className="col-span-12 h-[320px] lg:h-[380px] xl:h-[440px]">
+          <GalleryItem {...projects[6]} index={6} className="h-full" />
+        </div>
+      </div>
+
+      {/* Mobile stacked layout */}
+      <div className="md:hidden flex flex-col gap-3">
+        {projects.map((project, i) => (
+          <div
+            key={project.title}
+            className={`w-full ${
+              i === 0
+                ? "h-[70vw]"
+                : i % 3 === 0
+                ? "h-[85vw]"
+                : "h-[60vw]"
+            }`}
+          >
+            <GalleryItem
+              {...project}
+              index={i}
+              className="h-full"
+              priority={i === 0}
+            />
+          </div>
         ))}
       </div>
 
-      {/* Mobile stack */}
-      <div className="flex flex-col gap-8 md:hidden">
-        {galleryItems.map((item, i) => (
-          <GalleryItem key={item.id} item={item} index={i} />
-        ))}
-      </div>
+      {/* Bottom counter / editorial footnote */}
+      <motion.div
+        className="mt-20 md:mt-28 flex items-center justify-between border-t border-stone-800/60 pt-6"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, delay: 0.3 }}
+      >
+        <p className="text-stone-600 font-sans text-[10px] tracking-[0.22em] uppercase font-light">
+          Archviz Craft — Selected Works
+        </p>
+        <p className="text-stone-600 font-sans text-[10px] tracking-[0.18em] font-light">
+          {String(projects.length).padStart(2, "0")} Projects
+        </p>
+      </motion.div>
     </section>
   );
 }
