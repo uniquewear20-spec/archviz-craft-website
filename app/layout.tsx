@@ -1,26 +1,34 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400"],
   variable: "--font-dm",
+  weight: ["300", "400", "500"],
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Archviz Craft — Architectural Visualisation Studio",
+  title: "Archviz Craft — Architectural Visualisation Studio · Dubai",
   description:
-    "Premium architectural visualisation studio. Light, geometry, atmosphere.",
+    "Premium architectural visualisation studio based in Dubai. Cinematic renders for the world's most ambitious architectural projects.",
+  openGraph: {
+    title: "Archviz Craft",
+    description: "Architectural Visualisation Studio · Dubai",
+    url: "https://archvizcraft.com",
+    siteName: "Archviz Craft",
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -29,10 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${cormorant.variable} ${dmSans.variable} font-sans antialiased`}
-      >
+    <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
+      <body className="bg-[#0a0a08] text-stone-100 antialiased overflow-x-hidden">
         {children}
       </body>
     </html>
