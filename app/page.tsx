@@ -9,9 +9,9 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 const GOLD = "#A8885A";
 
 const bedroomSlides = [
-  { src: "/images/gallery/bedrooms/elegant-master-bedroom1.png", quote: "The morning light in our master suite looked like a photograph, not a render.", author: "Sarah Jenkins", role: "Principal, Jenkins Howe Interiors — London" },
-  { src: "/images/gallery/bedrooms/elegant-master-bedroom3.png", quote: "Their visualizations became the investment deck. Three anchor investors cited the imagery specifically.", author: "Marcello Rossi", role: "Development Director, Rossi Hospitality Group — Dubai" },
-  { src: "/images/gallery/bedrooms/elegant-master-bedroom5.png", quote: "Indistinguishable from photography of a completed space.", author: "Elena Rodriguez", role: "Founder, Studio Elara — Abu Dhabi" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg", quote: "The morning light in our master suite looked like a photograph, not a render.", author: "Sarah Jenkins", role: "Principal, Jenkins Howe Interiors — London" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg", quote: "Their visualizations became the investment deck. Three anchor investors cited the imagery specifically.", author: "Marcello Rossi", role: "Development Director, Rossi Hospitality Group — Dubai" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg", quote: "Indistinguishable from photography of a completed space.", author: "Elena Rodriguez", role: "Founder, Studio Elara — Abu Dhabi" },
 ];
 
 export default function HomePage() {
