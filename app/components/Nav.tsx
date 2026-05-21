@@ -29,16 +29,16 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         }
       />
 
-      <div className="relative z-10 grid grid-cols-3 items-center px-10 md:px-16 lg:px-20 py-4">
+      <div className="relative z-10 grid grid-cols-3 items-center px-10 md:px-16 lg:px-20 py-3">
 
-        {/* LEFT — Logo */}
+        {/* LEFT — Logo, smaller and refined */}
         <Link href="/" className="flex-shrink-0 justify-self-start">
           <Image
             src="/logo-avc.png"
             alt="Archviz Craft"
-            width={180}
-            height={180}
-            className="object-contain drop-shadow-lg"
+            width={100}
+            height={100}
+            className="object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
             priority
           />
         </Link>
@@ -49,7 +49,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
             <Link
               key={label}
               href={href}
-              className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
+              className="font-sans text-white text-[11px] font-light tracking-[0.22em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
             >
               {label}
             </Link>
