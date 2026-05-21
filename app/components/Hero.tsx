@@ -80,8 +80,9 @@ export default function Hero() {
       {mounted && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
 
+          {/* Eyebrow tag */}
           <motion.div
-            className="flex items-center gap-2 mb-10"
+            className="flex items-center gap-2 mb-8"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -92,38 +93,50 @@ export default function Hero() {
             </span>
           </motion.div>
 
+          {/* Headline — line 1: large, white, bold serif */}
           <motion.h1
-            className="font-serif font-bold leading-[1.05] tracking-tight"
-            style={{ fontSize: "clamp(2.8rem, 7.5vw, 5.5rem)" }}
+            className="font-serif font-bold leading-[1.1] tracking-tight"
+            style={{ fontSize: "clamp(3rem, 8vw, 6rem)" }}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span style={{ color: "#FFFFFF" }}>The Power of Architectural </span>
-            <span style={{ color: "#A8885A", fontStyle: "italic" }}>Visualization</span>
+            <span className="block text-white">The Power of Architectural</span>
+            {/* Line 2: gold italic, same large size — matches Zenith's second line treatment */}
+            <span
+              className="block font-serif font-bold italic"
+              style={{ color: "#A8885A", fontSize: "clamp(3rem, 8vw, 6rem)" }}
+            >
+              Visualization
+            </span>
           </motion.h1>
 
-          <motion.div
-            className="flex items-center gap-4 mt-5"
+          {/* Subtitle — centred, no side decorators, matches Zenith's clean subtitle */}
+          <motion.p
+            className="font-sans text-white/70 font-light tracking-wide mt-6 max-w-xl"
+            style={{ fontSize: "clamp(0.9rem, 1.6vw, 1.1rem)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="h-px w-10" style={{ backgroundColor: "#A8885A" }} />
-            <p
-              className="font-sans text-white/75 font-light tracking-wide"
-              style={{ fontSize: "clamp(0.85rem, 1.6vw, 1.05rem)" }}
-            >
-              Bringing visionary developments to life before construction begins
-            </p>
-            <div className="h-px w-10" style={{ backgroundColor: "#A8885A" }} />
-          </motion.div>
+            Bringing visionary developments to life before construction begins
+          </motion.p>
 
+          {/* Hairline divider below subtitle */}
           <motion.div
-            className="mt-16"
+            className="mt-6 h-px w-16"
+            style={{ backgroundColor: "#A8885A" }}
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          />
+
+          {/* CTA — moved further down with extra top margin */}
+          <motion.div
+            className="mt-12"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.0, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
           >
             <a
               href="#work"
@@ -141,6 +154,7 @@ export default function Hero() {
             </a>
           </motion.div>
 
+          {/* Slide dots */}
           <motion.div
             className="absolute bottom-10 flex items-center gap-2"
             initial={{ opacity: 0 }}
