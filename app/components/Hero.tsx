@@ -17,30 +17,15 @@ const SLIDE_DURATION = 6000;
 function getMotionProps(effect: string) {
   switch (effect) {
     case "zoom-in":
-      return {
-        initial: { scale: 1.0, x: 0 },
-        animate: { scale: 1.08, x: 0 },
-      };
+      return { initial: { scale: 1.0, x: 0 }, animate: { scale: 1.08, x: 0 } };
     case "zoom-out":
-      return {
-        initial: { scale: 1.1, x: 0 },
-        animate: { scale: 1.0, x: 0 },
-      };
+      return { initial: { scale: 1.1, x: 0 }, animate: { scale: 1.0, x: 0 } };
     case "slide-right":
-      return {
-        initial: { scale: 1.05, x: "-3%" },
-        animate: { scale: 1.05, x: "0%" },
-      };
+      return { initial: { scale: 1.05, x: "-3%" }, animate: { scale: 1.05, x: "0%" } };
     case "slide-left":
-      return {
-        initial: { scale: 1.05, x: "3%" },
-        animate: { scale: 1.05, x: "0%" },
-      };
+      return { initial: { scale: 1.05, x: "3%" }, animate: { scale: 1.05, x: "0%" } };
     default:
-      return {
-        initial: { scale: 1.0, x: 0 },
-        animate: { scale: 1.06, x: 0 },
-      };
+      return { initial: { scale: 1.0, x: 0 }, animate: { scale: 1.06, x: 0 } };
   }
 }
 
@@ -63,7 +48,6 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen min-h-[600px] overflow-hidden bg-black">
 
-      {/* ── BACKGROUND SLIDESHOW ── */}
       <AnimatePresence mode="sync">
         <motion.div
           key={slide.id}
@@ -91,14 +75,11 @@ export default function Hero() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/50 z-10" />
 
-      {/* ── CONTENT — iCreate style ── */}
       {mounted && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
 
-          {/* Status pill */}
           <motion.div
             className="flex items-center gap-2 mb-10"
             initial={{ opacity: 0, y: 10 }}
@@ -111,10 +92,9 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Headline — iCreate layout: one line */}
           <motion.h1
-            className="font-serif text-white font-light leading-tight tracking-tight"
-            style={{ fontSize: "clamp(2.4rem, 6.5vw, 6.5rem)" }}
+            className="font-serif text-white font-bold leading-[1.05] tracking-tight"
+            style={{ fontSize: "clamp(2.8rem, 7.5vw, 5.5rem)" }}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -122,7 +102,6 @@ export default function Hero() {
             The Power Of 3D Visualization
           </motion.h1>
 
-          {/* Gold divider lines + subtitle — iCreate style */}
           <motion.div
             className="flex items-center gap-4 mt-5"
             initial={{ opacity: 0 }}
@@ -139,7 +118,6 @@ export default function Hero() {
             <div className="h-px w-10" style={{ backgroundColor: "#A8885A" }} />
           </motion.div>
 
-          {/* CTA — iCreate gold box button */}
           <motion.div
             className="mt-10"
             initial={{ opacity: 0, y: 12 }}
@@ -148,17 +126,20 @@ export default function Hero() {
           >
             <a
               href="#work"
-              className="inline-flex items-center gap-3 font-sans text-white font-light tracking-[0.12em] text-sm px-10 py-4 transition-all duration-400"
-              style={{ backgroundColor: "#A8885A" }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#8C6E42")}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#A8885A")}
+              className="inline-flex items-center gap-3 font-sans text-white font-light tracking-[0.12em] text-sm px-10 py-4 transition-all duration-300"
+              style={{ backgroundColor: "#A8885A" } as React.CSSProperties}
+              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                e.currentTarget.style.backgroundColor = "#8C6E42";
+              }}
+              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                e.currentTarget.style.backgroundColor = "#A8885A";
+              }}
             >
               See our work
-              <span className="text-lg font-light">›</span>
+              <span className="text-lg font-light">&#8250;</span>
             </a>
           </motion.div>
 
-          {/* Slide dots */}
           <motion.div
             className="absolute bottom-10 flex items-center gap-2"
             initial={{ opacity: 0 }}
@@ -173,12 +154,12 @@ export default function Hero() {
                 style={{
                   width: i === index ? "24px" : "6px",
                   height: "6px",
-                  backgroundColor:
-                    i === index ? "#A8885A" : "rgba(255,255,255,0.3)",
+                  backgroundColor: i === index ? "#A8885A" : "rgba(255,255,255,0.3)",
                 }}
               />
             ))}
           </motion.div>
+
         </div>
       )}
     </section>
