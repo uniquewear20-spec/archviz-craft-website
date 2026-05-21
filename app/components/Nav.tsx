@@ -21,16 +21,16 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         }`}
       />
 
-      <div className="relative z-10 flex items-center justify-between px-8 md:px-12 lg:px-16 py-3">
+      <div className="relative z-10 flex items-center justify-between px-16 md:px-20 lg:px-24 py-4">
 
-        {/* Logo — large, left-aligned, matches iCreate scale */}
-        <a href="#" className="flex-shrink-0">
+        {/* Logo — large, pulled in from left edge */}
+        <a href="#" className="flex-shrink-0 ml-2">
           <Image
             src="/logo-avc.png"
             alt="Archviz Craft"
-            width={160}
-            height={160}
-            className="object-contain drop-shadow-lg brightness-125"
+            width={200}
+            height={200}
+            className="object-contain drop-shadow-lg brightness-150"
             priority
           />
         </a>
@@ -47,10 +47,10 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
             </a>
           ))}
 
-          {/* Enquire — pulled in from edge with mr-4 */}
+          {/* Enquire — pulled in with mr-8 so it's not at the very edge */}
           <a
             href="#contact"
-            className="font-sans text-[13px] font-light tracking-[0.14em] uppercase text-white px-6 py-3 mr-4 transition-all duration-300"
+            className="font-sans text-[13px] font-light tracking-[0.14em] uppercase text-white px-6 py-3 mr-8 transition-all duration-300"
             style={{ backgroundColor: "#A8885A" } as React.CSSProperties}
             onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
               e.currentTarget.style.backgroundColor = "#8C6E42";
