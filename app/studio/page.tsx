@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Nav from "../components/Nav";
 
@@ -19,27 +18,19 @@ const skills = [
 ];
 
 export default function StudioPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
-
   return (
     <div
-      ref={containerRef}
       className="min-h-screen"
       style={{ backgroundColor: "#080808", color: "#F0EBE3" }}
     >
-      {/* Pass scrolled={false} so nav stays transparent — no dark bar over his head */}
       <Nav scrolled={false} />
 
       {/* ── Hero split ───────────────────────────────────────────── */}
-      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-24 lg:pt-0">
+      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
 
-        {/* LEFT — Portrait */}
-        <div
-          className="relative overflow-hidden"
-          style={{ minHeight: "55vw", maxHeight: "100vh" }}
-        >
+        {/* LEFT — Portrait (static, no parallax) */}
+        <div className="relative overflow-hidden" style={{ minHeight: "100vh" }}>
+
           {/* Grain overlay */}
           <div
             className="absolute inset-0 z-10 pointer-events-none opacity-20"
@@ -49,32 +40,40 @@ export default function StudioPage() {
             }}
           />
 
-          <motion.div className="absolute inset-0 group" style={{ y: imgY }}>
+          {/* Static image — no motion wrapper, fills container cleanly */}
+          <div className="absolute inset-0 group">
             <Image
               src="/images/wasim-akram.jpg"
               alt="Wasim Akram — Senior 3D Visualizer"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-top grayscale transition-all duration-700 ease-in-out group-hover:grayscale-0"
+              className="object-cover grayscale transition-all duration-700 ease-in-out group-hover:grayscale-0"
               style={{ objectPosition: "center 10%" }}
             />
 
             {/* Bottom gradient */}
             <div
-              className="absolute bottom-0 left-0 right-0 h-40 z-20"
+              className="absolute bottom-0 left-0 right-0 h-48 z-20"
               style={{ background: "linear-gradient(to top, #080808 0%, transparent 100%)" }}
             />
+
             {/* Right-edge fade — desktop only */}
             <div
-              className="hidden lg:block absolute top-0 right-0 bottom-0 w-32 z-20"
+              className="hidden lg:block absolute top-0 right-0 bottom-0 w-40 z-20"
               style={{ background: "linear-gradient(to left, #080808 0%, transparent 100%)" }}
             />
-          </motion.div>
+
+            {/* Top gradient — keeps nav readable */}
+            <div
+              className="absolute top-0 left-0 right-0 h-32 z-20"
+              style={{ background: "linear-gradient(to bottom, rgba(8,8,8,0.6) 0%, transparent 100%)" }}
+            />
+          </div>
 
           {/* THE STUDIO label */}
           <motion.div
-            className="absolute bottom-10 left-8 z-30"
+            className="absolute bottom-10 left-10 z-30"
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.0, delay: 0.3, ease: EASE_ENTER }}
@@ -88,8 +87,8 @@ export default function StudioPage() {
           </motion.div>
         </div>
 
-        {/* RIGHT — Biography */}
-        <div className="flex flex-col justify-center px-8 md:px-14 lg:px-16 py-16 lg:py-32">
+        {/* RIGHT — Biography, pushed further right with more padding */}
+        <div className="flex flex-col justify-center px-10 md:px-16 lg:px-20 xl:px-24 py-32 lg:py-40">
 
           {/* Name */}
           <motion.div
@@ -141,7 +140,7 @@ export default function StudioPage() {
             style={{
               fontSize: "clamp(0.85rem, 1.1vw, 0.95rem)",
               color: "#9A948E",
-              maxWidth: "520px",
+              maxWidth: "480px",
             }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
