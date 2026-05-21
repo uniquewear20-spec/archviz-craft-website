@@ -7,7 +7,7 @@ import Link from "next/link";
 const navLinks = [
   { label: "Work",    href: "/#work" },
   { label: "Studio",  href: "/studio" },
-  { label: "About",   href: "/about" },
+  { label: "About",   href: "/studio" },
   { label: "Process", href: "/#process" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -65,6 +65,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
           <span className="w-4 h-px bg-white" />
           <span className="w-5 h-px bg-white" />
         </div>
+
       </div>
     </motion.header>
   );
