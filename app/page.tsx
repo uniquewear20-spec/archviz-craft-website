@@ -16,8 +16,8 @@ const EASE_ENTER: [number, number, number, number] = [0.16, 1, 0.3, 1];
 function PageLoader({ onComplete }: { onComplete: () => void }) {
   return (
     <motion.div
-      // ✦ Was: bg-black — now warm cream to match the page
-      className="fixed inset-0 bg-page z-[200] flex flex-col items-center justify-center"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center"
+      style={{ backgroundColor: "#F5F0E8" }}
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
       transition={{ duration: 1.0, delay: 1.6, ease: EASE }}
@@ -32,18 +32,17 @@ function PageLoader({ onComplete }: { onComplete: () => void }) {
         <Image
           src="/logo-avc.png"
           alt="Archviz Craft"
-          width={72}
-          height={72}
-          className="object-contain opacity-70"
+          width={90}
+          height={90}
+          className="object-contain"
           priority
         />
-        {/* ✦ Was: text-white/40 — now ink/tertiary color */}
-        <p className="font-sans text-[9px] tracking-[0.36em] uppercase text-ink-faint font-light">
+        <p className="font-sans text-[9px] tracking-[0.36em] uppercase font-light" style={{ color: "#A09890" }}>
           Archviz Craft
         </p>
-        {/* ✦ Was: bg-white/20 — now border color */}
         <motion.div
-          className="h-px bg-border-strong origin-left"
+          className="h-px origin-left"
+          style={{ backgroundColor: "#A8885A" }}
           initial={{ width: 0 }}
           animate={{ width: 64 }}
           transition={{ duration: 1.2, delay: 0.5, ease: EASE }}
@@ -53,29 +52,8 @@ function PageLoader({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// ── Hairline divider ──────────────────────────────────────────────────────────
-function Hairline() {
-  return (
-    <motion.div
-      // ✦ Was: bg-white/8 — now warm border
-      className="h-px bg-border mx-6 md:mx-16 lg:mx-24"
-      initial={{ scaleX: 0, opacity: 0 }}
-      whileInView={{ scaleX: 1, opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 1.4, ease: EASE }}
-      style={{ originX: 0 }}
-    />
-  );
-}
-
 // ── Section reveal ────────────────────────────────────────────────────────────
-function SectionReveal({
-  children,
-  id,
-}: {
-  children: React.ReactNode;
-  id?: string;
-}) {
+function SectionReveal({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
     <motion.section
       id={id}
@@ -86,6 +64,16 @@ function SectionReveal({
     >
       {children}
     </motion.section>
+  );
+}
+
+// ── Hairline ──────────────────────────────────────────────────────────────────
+function Hairline() {
+  return (
+    <div
+      className="mx-6 md:mx-16 lg:mx-24"
+      style={{ height: "1px", backgroundColor: "#E2D9CC" }}
+    />
   );
 }
 
@@ -106,93 +94,88 @@ export default function Home() {
 
   return (
     <>
-      {/* Loader */}
       <AnimatePresence>
         {!loaded && <PageLoader onComplete={() => setLoaded(true)} />}
       </AnimatePresence>
 
-      {/* Scroll progress bar — ✦ Was: bg-white/25 — now gold accent */}
+      {/* Gold scroll progress bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-px bg-gold z-[60] origin-left"
-        style={{ scaleX: progressBar }}
+        className="fixed top-0 left-0 right-0 h-px z-[60] origin-left"
+        style={{ scaleX: progressBar, backgroundColor: "#A8885A" }}
       />
 
       <motion.div
         ref={mainRef}
-        // ✦ Was: bg-[#0a0a08] — now warm cream page background
-        className="bg-page min-h-screen"
         initial={{ opacity: 0 }}
         animate={{ opacity: loaded ? 1 : 0 }}
         transition={{ duration: 0.8, delay: 0.1 }}
       >
-        {/* Nav — pass scrolled + light theme flag */}
         <Nav scrolled={scrolled} />
 
-        {/* 1 — Hero slideshow */}
+        {/* 1 — Hero (dark, full bleed) */}
         <Hero />
 
-        {/* 2 — About / Studio */}
-        <Hairline />
-        <SectionReveal id="studio">
-          <About />
-        </SectionReveal>
+        {/* ── CREAM SECTIONS ── */}
+        <div style={{ backgroundColor: "#F5F0E8" }}>
 
-        {/* 3 — Services / Process */}
-        <Hairline />
-        <SectionReveal id="process">
-          <Services />
-        </SectionReveal>
+          <Hairline />
+          <SectionReveal id="studio">
+            <About />
+          </SectionReveal>
 
-        {/* 4 — Contact */}
-        <Hairline />
-        <SectionReveal id="contact">
-          <Contact />
-        </SectionReveal>
+          <Hairline />
+          <SectionReveal id="process">
+            <Services />
+          </SectionReveal>
 
-        {/* Footer */}
-        <motion.footer
-          // ✦ Was: border-white/8 — now warm border
-          className="border-t border-border px-6 md:px-16 lg:px-24 py-10"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.0 }}
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo-avc.png"
-                alt="Archviz Craft"
-                width={36}
-                height={36}
-                // ✦ Was: opacity-50 on dark — adjusted for light bg
-                className="object-contain opacity-40"
-              />
-              {/* ✦ Was: text-white/25 — now ink/faint */}
-              <span className="font-sans text-[9px] tracking-[0.28em] uppercase text-ink-faint font-light">
-                Archviz Craft
-              </span>
+          <Hairline />
+          <SectionReveal id="contact">
+            <Contact />
+          </SectionReveal>
+
+          {/* Footer */}
+          <motion.footer
+            className="px-6 md:px-16 lg:px-24 py-10"
+            style={{ borderTop: "1px solid #E2D9CC" }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.0 }}
+          >
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/logo-avc.png"
+                  alt="Archviz Craft"
+                  width={44}
+                  height={44}
+                  className="object-contain opacity-60"
+                />
+                <span className="font-sans text-[9px] tracking-[0.28em] uppercase font-light" style={{ color: "#A09890" }}>
+                  Archviz Craft
+                </span>
+              </div>
+              <nav className="flex items-center gap-8">
+                {["Studio", "Process", "Contact"].map((label) => (
+                  <a
+                    key={label}
+                    href={`#${label.toLowerCase()}`}
+                    className="font-sans text-[9px] tracking-[0.16em] uppercase font-light transition-colors duration-300"
+                    style={{ color: "#A09890" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "#A8885A")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "#A09890")}
+                  >
+                    {label}
+                  </a>
+                ))}
+              </nav>
+              <p className="font-sans text-[9px] font-light tracking-wide" style={{ color: "#C8BFB2" }}>
+                © {new Date().getFullYear()} Archviz Craft · Dubai
+              </p>
             </div>
+          </motion.footer>
 
-            <nav className="flex items-center gap-8">
-              {["Studio", "Process", "Contact"].map((label) => (
-                <a
-                  key={label}
-                  href={`#${label.toLowerCase()}`}
-                  // ✦ Was: text-white/20 hover:text-white/50
-                  className="font-sans text-[9px] tracking-[0.16em] uppercase text-ink-faint hover:text-gold font-light transition-colors duration-300"
-                >
-                  {label}
-                </a>
-              ))}
-            </nav>
-
-            {/* ✦ Was: text-white/15 — now ink/faint */}
-            <p className="font-sans text-[9px] text-ink-faint font-light tracking-wide">
-              © {new Date().getFullYear()} Archviz Craft · Dubai
-            </p>
-          </div>
-        </motion.footer>
+        </div>
       </motion.div>
     </>
   );
