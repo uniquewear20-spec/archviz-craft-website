@@ -93,13 +93,14 @@ export default function Hero() {
           </motion.div>
 
           <motion.h1
-            className="font-serif text-white font-bold leading-[1.05] tracking-tight"
+            className="font-serif font-bold leading-[1.05] tracking-tight"
             style={{ fontSize: "clamp(2.8rem, 7.5vw, 5.5rem)" }}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            The Power of Architectural Visualization
+            <span style={{ color: "#FFFFFF" }}>The Power of Architectural </span>
+            <span style={{ color: "#A8885A", fontStyle: "italic" }}>Visualization</span>
           </motion.h1>
 
           <motion.div
@@ -119,7 +120,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="mt-10"
+            className="mt-16"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
@@ -127,12 +128,12 @@ export default function Hero() {
             <a
               href="#work"
               className="inline-flex items-center gap-3 font-sans text-white font-light tracking-[0.12em] text-sm px-10 py-4 transition-all duration-300"
-              style={{ backgroundColor: "#A8885A" } as React.CSSProperties}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                e.currentTarget.style.backgroundColor = "#8C6E42";
+              style={{ backgroundColor: "#A8885A" }}
+              onMouseEnter={function(e) {
+                (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#8C6E42";
               }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                e.currentTarget.style.backgroundColor = "#A8885A";
+              onMouseLeave={function(e) {
+                (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#A8885A";
               }}
             >
               See our work
@@ -146,18 +147,20 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.8 }}
           >
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIndex(i)}
-                className="rounded-full transition-all duration-500"
-                style={{
-                  width: i === index ? "24px" : "6px",
-                  height: "6px",
-                  backgroundColor: i === index ? "#A8885A" : "rgba(255,255,255,0.3)",
-                }}
-              />
-            ))}
+            {slides.map(function(_, i) {
+              return (
+                <button
+                  key={i}
+                  onClick={function() { setIndex(i); }}
+                  className="rounded-full transition-all duration-500"
+                  style={{
+                    width: i === index ? "24px" : "6px",
+                    height: "6px",
+                    backgroundColor: i === index ? "#A8885A" : "rgba(255,255,255,0.3)",
+                  }}
+                />
+              );
+            })}
           </motion.div>
 
         </div>

@@ -14,14 +14,14 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
       transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
     >
       <div
-        className={`absolute inset-0 transition-all duration-500 ${
-          scrolled
+        className={
+          "absolute inset-0 transition-all duration-500 " +
+          (scrolled
             ? "bg-black/90 backdrop-blur-md border-b border-white/10"
-            : "bg-transparent"
-        }`}
+            : "bg-transparent")
+        }
       />
 
-      {/* Three-column layout: logo | nav center | enquire */}
       <div className="relative z-10 grid grid-cols-3 items-center px-10 md:px-16 lg:px-20 py-4">
 
         {/* LEFT — Logo */}
@@ -38,33 +38,21 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
 
         {/* CENTER — Nav links */}
         <nav className="hidden md:flex items-center justify-center gap-8 lg:gap-12">
-          {navLinks.map((link) => (
-            <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
-              className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
-            >
-              {link}
-            </a>
-          ))}
+          {navLinks.map(function (link) {
+            return (
+              <a
+                key={link}
+                href={"#" + link.toLowerCase()}
+                className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
+              >
+                {link}
+              </a>
+            );
+          })}
         </nav>
 
-        {/* RIGHT — Enquire */}
-        <div className="hidden md:flex justify-end">
-          <a
-            href="#contact"
-            className="font-sans text-[12px] font-light tracking-[0.14em] uppercase text-white px-7 py-3 transition-all duration-300"
-            style={{ backgroundColor: "#A8885A" } as React.CSSProperties}
-            onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
-              e.currentTarget.style.backgroundColor = "#8C6E42";
-            }}
-            onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
-              e.currentTarget.style.backgroundColor = "#A8885A";
-            }}
-          >
-            Enquire
-          </a>
-        </div>
+        {/* RIGHT — spacer */}
+        <div className="hidden md:block" />
 
         {/* Mobile hamburger */}
         <div className="md:hidden flex flex-col gap-1.5 cursor-pointer p-1 justify-self-end col-start-3">
