@@ -46,10 +46,7 @@ export const portfolioImages = [
     { src: '/images/portfolio/bedrooms/elegant-master-bedroom7.jpg', category: 'bedrooms' },
     { src: '/images/portfolio/bedrooms/elegant-master-bedroom8.jpg', category: 'bedrooms' },
     { src: '/images/portfolio/bedrooms/elegant-master-bedroom9.jpg', category: 'bedrooms' },
-    { src: '/images/portfolio/bedrooms/elegant-bedroom-hallway.jpg', category: 'bedrooms' },
-    { src: '/images/portfolio/bedrooms/luxury-wardrobe-closet1.jpg', category: 'bedrooms' },
-    { src: '/images/portfolio/bedrooms/luxury-wardrobe-closet2.jpg', category: 'bedrooms' },
-    { src: '/images/portfolio/bedrooms/luxury-wardrobe-closet3.jpg', category: 'bedrooms' },
+   
   
     // --- WASHROOMS ---
     { src: '/images/portfolio/washrooms/premium-suite-bathroom1.jpg', category: 'washrooms' },

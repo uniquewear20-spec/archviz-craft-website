@@ -1,334 +1,355 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+// ── Tokens ─────────────────────────────────────────────────────────────────
 const GOLD = "#A8885A";
+const GOLD_L = "#C4A882";
+const INK = "#080808";
+const CREAM = "#F0EBE3";
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-// ── Bedroom showcase slides ────────────────────────────────────────────────────
-const bedroomSlides = [
-  {
-    src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg",
-    quote:
-      "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.",
-    author: "Priya Mehta",
-    role: "Design Principal · Foster + Partners, London",
-  },
-  {
-    src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg",
-    quote:
-      "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.",
-    author: "Khalid Al Mansoori",
-    role: "Managing Director · Mansoori Capital Developments, Dubai",
-  },
-  {
-    src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg",
-    quote:
-      "They understand how a room feels, not just how it looks. The hospitality intelligence here is genuinely rare.",
-    author: "Isabelle Fournier",
-    role: "Founder · Atelier Fournier, Paris",
-  },
-];
-
-// ── Services ──────────────────────────────────────────────────────────────────
-const services = [
-  {
-    number: "01",
-    title: "Architectural Visualisation",
-    description:
-      "Still renders of unbuilt architecture. Every frame a considered composition of light, material, and space.",
-  },
-  {
-    number: "02",
-    title: "Interior Rendering",
-    description:
-      "Spatial storytelling for interior concepts. We render atmosphere, not just furniture.",
-  },
-  {
-    number: "03",
-    title: "Walkthrough Animation",
-    description:
-      "Cinematic fly-throughs and walkthrough films that immerse clients in the unbuilt project.",
-  },
-  {
-    number: "04",
-    title: "360° Panoramic Views",
-    description:
-      "Immersive spherical renders for VR headsets, web viewers, and real estate presentations.",
-  },
-  {
-    number: "05",
-    title: "Concept Design",
-    description:
-      "Early-stage design exploration. We help architects and developers visualise possibilities before CAD is finalised.",
-  },
-  {
-    number: "06",
-    title: "Brand Imagery",
-    description:
-      "Hero images for marketing suites, brochures, hoardings, and luxury real estate campaigns.",
-  },
-];
-
-// ── Stats ─────────────────────────────────────────────────────────────────────
-const stats = [
+// ── Data ───────────────────────────────────────────────────────────────────
+const STATS = [
   { value: "120+", label: "Projects Delivered" },
   { value: "14",   label: "Countries" },
   { value: "9",    label: "Years of Practice" },
   { value: "40+",  label: "Awards & Recognition" },
 ];
 
-// ── Fade-up variant ────────────────────────────────────────────────────────────
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1.3, ease: EASE, delay: i * 0.12 },
-  }),
-};
+const TESTIMONIALS = [
+  {
+    quote: "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.",
+    name: "Priya Mehta",
+    role: "Design Principal",
+    company: "Foster + Partners, London",
+    img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&h=120&fit=crop&crop=face",
+  },
+  {
+    quote: "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.",
+    name: "Khalid Al Mansoori",
+    role: "Managing Director",
+    company: "Mansoori Capital Developments, Dubai",
+    img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&h=120&fit=crop&crop=face",
+  },
+  {
+    quote: "They understand how a room feels, not just how it looks. The light quality in our master suite visualisation was indistinguishable from a completed space. The hospitality intelligence here is genuinely rare.",
+    name: "Isabelle Fournier",
+    role: "Founder",
+    company: "Atelier Fournier, Paris",
+    img: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=120&h=120&fit=crop&crop=face",
+  },
+];
 
-// ─────────────────────────────────────────────────────────────────────────────
+const SERVICES = [
+  { n: "01", title: "Architectural Visualisation", desc: "Still renders of unbuilt architecture. Every frame a considered composition of light, material, and space." },
+  { n: "02", title: "Interior Rendering",           desc: "Spatial storytelling for interior concepts. We render atmosphere, not just furniture." },
+  { n: "03", title: "Walkthrough Animation",        desc: "Cinematic fly-throughs and walkthrough films that immerse clients in the unbuilt project." },
+  { n: "04", title: "360° Panoramic Views",         desc: "Immersive spherical renders for VR headsets, web viewers, and real estate presentations." },
+  { n: "05", title: "Concept Design",               desc: "Early-stage design exploration. We help architects visualise possibilities before CAD is finalised." },
+  { n: "06", title: "Brand Imagery",                desc: "Hero images for marketing suites, brochures, hoardings, and luxury real estate campaigns." },
+];
 
-export default function HomePage() {
-  const [active, setActive] = useState(0);
+const BEDROOM_SLIDES = [
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom7.jpg" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg" },
+];
+
+// ── Utility components ─────────────────────────────────────────────────────
+function Reveal({ children, delay = 0, y = 28, className = "" }: {
+  children: React.ReactNode; delay?: number; y?: number; className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 1.3, ease: EASE, delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function GoldLine({ width = "48px", delay = 0 }: { width?: string; delay?: number }) {
+  return (
+    <motion.div
+      style={{ height: "1px", width, backgroundColor: GOLD, opacity: 0.55 }}
+      initial={{ scaleX: 0, transformOrigin: "left" }}
+      whileInView={{ scaleX: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1.2, ease: EASE, delay }}
+    />
+  );
+}
+
+function CountUp({ target }: { target: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [display, setDisplay] = useState("0");
+  const [triggered, setTriggered] = useState(false);
 
   useEffect(() => {
-    const t = setInterval(
-      () => setActive((p) => (p + 1) % bedroomSlides.length),
-      5500
-    );
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setTriggered(true); }, { threshold: 0.5 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!triggered) return;
+    const num = parseFloat(target.replace(/[^0-9.]/g, ""));
+    if (isNaN(num)) { setDisplay(target); return; }
+    const suffix = target.match(/[^0-9.]+$/)?.[0] ?? "";
+    const prefix = target.match(/^[^0-9]*/)?.[0] ?? "";
+    const dur = 1600; const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setDisplay(`${prefix}${Math.round(ease * num)}${suffix}`);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [triggered, target]);
+
+  return <span ref={ref}>{display}</span>;
+}
+
+// ── Main page ──────────────────────────────────────────────────────────────
+export default function HomePage() {
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+
+  // Auto-advance testimonials
+  useEffect(() => {
+    const t = setInterval(() => setActiveTestimonial(p => (p + 1) % TESTIMONIALS.length), 6000);
     return () => clearInterval(t);
   }, []);
 
-  const prev = () =>
-    setActive((p) => (p - 1 + bedroomSlides.length) % bedroomSlides.length);
-  const next = () =>
-    setActive((p) => (p + 1) % bedroomSlides.length);
+  // Auto-advance bedroom slides
+  useEffect(() => {
+    const t = setInterval(() => setActiveSlide(p => (p + 1) % BEDROOM_SLIDES.length), 5000);
+    return () => clearInterval(t);
+  }, []);
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "#080808", color: "#F0EBE3" }}
-    >
+    <div style={{ backgroundColor: INK, color: CREAM, fontFamily: "var(--font-cormorant), serif" }}>
+
+      {/* Grain overlay — fixed, subtle */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[100] opacity-[0.032]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: "200px",
+        }}
+      />
+
       <Nav scrolled={false} />
 
-      {/* ── HERO — untouched ──────────────────────────────────────────────── */}
+      {/* ── HERO — untouched ─────────────────────────────────────────────── */}
       <Hero />
 
-      {/* ── MANIFESTO STRIP ──────────────────────────────────────────────── */}
-      <motion.section
+      {/* ── METRICS STRIP ────────────────────────────────────────────────── */}
+      <section style={{ borderTop: "1px solid #141210", borderBottom: "1px solid #141210" }}>
+        <div className="grid grid-cols-2 md:grid-cols-4">
+          {STATS.map((s, i) => (
+            <Reveal key={s.label} delay={i * 0.08}>
+              <div
+                className="flex flex-col items-start px-10 py-14"
+                style={{ borderRight: i < 3 ? "1px solid #141210" : "none" }}
+              >
+                <p
+                  className="font-serif font-extralight leading-none mb-3"
+                  style={{ fontSize: "clamp(2.2rem,4vw,3.5rem)", color: CREAM }}
+                >
+                  <CountUp target={s.value} />
+                </p>
+                <p
+                  className="font-sans font-light uppercase"
+                  style={{ fontSize: "0.58rem", letterSpacing: "0.28em", color: "#3A342E" }}
+                >
+                  {s.label}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── MANIFESTO ────────────────────────────────────────────────────── */}
+      <section
         className="px-8 md:px-16 lg:px-24"
         style={{
-          paddingTop: "clamp(7rem,11vw,11rem)",
-          paddingBottom: "clamp(7rem,11vw,11rem)",
+          paddingTop: "clamp(8rem,12vw,13rem)",
+          paddingBottom: "clamp(8rem,12vw,13rem)",
           borderBottom: "1px solid #141210",
         }}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-        variants={fadeUp}
-        custom={0}
       >
-        <div className="max-w-4xl mx-auto text-center">
-          <span
-            className="block font-sans font-light uppercase mb-10"
-            style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.48em" }}
-          >
+        <Reveal className="max-w-5xl mx-auto text-center">
+          <p className="font-sans font-light uppercase mb-10" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
             Studio Manifesto
-          </span>
+          </p>
           <blockquote
-            className="font-serif font-extralight italic leading-[1.35]"
-            style={{
-              fontSize: "clamp(1.5rem, 3.2vw, 2.8rem)",
-              color: "#F0EBE3",
-            }}
+            className="font-serif font-extralight italic leading-[1.3]"
+            style={{ fontSize: "clamp(1.7rem,3.5vw,3.2rem)", color: CREAM }}
           >
-            We render architecture through the lens of hospitality —
+            We render architecture through the lens of hospitality —<br />
             understanding how spaces are inhabited, not just how they appear.
-            Precision meets emotional intelligence.
           </blockquote>
-          <motion.div
-            className="mx-auto mt-12 origin-center"
-            style={{ height: "1px", width: "48px", backgroundColor: GOLD, opacity: 0.5 }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.4, ease: EASE }}
-          />
-        </div>
-      </motion.section>
+          <div className="flex justify-center mt-14">
+            <GoldLine width="40px" delay={0.4} />
+          </div>
+        </Reveal>
+      </section>
 
-      {/* ── BEDROOM SHOWCASE ─────────────────────────────────────────────── */}
-      <section
-        id="bedrooms"
-        className="px-8 md:px-16 lg:px-24"
-        style={{
-          paddingTop: "clamp(6rem,10vw,10rem)",
-          paddingBottom: "clamp(6rem,10vw,10rem)",
-        }}
-      >
-        {/* Header */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={0}
-          className="mb-16"
-        >
-          <span
-            className="block font-sans font-light uppercase mb-6"
-            style={{
-              fontSize: "clamp(0.6rem,0.9vw,0.75rem)",
-              color: GOLD,
-              letterSpacing: "0.45em",
-            }}
-          >
-            01. Selected Work — Private Sanctuaries
-          </span>
-          <h2
-            className="font-serif italic font-extralight leading-[1.05]"
-            style={{
-              fontSize: "clamp(2rem,4.5vw,4.2rem)",
-              color: "#F0EBE3",
-              maxWidth: "860px",
-            }}
-          >
-            The private suite, before the walls exist.
-          </h2>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.4, delay: 0.3, ease: EASE }}
-            className="origin-left mt-10"
-            style={{
-              height: "1px",
-              width: "clamp(80px,12vw,160px)",
-              backgroundColor: GOLD,
-              opacity: 0.5,
-            }}
-          />
-        </motion.div>
+      {/* ── BEDROOM SHOWCASE — FULL BLEED ────────────────────────────────── */}
+      <section id="bedrooms" style={{ borderBottom: "1px solid #141210" }}>
 
-        {/* Slideshow */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={1}
-          className="relative w-full overflow-hidden"
-          style={{ aspectRatio: "16/9", maxHeight: "75vh" }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, scale: 1.04 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 1.0, ease: EASE }}
-              className="absolute inset-0"
+        {/* Section label */}
+        <div className="px-8 md:px-16 lg:px-24 pt-20 pb-14">
+          <Reveal>
+            <p className="font-sans font-light uppercase mb-5" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
+              01 · Selected Work — Private Sanctuaries
+            </p>
+            <h2
+              className="font-serif font-extralight italic"
+              style={{ fontSize: "clamp(2rem,4.5vw,4.5rem)", color: CREAM, maxWidth: "780px", lineHeight: 1.05 }}
             >
-              <Image
-                src={bedroomSlides[active].src}
-                alt="Luxury Bedroom"
-                fill
-                sizes="100vw"
-                className="object-cover"
-                priority
+              The private suite,<br />before the walls exist.
+            </h2>
+          </Reveal>
+          <div className="mt-10">
+            <GoldLine width="clamp(80px,12vw,140px)" delay={0.3} />
+          </div>
+        </div>
+
+        {/* Full-bleed image carousel */}
+        <div className="relative w-full overflow-hidden" style={{ height: "85vh", minHeight: "560px" }}>
+          <AnimatePresence mode="sync">
+            <motion.div
+              key={activeSlide}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.4, ease: "easeInOut" }}
+            >
+              {/* The image itself — fills entire container */}
+              <div className="relative w-full h-full">
+                <Image
+                  src={BEDROOM_SLIDES[activeSlide].src}
+                  alt="Luxury bedroom visualisation"
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              {/* Multi-layer gradient for cinematic depth */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: "linear-gradient(to top, rgba(8,8,8,0.92) 0%, rgba(8,8,8,0.3) 40%, rgba(8,8,8,0.05) 70%, transparent 100%)",
+                }}
               />
               <div
                 className="absolute inset-0"
                 style={{
-                  background:
-                    "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)",
+                  background: "linear-gradient(to right, rgba(8,8,8,0.5) 0%, transparent 50%)",
                 }}
               />
             </motion.div>
           </AnimatePresence>
 
-          {/* Quote */}
-          <div className="absolute bottom-0 left-0 right-0 px-10 pb-10 pointer-events-none">
+          {/* Testimonial overlay — bottom left */}
+          <div className="absolute bottom-0 left-0 right-0 px-8 md:px-16 lg:px-24 pb-14 z-10">
             <AnimatePresence mode="wait">
               <motion.div
-                key={active + "-quote"}
-                initial={{ opacity: 0, y: 16 }}
+                key={activeTestimonial}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.7, ease: EASE }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.8, ease: EASE }}
+                className="max-w-2xl"
               >
                 <p
-                  className="font-serif italic font-light mb-3"
-                  style={{
-                    fontSize: "clamp(1rem,2vw,1.45rem)",
-                    color: "#F0EBE3",
-                    maxWidth: "680px",
-                    lineHeight: 1.45,
-                  }}
+                  className="font-serif italic font-light mb-5"
+                  style={{ fontSize: "clamp(1.05rem,2vw,1.5rem)", color: CREAM, lineHeight: 1.55 }}
                 >
-                  &ldquo;{bedroomSlides[active].quote}&rdquo;
+                  &ldquo;{TESTIMONIALS[activeTestimonial].quote}&rdquo;
                 </p>
-                <p
-                  className="font-sans font-light"
-                  style={{
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.25em",
-                    color: GOLD,
-                  }}
-                >
-                  — {bedroomSlides[active].author},{" "}
-                  {bedroomSlides[active].role}
-                </p>
+                <div className="flex items-center gap-4">
+                  <div
+                    className="rounded-full overflow-hidden shrink-0"
+                    style={{ width: "36px", height: "36px", border: `1px solid ${GOLD}40` }}
+                  >
+                    <img
+                      src={TESTIMONIALS[activeTestimonial].img}
+                      alt={TESTIMONIALS[activeTestimonial].name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(40%)" }}
+                    />
+                  </div>
+                  <div>
+                    <p className="font-sans font-light" style={{ fontSize: "0.65rem", color: GOLD, letterSpacing: "0.22em" }}>
+                      — {TESTIMONIALS[activeTestimonial].name},&nbsp;
+                      <span style={{ color: "#4A4540" }}>
+                        {TESTIMONIALS[activeTestimonial].role} · {TESTIMONIALS[activeTestimonial].company}
+                      </span>
+                    </p>
+                  </div>
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Arrows */}
-          <div className="absolute bottom-8 right-10 flex gap-3">
-            {[prev, next].map((fn, i) => (
+          {/* Slide counter + arrows — bottom right */}
+          <div className="absolute bottom-12 right-8 md:right-16 lg:right-24 z-10 flex items-center gap-4">
+            <span className="font-sans font-light" style={{ fontSize: "0.58rem", color: "#2A2520", letterSpacing: "0.2em" }}>
+              {String(activeSlide + 1).padStart(2, "0")} / {String(BEDROOM_SLIDES.length).padStart(2, "0")}
+            </span>
+            {[
+              () => setActiveSlide(p => (p - 1 + BEDROOM_SLIDES.length) % BEDROOM_SLIDES.length),
+              () => setActiveSlide(p => (p + 1) % BEDROOM_SLIDES.length),
+            ].map((fn, i) => (
               <button
                 key={i}
                 onClick={fn}
-                className="flex items-center justify-center transition-colors duration-300"
+                className="flex items-center justify-center transition-all duration-400"
                 style={{
-                  width: "44px",
-                  height: "44px",
-                  border: "1px solid rgba(168,136,90,0.4)",
-                  color: "#F0EBE3",
-                  backgroundColor: "rgba(28,25,22,0.7)",
-                  fontSize: "1rem",
+                  width: "42px", height: "42px",
+                  border: "1px solid rgba(168,136,90,0.35)",
+                  color: CREAM,
+                  background: "rgba(8,8,8,0.6)",
+                  fontSize: "0.9rem",
                   cursor: "pointer",
                 }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLButtonElement).style.borderColor =
-                    GOLD)
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLButtonElement).style.borderColor =
-                    "rgba(168,136,90,0.4)")
-                }
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = GOLD; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(168,136,90,0.35)"; }}
               >
                 {i === 0 ? "←" : "→"}
               </button>
             ))}
           </div>
 
-          {/* Dots */}
-          <div className="absolute top-6 right-10 flex gap-2">
-            {bedroomSlides.map((_, i) => (
+          {/* Progress dots */}
+          <div className="absolute top-6 right-8 md:right-16 lg:right-24 z-10 flex gap-2">
+            {BEDROOM_SLIDES.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setActive(i)}
+                onClick={() => setActiveSlide(i)}
                 style={{
-                  width: i === active ? "24px" : "6px",
+                  width: i === activeSlide ? "22px" : "5px",
                   height: "2px",
-                  backgroundColor:
-                    i === active ? GOLD : "rgba(240,235,227,0.3)",
+                  backgroundColor: i === activeSlide ? GOLD : "rgba(240,235,227,0.25)",
                   transition: "all 0.4s ease",
                   border: "none",
                   padding: 0,
@@ -337,79 +358,39 @@ export default function HomePage() {
               />
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* CTA */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={2}
-          className="mt-16"
+        {/* Below image — thumbnail strip + CTA */}
+        <div
+          className="px-8 md:px-16 lg:px-24 py-10 flex items-center justify-between"
+          style={{ borderTop: "1px solid #0E0C0A" }}
         >
+          {/* Thumbnails */}
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {BEDROOM_SLIDES.map((slide, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveSlide(i)}
+                className="relative shrink-0 overflow-hidden transition-all duration-500"
+                style={{
+                  width: "72px", height: "48px",
+                  opacity: i === activeSlide ? 1 : 0.28,
+                  border: i === activeSlide ? `1px solid ${GOLD}` : "1px solid transparent",
+                }}
+              >
+                <Image src={slide.src} alt="" fill sizes="72px" className="object-cover" />
+              </button>
+            ))}
+          </div>
+          {/* CTA */}
           <a
             href="/work"
-            className="inline-flex items-center gap-4 font-sans font-light tracking-[0.35em] uppercase transition-opacity duration-300 hover:opacity-60"
-            style={{
-              fontSize: "clamp(0.6rem,0.85vw,0.72rem)",
-              color: GOLD,
-            }}
+            className="hidden md:inline-flex items-center gap-3 font-sans font-light uppercase transition-opacity duration-300 hover:opacity-50"
+            style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.38em", textDecoration: "none" }}
           >
-            <span style={{ borderBottom: "1px solid #A8885A", paddingBottom: "2px" }}>
-              View Full Portfolio
-            </span>
-            <span
-              style={{
-                display: "inline-block",
-                width: "32px",
-                height: "1px",
-                backgroundColor: GOLD,
-              }}
-            />
+            <span style={{ borderBottom: "1px solid #A8885A", paddingBottom: "2px" }}>View Full Portfolio</span>
+            <span style={{ display: "inline-block", width: "28px", height: "1px", backgroundColor: GOLD }} />
           </a>
-        </motion.div>
-      </section>
-
-      {/* ── STATS ────────────────────────────────────────────────────────── */}
-      <section style={{ borderTop: "1px solid #141210", borderBottom: "1px solid #141210" }}>
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              className="px-10 py-12"
-              style={{
-                borderRight: i < 3 ? "1px solid #141210" : "none",
-              }}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={i}
-            >
-              <p
-                className="font-serif font-extralight"
-                style={{
-                  fontSize: "clamp(2rem,3.5vw,3.2rem)",
-                  color: "#F0EBE3",
-                  lineHeight: 1,
-                }}
-              >
-                {stat.value}
-              </p>
-              <p
-                className="font-sans font-light mt-2"
-                style={{
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  color: "#4A4540",
-                }}
-              >
-                {stat.label}
-              </p>
-            </motion.div>
-          ))}
         </div>
       </section>
 
@@ -417,455 +398,392 @@ export default function HomePage() {
       <section
         className="px-8 md:px-16 lg:px-24"
         style={{
-          paddingTop: "clamp(6rem,10vw,10rem)",
-          paddingBottom: "clamp(6rem,10vw,10rem)",
+          paddingTop: "clamp(7rem,11vw,12rem)",
+          paddingBottom: "clamp(7rem,11vw,12rem)",
+          borderBottom: "1px solid #141210",
         }}
       >
-        {/* Header */}
-        <motion.div
-          className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={0}
-        >
+        <Reveal className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
           <div>
-            <p
-              className="font-sans font-light uppercase mb-6"
-              style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.48em" }}
-            >
+            <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
               What We Do
             </p>
             <h2
               className="font-serif font-extralight italic"
-              style={{ fontSize: "clamp(2rem,4vw,4rem)", color: "#F0EBE3" }}
+              style={{ fontSize: "clamp(2rem,4vw,4.2rem)", color: CREAM }}
             >
               Services
             </h2>
           </div>
           <p
             className="font-sans font-light leading-relaxed"
-            style={{
-              fontSize: "0.85rem",
-              color: "#4A4540",
-              maxWidth: "300px",
-              lineHeight: 1.8,
-            }}
+            style={{ fontSize: "0.85rem", color: "#3A342E", maxWidth: "280px", lineHeight: 1.9 }}
           >
-            Full-spectrum visualisation for architecture and real estate.
-            Every deliverable is a considered composition.
+            Full-spectrum visualisation for architecture and real estate. Every deliverable a considered composition.
           </p>
-        </motion.div>
+        </Reveal>
 
-        {/* List */}
         <div style={{ borderTop: "1px solid #141210" }}>
-          {services.map((service, i) => (
-            <motion.div
-              key={service.number}
-              className="group py-9 md:py-10 grid md:grid-cols-12 gap-4 md:gap-0 cursor-default"
-              style={{ borderBottom: "1px solid #141210" }}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-5%" }}
-              variants={fadeUp}
-              custom={i * 0.5}
-            >
-              <span
-                className="md:col-span-1 font-sans font-light pt-1"
-                style={{
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.2em",
-                  color: "#2A2520",
-                }}
+          {SERVICES.map((svc, i) => (
+            <Reveal key={svc.n} delay={i * 0.05}>
+              <div
+                className="group py-9 md:py-11 grid md:grid-cols-12 gap-4 md:gap-0 cursor-default"
+                style={{ borderBottom: "1px solid #141210" }}
               >
-                {service.number}
-              </span>
-              <h3
-                className="md:col-span-5 font-serif font-light transition-colors duration-500"
-                style={{
-                  fontSize: "clamp(1.2rem,2vw,1.7rem)",
-                  color: "#6B6560",
-                }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLHeadingElement).style.color =
-                    "#F0EBE3")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLHeadingElement).style.color =
-                    "#6B6560")
-                }
-              >
-                {service.title}
-              </h3>
-              <p
-                className="md:col-span-5 font-sans font-light leading-relaxed transition-colors duration-500"
-                style={{ fontSize: "0.85rem", color: "#2A2520", lineHeight: 1.8 }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLParagraphElement).style.color =
-                    "#4A4540")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLParagraphElement).style.color =
-                    "#2A2520")
-                }
-              >
-                {service.description}
-              </p>
-              <div className="md:col-span-1 flex justify-end items-start">
-                <span
-                  className="font-sans text-sm transition-all duration-500 inline-block group-hover:translate-x-1"
-                  style={{ color: "#2A2520" }}
-                >
-                  →
+                <span className="md:col-span-1 font-sans font-light pt-1" style={{ fontSize: "0.55rem", letterSpacing: "0.2em", color: "#1E1A16" }}>
+                  {svc.n}
                 </span>
+                <h3
+                  className="md:col-span-5 font-serif font-light transition-colors duration-500"
+                  style={{ fontSize: "clamp(1.1rem,2vw,1.65rem)", color: "#4A4540" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLHeadingElement).style.color = CREAM; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLHeadingElement).style.color = "#4A4540"; }}
+                >
+                  {svc.title}
+                </h3>
+                <p
+                  className="md:col-span-5 font-sans font-light leading-relaxed transition-colors duration-500"
+                  style={{ fontSize: "0.85rem", color: "#1E1A16", lineHeight: 1.85 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLParagraphElement).style.color = "#4A4540"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLParagraphElement).style.color = "#1E1A16"; }}
+                >
+                  {svc.desc}
+                </p>
+                <div className="md:col-span-1 flex justify-end items-start">
+                  <span
+                    className="font-sans text-sm transition-all duration-500 inline-block group-hover:translate-x-1"
+                    style={{ color: "#1E1A16" }}
+                  >
+                    →
+                  </span>
+                </div>
               </div>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* ── ABOUT STRIP ──────────────────────────────────────────────────── */}
-      <motion.section
+      {/* ── ABOUT ────────────────────────────────────────────────────────── */}
+      <section
         className="px-8 md:px-16 lg:px-24"
         style={{
-          paddingTop: "clamp(6rem,10vw,10rem)",
-          paddingBottom: "clamp(6rem,10vw,10rem)",
-          borderTop: "1px solid #141210",
+          paddingTop: "clamp(7rem,11vw,12rem)",
+          paddingBottom: "clamp(7rem,11vw,12rem)",
+          borderBottom: "1px solid #141210",
         }}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-        variants={fadeUp}
-        custom={0}
       >
         <div className="grid md:grid-cols-12 gap-12 md:gap-0">
-          {/* Left label + headline */}
+          {/* Left */}
           <div className="md:col-span-7 md:pr-20">
-            <p
-              className="font-sans font-light uppercase mb-8"
-              style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.48em" }}
-            >
-              The Studio
-            </p>
-            <h2
-              className="font-serif font-extralight leading-[1.1]"
-              style={{
-                fontSize: "clamp(1.8rem,4vw,4rem)",
-                color: "#F0EBE3",
-              }}
-            >
-              Architecture Rendered with{" "}
-              <span className="italic" style={{ color: "#6B6560" }}>
-                Hospitality Intelligence.
-              </span>
-            </h2>
+            <Reveal>
+              <p className="font-sans font-light uppercase mb-8" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
+                The Studio
+              </p>
+              <h2
+                className="font-serif font-extralight leading-[1.1]"
+                style={{ fontSize: "clamp(1.8rem,4vw,4rem)", color: CREAM }}
+              >
+                Architecture Rendered with{" "}
+                <em className="italic" style={{ color: "#4A4540" }}>Hospitality Intelligence.</em>
+              </h2>
+            </Reveal>
           </div>
 
-          {/* Right body copy */}
-          <div
-            className="md:col-span-5 md:pt-16 flex flex-col justify-between gap-8"
-            style={{ paddingLeft: "0" }}
-          >
-            <div style={{ borderLeft: "1px solid #1C1916", paddingLeft: "2rem" }}>
-              <p
-                className="font-sans font-light leading-relaxed mb-6"
-                style={{ fontSize: "0.9rem", color: "#4A4540", lineHeight: 1.85 }}
-              >
-                ArchViz Craft is a luxury architectural visualisation studio
-                serving architects, developers, and interior designers across
-                the Gulf and beyond. We bring 9 years of regional expertise
-                and a hospitality-trained eye to every project.
-              </p>
-              <p
-                className="font-sans font-light leading-relaxed"
-                style={{ fontSize: "0.9rem", color: "#2A2520", lineHeight: 1.85 }}
-              >
-                Our work sits at the intersection of technical precision and
-                cinematic artistry. Every image is a deliberate composition.
-                Visualisation is not documentation. It is persuasion.
-              </p>
-            </div>
-            <a
-              href="/studio"
-              className="inline-flex items-center gap-3 font-sans font-light tracking-[0.3em] uppercase transition-opacity duration-300 hover:opacity-60"
-              style={{ fontSize: "0.6rem", color: GOLD }}
-            >
-              <span style={{ borderBottom: "1px solid #A8885A", paddingBottom: "2px" }}>
-                Meet the Studio
-              </span>
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "24px",
-                  height: "1px",
-                  backgroundColor: GOLD,
-                }}
-              />
-            </a>
+          {/* Right */}
+          <div className="md:col-span-5 md:pt-14">
+            <Reveal delay={0.15}>
+              <div style={{ borderLeft: "1px solid #141210", paddingLeft: "2rem" }}>
+                <p className="font-sans font-light leading-relaxed mb-6" style={{ fontSize: "0.9rem", color: "#3A342E", lineHeight: 1.9 }}>
+                  ArchViz Craft is a luxury architectural visualisation studio serving architects, developers, and interior designers across the Gulf and beyond. We bring 9 years of regional expertise and a hospitality-trained eye to every project.
+                </p>
+                <p className="font-sans font-light leading-relaxed mb-10" style={{ fontSize: "0.9rem", color: "#1E1A16", lineHeight: 1.9 }}>
+                  Every image is a deliberate composition. Visualisation is not documentation. It is persuasion.
+                </p>
+                <a
+                  href="/studio"
+                  className="inline-flex items-center gap-3 font-sans font-light uppercase transition-opacity duration-300 hover:opacity-50"
+                  style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.38em", textDecoration: "none" }}
+                >
+                  <span style={{ borderBottom: "1px solid #A8885A", paddingBottom: "2px" }}>Meet the Studio</span>
+                  <span style={{ display: "inline-block", width: "22px", height: "1px", backgroundColor: GOLD }} />
+                </a>
+              </div>
+            </Reveal>
           </div>
         </div>
-      </motion.section>
+      </section>
+
+      {/* ── TESTIMONIALS GRID ────────────────────────────────────────────── */}
+      <section
+        className="px-8 md:px-16 lg:px-24"
+        style={{
+          paddingTop: "clamp(7rem,11vw,12rem)",
+          paddingBottom: "clamp(7rem,11vw,12rem)",
+          borderBottom: "1px solid #141210",
+        }}
+      >
+        <Reveal className="mb-20">
+          <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
+            The Record
+          </p>
+          <h2
+            className="font-serif font-extralight"
+            style={{ fontSize: "clamp(2rem,4vw,4rem)", color: CREAM }}
+          >
+            Results that speak<br />
+            <em className="italic" style={{ color: "#4A4540" }}>before we do.</em>
+          </h2>
+        </Reveal>
+
+        <div className="grid md:grid-cols-3 gap-px" style={{ background: "#141210" }}>
+          {TESTIMONIALS.map((t, i) => (
+            <Reveal key={t.name} delay={i * 0.1}>
+              <div
+                className="flex flex-col h-full p-10 md:p-12"
+                style={{ background: INK }}
+              >
+                {/* Stars */}
+                <div className="flex gap-1 mb-8">
+                  {Array.from({ length: 5 }).map((_, si) => (
+                    <svg key={si} width="10" height="10" viewBox="0 0 14 14" fill={GOLD} opacity="0.55">
+                      <path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" />
+                    </svg>
+                  ))}
+                </div>
+                <p
+                  className="font-serif italic font-light flex-1 mb-10"
+                  style={{ fontSize: "clamp(1rem,1.5vw,1.2rem)", color: "#6B6560", lineHeight: 1.7 }}
+                >
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div style={{ borderTop: "1px solid #141210", paddingTop: "1.5rem" }} className="flex items-center gap-4">
+                  <div
+                    className="rounded-full overflow-hidden shrink-0"
+                    style={{ width: "38px", height: "38px", border: `1px solid ${GOLD}25` }}
+                  >
+                    <img
+                      src={t.img}
+                      alt={t.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(60%)" }}
+                    />
+                  </div>
+                  <div>
+                    <p className="font-sans font-light" style={{ fontSize: "0.72rem", color: CREAM, letterSpacing: "0.05em" }}>
+                      {t.name}
+                    </p>
+                    <p className="font-sans font-light" style={{ fontSize: "0.6rem", color: "#2A2520", letterSpacing: "0.08em" }}>
+                      {t.role} · {t.company}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
       {/* ── CONTACT ──────────────────────────────────────────────────────── */}
       <section
         id="contact"
         className="px-8 md:px-16 lg:px-24"
         style={{
-          paddingTop: "clamp(6rem,10vw,10rem)",
-          paddingBottom: "clamp(6rem,10vw,10rem)",
-          borderTop: "1px solid #141210",
+          paddingTop: "clamp(7rem,11vw,12rem)",
+          paddingBottom: "clamp(7rem,11vw,12rem)",
+          borderBottom: "1px solid #141210",
         }}
       >
-        <motion.div
-          className="mb-20"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <p
-            className="font-sans font-light uppercase mb-6"
-            style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.48em" }}
-          >
+        <Reveal className="mb-20">
+          <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
             Get In Touch
           </p>
           <h2
             className="font-serif font-extralight"
-            style={{ fontSize: "clamp(2rem,5vw,5rem)", color: "#F0EBE3" }}
+            style={{ fontSize: "clamp(2rem,5vw,5rem)", color: CREAM }}
           >
-            Begin a project
-            <br />
-            <span className="italic" style={{ color: "#6B6560" }}>
-              with us.
-            </span>
+            Begin a project<br />
+            <em className="italic" style={{ color: "#4A4540" }}>with us.</em>
           </h2>
-        </motion.div>
+        </Reveal>
 
         <div className="grid md:grid-cols-12 gap-16 md:gap-0">
-          {/* Contact info */}
-          <div className="md:col-span-4 md:pr-12 space-y-12">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={0}
-            >
-              <p
-                className="font-sans font-light uppercase mb-4"
-                style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#2A2520" }}
-              >
-                WhatsApp
-              </p>
-              <a
-                href="https://wa.me/971500000000"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-serif transition-colors duration-500"
-                style={{ fontSize: "1.2rem", color: "#6B6560" }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#F0EBE3")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#6B6560")
-                }
-              >
-                +971 50 000 0000
-              </a>
-            </motion.div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={1}
-            >
-              <p
-                className="font-sans font-light uppercase mb-4"
-                style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#2A2520" }}
-              >
-                Email
-              </p>
-              <a
-                href="mailto:studio@archvizcraft.com"
-                className="font-serif transition-colors duration-500"
-                style={{ fontSize: "1.2rem", color: "#6B6560" }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#F0EBE3")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#6B6560")
-                }
-              >
-                studio@archvizcraft.com
-              </a>
-            </motion.div>
+          {/* Left — contact details */}
+          <div className="md:col-span-4 md:pr-12 space-y-14">
+            <Reveal>
+              <div>
+                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "#1E1A16" }}>
+                  WhatsApp
+                </p>
+                <a
+                  href="https://wa.me/971500000000"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-serif transition-colors duration-500 block"
+                  style={{ fontSize: "1.2rem", color: "#4A4540", textDecoration: "none" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = CREAM; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#4A4540"; }}
+                >
+                  +971 50 000 0000
+                </a>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div>
+                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "#1E1A16" }}>
+                  Email
+                </p>
+                <a
+                  href="mailto:studio@archvizcraft.com"
+                  className="font-serif transition-colors duration-500 block"
+                  style={{ fontSize: "1.2rem", color: "#4A4540", textDecoration: "none" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = CREAM; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#4A4540"; }}
+                >
+                  studio@archvizcraft.com
+                </a>
+              </div>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <div>
+                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "#1E1A16" }}>
+                  Location
+                </p>
+                <p className="font-serif" style={{ fontSize: "1.2rem", color: "#4A4540" }}>
+                  By Appointment · Dubai
+                </p>
+              </div>
+            </Reveal>
           </div>
 
-          {/* Form */}
-          <motion.div
-            className="md:col-span-8 md:pl-16"
-            style={{ borderLeft: "1px solid #141210" }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={1}
-          >
-            <ContactForm />
-          </motion.div>
+          {/* Right — form */}
+          <Reveal delay={0.1} className="md:col-span-8">
+            <div className="md:pl-16" style={{ borderLeft: "1px solid #141210" }}>
+            {contactSubmitted ? (
+              <div className="py-20">
+                <h3 className="font-serif font-extralight italic" style={{ fontSize: "2rem", color: CREAM }}>
+                  Thank you. We&rsquo;ll be in touch shortly.
+                </h3>
+              </div>
+            ) : (
+              <form
+                onSubmit={e => { e.preventDefault(); setContactSubmitted(true); }}
+                className="space-y-8"
+              >
+                {(["name", "email"] as const).map(field => (
+                  <input
+                    key={field}
+                    type={field === "email" ? "email" : "text"}
+                    required
+                    placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                    value={form[field]}
+                    onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      borderBottom: "1px solid #141210",
+                      padding: "0.75rem 0",
+                      fontSize: "0.9rem",
+                      color: CREAM,
+                      outline: "none",
+                      fontFamily: "var(--font-dm), sans-serif",
+                      fontWeight: 300,
+                    }}
+                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "#2A2520"; }}
+                    onBlur={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "#141210"; }}
+                  />
+                ))}
+                <textarea
+                  rows={5}
+                  required
+                  placeholder="Tell us about your project"
+                  value={form.message}
+                  onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    borderBottom: "1px solid #141210",
+                    padding: "0.75rem 0",
+                    fontSize: "0.9rem",
+                    color: CREAM,
+                    outline: "none",
+                    resize: "none",
+                    fontFamily: "var(--font-dm), sans-serif",
+                    fontWeight: 300,
+                  }}
+                  onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "#2A2520"; }}
+                  onBlur={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "#141210"; }}
+                />
+                <button
+                  type="submit"
+                  className="font-sans font-light uppercase tracking-widest transition-all duration-500"
+                  style={{
+                    fontSize: "0.6rem",
+                    color: "#4A4540",
+                    border: "1px solid #141210",
+                    padding: "1rem 2.5rem",
+                    background: "transparent",
+                    cursor: "pointer",
+                    letterSpacing: "0.3em",
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLButtonElement;
+                    el.style.color = CREAM;
+                    el.style.borderColor = "#2A2520";
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLButtonElement;
+                    el.style.color = "#4A4540";
+                    el.style.borderColor = "#141210";
+                  }}
+                >
+                  Send Enquiry
+                </button>
+              </form>
+            )}
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
       <footer
-        className="px-8 md:px-16 lg:px-24 py-10 flex items-center justify-between"
+        className="px-8 md:px-16 lg:px-24 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         style={{ borderTop: "1px solid #141210" }}
       >
-        <a
-          href="/work"
-          className="font-sans font-light tracking-[0.3em] uppercase transition-colors duration-300"
-          style={{ fontSize: "0.6rem", color: "#2A2520" }}
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLAnchorElement).style.color = GOLD)
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLAnchorElement).style.color = "#2A2520")
-          }
-        >
-          View Portfolio
-        </a>
-        <p
-          className="font-sans font-light tracking-wide"
-          style={{ fontSize: "0.6rem", color: "#1A1714" }}
-        >
+        <div className="flex items-center gap-6">
+          <a
+            href="/work"
+            className="font-sans font-light uppercase transition-colors duration-300"
+            style={{ fontSize: "0.55rem", color: "#1E1A16", letterSpacing: "0.28em", textDecoration: "none" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = GOLD; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#1E1A16"; }}
+          >
+            View Portfolio
+          </a>
+          <span style={{ color: "#141210", fontSize: "8px" }}>·</span>
+          <a
+            href="/studio"
+            className="font-sans font-light uppercase transition-colors duration-300"
+            style={{ fontSize: "0.55rem", color: "#1E1A16", letterSpacing: "0.28em", textDecoration: "none" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = GOLD; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#1E1A16"; }}
+          >
+            The Studio
+          </a>
+          <span style={{ color: "#141210", fontSize: "8px" }}>·</span>
+          <a
+            href="/#contact"
+            className="font-sans font-light uppercase transition-colors duration-300"
+            style={{ fontSize: "0.55rem", color: "#1E1A16", letterSpacing: "0.28em", textDecoration: "none" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = GOLD; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#1E1A16"; }}
+          >
+            Contact
+          </a>
+        </div>
+        <p className="font-sans font-light" style={{ fontSize: "0.55rem", color: "#141210", letterSpacing: "0.14em" }}>
           © {new Date().getFullYear()} Archviz Craft · Dubai
         </p>
       </footer>
     </div>
-  );
-}
-
-// ── Contact form as sub-component ─────────────────────────────────────────────
-function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
-
-  const inputStyle = {
-    width: "100%",
-    background: "transparent",
-    borderBottom: "1px solid #1C1916",
-    padding: "0.75rem 0",
-    fontSize: "0.9rem",
-    color: "#F0EBE3",
-    outline: "none",
-    fontFamily: "var(--font-dm), sans-serif",
-    fontWeight: 300,
-    letterSpacing: "0.02em",
-  };
-
-  if (submitted) {
-    return (
-      <div className="py-20">
-        <h3
-          className="font-serif font-extralight italic"
-          style={{ fontSize: "1.8rem", color: "#F0EBE3" }}
-        >
-          Thank you. We&rsquo;ll be in touch shortly.
-        </h3>
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <input
-        type="text"
-        required
-        placeholder="Name"
-        value={formData.name}
-        onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-        style={inputStyle}
-        onFocus={(e) =>
-          ((e.currentTarget as HTMLInputElement).style.borderBottomColor =
-            "#4A4540")
-        }
-        onBlur={(e) =>
-          ((e.currentTarget as HTMLInputElement).style.borderBottomColor =
-            "#1C1916")
-        }
-      />
-      <input
-        type="email"
-        required
-        placeholder="Email"
-        value={formData.email}
-        onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-        style={inputStyle}
-        onFocus={(e) =>
-          ((e.currentTarget as HTMLInputElement).style.borderBottomColor =
-            "#4A4540")
-        }
-        onBlur={(e) =>
-          ((e.currentTarget as HTMLInputElement).style.borderBottomColor =
-            "#1C1916")
-        }
-      />
-      <textarea
-        rows={5}
-        required
-        placeholder="Tell us about your project"
-        value={formData.message}
-        onChange={(e) =>
-          setFormData((p) => ({ ...p, message: e.target.value }))
-        }
-        style={{ ...inputStyle, resize: "none" }}
-        onFocus={(e) =>
-          ((e.currentTarget as HTMLTextAreaElement).style.borderBottomColor =
-            "#4A4540")
-        }
-        onBlur={(e) =>
-          ((e.currentTarget as HTMLTextAreaElement).style.borderBottomColor =
-            "#1C1916")
-        }
-      />
-      <button
-        type="submit"
-        className="font-sans font-light tracking-[0.28em] uppercase transition-all duration-500"
-        style={{
-          fontSize: "0.65rem",
-          color: "#6B6560",
-          border: "1px solid #1C1916",
-          padding: "1rem 2.5rem",
-          background: "transparent",
-          cursor: "pointer",
-          letterSpacing: "0.28em",
-        }}
-        onMouseEnter={(e) => {
-          const el = e.currentTarget as HTMLButtonElement;
-          el.style.color = "#F0EBE3";
-          el.style.borderColor = "#4A4540";
-        }}
-        onMouseLeave={(e) => {
-          const el = e.currentTarget as HTMLButtonElement;
-          el.style.color = "#6B6560";
-          el.style.borderColor = "#1C1916";
-        }}
-      >
-        Send Enquiry
-      </button>
-    </form>
   );
 }
