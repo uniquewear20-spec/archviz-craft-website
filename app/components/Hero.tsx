@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 const slides = [
-  { id: 1, src: "/hero-1.png", effect: "zoom-in" },
-  { id: 2, src: "/hero-2.png", effect: "zoom-out" },
-  { id: 3, src: "/hero-3.png", effect: "slide-right" },
-  { id: 4, src: "/hero-4.png", effect: "slide-left" },
-  { id: 5, src: "/hero-5.png", effect: "zoom-in" },
+  { id: 1, src: "/images/hero/hero-1.png", effect: "zoom-in" },
+  { id: 2, src: "/images/hero/hero-2.png", effect: "zoom-out" },
+  { id: 3, src: "/images/hero/hero-3.png", effect: "slide-right" },
+  { id: 4, src: "/images/hero/hero-4.png", effect: "slide-left" },
+  { id: 5, src: "/images/hero/hero-5.png", effect: "zoom-in" },
 ];
 
 const SLIDE_DURATION = 6000;
@@ -93,7 +93,7 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Headline — light weight, matching nav link elegance */}
+          {/* Headline */}
           <motion.h1
             className="font-serif font-light leading-[1.1] tracking-tight"
             style={{ fontSize: "clamp(3rem, 8vw, 6rem)" }}
@@ -110,7 +110,7 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          {/* Subtitle — centred, no side decorators, matches Zenith's clean subtitle */}
+          {/* Subtitle */}
           <motion.p
             className="font-sans text-white/70 font-light tracking-wide mt-6 max-w-xl"
             style={{ fontSize: "clamp(0.9rem, 1.6vw, 1.1rem)" }}
@@ -121,7 +121,7 @@ export default function Hero() {
             Bringing visionary developments to life before construction begins
           </motion.p>
 
-          {/* Hairline divider below subtitle */}
+          {/* Hairline divider */}
           <motion.div
             className="mt-6 h-px w-16"
             style={{ backgroundColor: "#A8885A" }}
@@ -130,7 +130,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
           />
 
-          {/* CTA — moved further down with extra top margin */}
+          {/* CTA */}
           <motion.div
             className="mt-12"
             initial={{ opacity: 0, y: 12 }}
@@ -141,10 +141,10 @@ export default function Hero() {
               href="#work"
               className="inline-flex items-center gap-3 font-sans text-white font-light tracking-[0.12em] text-sm px-10 py-4 transition-all duration-300"
               style={{ backgroundColor: "#A8885A" }}
-              onMouseEnter={function(e) {
+              onMouseEnter={(e) => {
                 (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#8C6E42";
               }}
-              onMouseLeave={function(e) {
+              onMouseLeave={(e) => {
                 (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#A8885A";
               }}
             >
@@ -160,20 +160,18 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.8 }}
           >
-            {slides.map(function(_, i) {
-              return (
-                <button
-                  key={i}
-                  onClick={function() { setIndex(i); }}
-                  className="rounded-full transition-all duration-500"
-                  style={{
-                    width: i === index ? "24px" : "6px",
-                    height: "6px",
-                    backgroundColor: i === index ? "#A8885A" : "rgba(255,255,255,0.3)",
-                  }}
-                />
-              );
-            })}
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                className="rounded-full transition-all duration-500"
+                style={{
+                  width: i === index ? "24px" : "6px",
+                  height: "6px",
+                  backgroundColor: i === index ? "#A8885A" : "rgba(255,255,255,0.3)",
+                }}
+              />
+            ))}
           </motion.div>
 
         </div>
