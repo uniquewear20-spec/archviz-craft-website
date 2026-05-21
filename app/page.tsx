@@ -16,7 +16,8 @@ const EASE_ENTER: [number, number, number, number] = [0.16, 1, 0.3, 1];
 function PageLoader({ onComplete }: { onComplete: () => void }) {
   return (
     <motion.div
-      className="fixed inset-0 bg-black z-[200] flex flex-col items-center justify-center"
+      // ✦ Was: bg-black — now warm cream to match the page
+      className="fixed inset-0 bg-page z-[200] flex flex-col items-center justify-center"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
       transition={{ duration: 1.0, delay: 1.6, ease: EASE }}
@@ -33,14 +34,16 @@ function PageLoader({ onComplete }: { onComplete: () => void }) {
           alt="Archviz Craft"
           width={72}
           height={72}
-          className="object-contain"
+          className="object-contain opacity-70"
           priority
         />
-        <p className="font-sans text-[9px] tracking-[0.36em] uppercase text-white/40 font-light">
+        {/* ✦ Was: text-white/40 — now ink/tertiary color */}
+        <p className="font-sans text-[9px] tracking-[0.36em] uppercase text-ink-faint font-light">
           Archviz Craft
         </p>
+        {/* ✦ Was: bg-white/20 — now border color */}
         <motion.div
-          className="h-px bg-white/20 origin-left"
+          className="h-px bg-border-strong origin-left"
           initial={{ width: 0 }}
           animate={{ width: 64 }}
           transition={{ duration: 1.2, delay: 0.5, ease: EASE }}
@@ -54,7 +57,8 @@ function PageLoader({ onComplete }: { onComplete: () => void }) {
 function Hairline() {
   return (
     <motion.div
-      className="h-px bg-white/8 mx-6 md:mx-16 lg:mx-24"
+      // ✦ Was: bg-white/8 — now warm border
+      className="h-px bg-border mx-6 md:mx-16 lg:mx-24"
       initial={{ scaleX: 0, opacity: 0 }}
       whileInView={{ scaleX: 1, opacity: 1 }}
       viewport={{ once: true }}
@@ -107,23 +111,24 @@ export default function Home() {
         {!loaded && <PageLoader onComplete={() => setLoaded(true)} />}
       </AnimatePresence>
 
-      {/* Scroll progress bar */}
+      {/* Scroll progress bar — ✦ Was: bg-white/25 — now gold accent */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-px bg-white/25 z-[60] origin-left"
+        className="fixed top-0 left-0 right-0 h-px bg-gold z-[60] origin-left"
         style={{ scaleX: progressBar }}
       />
 
       <motion.div
         ref={mainRef}
-        className="bg-[#0a0a08] min-h-screen"
+        // ✦ Was: bg-[#0a0a08] — now warm cream page background
+        className="bg-page min-h-screen"
         initial={{ opacity: 0 }}
         animate={{ opacity: loaded ? 1 : 0 }}
         transition={{ duration: 0.8, delay: 0.1 }}
       >
-        {/* Nav */}
+        {/* Nav — pass scrolled + light theme flag */}
         <Nav scrolled={scrolled} />
 
-        {/* 1 — Hero slideshow (5 images, no duplicates anywhere else) */}
+        {/* 1 — Hero slideshow */}
         <Hero />
 
         {/* 2 — About / Studio */}
@@ -146,7 +151,8 @@ export default function Home() {
 
         {/* Footer */}
         <motion.footer
-          className="border-t border-white/8 px-6 md:px-16 lg:px-24 py-10"
+          // ✦ Was: border-white/8 — now warm border
+          className="border-t border-border px-6 md:px-16 lg:px-24 py-10"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -159,24 +165,30 @@ export default function Home() {
                 alt="Archviz Craft"
                 width={36}
                 height={36}
-                className="object-contain opacity-50"
+                // ✦ Was: opacity-50 on dark — adjusted for light bg
+                className="object-contain opacity-40"
               />
-              <span className="font-sans text-[9px] tracking-[0.28em] uppercase text-white/25 font-light">
+              {/* ✦ Was: text-white/25 — now ink/faint */}
+              <span className="font-sans text-[9px] tracking-[0.28em] uppercase text-ink-faint font-light">
                 Archviz Craft
               </span>
             </div>
+
             <nav className="flex items-center gap-8">
               {["Studio", "Process", "Contact"].map((label) => (
                 <a
                   key={label}
                   href={`#${label.toLowerCase()}`}
-                  className="font-sans text-[9px] tracking-[0.16em] uppercase text-white/20 hover:text-white/50 font-light transition-colors duration-300"
+                  // ✦ Was: text-white/20 hover:text-white/50
+                  className="font-sans text-[9px] tracking-[0.16em] uppercase text-ink-faint hover:text-gold font-light transition-colors duration-300"
                 >
                   {label}
                 </a>
               ))}
             </nav>
-            <p className="font-sans text-[9px] text-white/15 font-light tracking-wide">
+
+            {/* ✦ Was: text-white/15 — now ink/faint */}
+            <p className="font-sans text-[9px] text-ink-faint font-light tracking-wide">
               © {new Date().getFullYear()} Archviz Craft · Dubai
             </p>
           </div>

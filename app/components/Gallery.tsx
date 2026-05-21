@@ -1,181 +1,223 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import GalleryItem from "./GalleryItem";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
-const projects = [
-  {
-    src: "/images/gallery/01.jpg",
-    title: "Meridian Residence",
-    category: "Residential",
-  },
-  {
-    src: "/images/gallery/02.jpg",
-    title: "Solstice Tower",
-    category: "Commercial",
-  },
-  {
-    src: "/images/gallery/03.jpg",
-    title: "The Atrium",
-    category: "Interior",
-  },
-  {
-    src: "/images/gallery/04.jpg",
-    title: "Coastal Pavilion",
-    category: "Landscape",
-  },
-  {
-    src: "/images/gallery/05.jpg",
-    title: "Void House",
-    category: "Residential",
-  },
-  {
-    src: "/images/gallery/06.jpg",
-    title: "Cultural Centre",
-    category: "Civic",
-  },
-  {
-    src: "/images/gallery/07.jpg",
-    title: "Ember Terrace",
-    category: "Hospitality",
-  },
+// ── Types ─────────────────────────────────────────────────────────────────────
+type Category =
+  | "all"
+  | "exterior"
+  | "interior"
+  | "masterplan"
+  | "animation"
+  | "panorama";
+
+interface GalleryItem {
+  id: string;
+  src: string;
+  alt: string;
+  category: Exclude<Category, "all">;
+  title?: string;
+  project?: string; // project name for hover label
+  aspect: "portrait" | "landscape" | "square";
+  featured?: boolean; // featured items get larger grid cells
+}
+
+// ── Category labels ───────────────────────────────────────────────────────────
+const CATEGORIES: { key: Category; label: string }[] = [
+  { key: "all",        label: "All Work"        },
+  { key: "exterior",   label: "Exterior"        },
+  { key: "interior",   label: "Interior"        },
+  { key: "masterplan", label: "Masterplan"      },
+  { key: "animation",  label: "Animation"       },
+  { key: "panorama",   label: "360° Panorama"   },
 ];
 
-export default function Gallery() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "start start"],
-  });
+// ── Sample data structure — replace with your actual images ───────────────────
+// Map each of your 60+ images here.
+// Tip: keep images in /public/images/{category}/{project-slug}/{filename}
+const GALLERY_ITEMS: GalleryItem[] = [
+  // EXTERIOR
+  { id: "ext-01", src: "/images/exterior/villa-palm/hero.jpg",      alt: "Palm Jumeirah Villa — Exterior",      category: "exterior",   aspect: "landscape", project: "Palm Jumeirah Villa",     featured: true  },
+  { id: "ext-02", src: "/images/exterior/downtown-tower/dusk.jpg",  alt: "Downtown Tower — Dusk",               category: "exterior",   aspect: "portrait",  project: "Downtown Tower"                           },
+  { id: "ext-03", src: "/images/exterior/villa-palm/courtyard.jpg", alt: "Palm Jumeirah Villa — Courtyard",     category: "exterior",   aspect: "square",    project: "Palm Jumeirah Villa"                      },
+  { id: "ext-04", src: "/images/exterior/marina-res/facade.jpg",    alt: "Marina Residence — Facade",           category: "exterior",   aspect: "landscape", project: "Marina Residence"                         },
+  { id: "ext-05", src: "/images/exterior/golf-estate/aerial.jpg",   alt: "Golf Estate — Aerial View",           category: "exterior",   aspect: "landscape", project: "Golf Estate",             featured: true  },
 
-  const headerY = useTransform(scrollYProgress, [0, 1], [40, 0]);
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  // INTERIOR
+  { id: "int-01", src: "/images/interior/villa-palm/living.jpg",    alt: "Palm Jumeirah Villa — Living Room",   category: "interior",   aspect: "landscape", project: "Palm Jumeirah Villa",     featured: true  },
+  { id: "int-02", src: "/images/interior/villa-palm/master.jpg",    alt: "Palm Jumeirah Villa — Master Suite",  category: "interior",   aspect: "portrait",  project: "Palm Jumeirah Villa"                      },
+  { id: "int-03", src: "/images/interior/penthouse-difc/lounge.jpg",alt: "DIFC Penthouse — Lounge",             category: "interior",   aspect: "landscape", project: "DIFC Penthouse"                           },
+  { id: "int-04", src: "/images/interior/penthouse-difc/kitchen.jpg",alt: "DIFC Penthouse — Kitchen",           category: "interior",   aspect: "square",    project: "DIFC Penthouse"                           },
+  { id: "int-05", src: "/images/interior/beach-villa/bathroom.jpg", alt: "Beach Villa — Bathroom",              category: "interior",   aspect: "portrait",  project: "Beach Villa"                              },
+  { id: "int-06", src: "/images/interior/mall-lobby/atrium.jpg",    alt: "Mall Lobby — Atrium",                 category: "interior",   aspect: "landscape", project: "Retail Atrium",           featured: true  },
+
+  // MASTERPLAN
+  { id: "mp-01",  src: "/images/masterplan/golf-estate/plan.jpg",   alt: "Golf Estate — Masterplan",            category: "masterplan", aspect: "landscape", project: "Golf Estate",             featured: true  },
+  { id: "mp-02",  src: "/images/masterplan/coastal-dev/aerial.jpg", alt: "Coastal Development — Aerial",        category: "masterplan", aspect: "landscape", project: "Coastal Development"                      },
+  { id: "mp-03",  src: "/images/masterplan/urban-mix/overview.jpg", alt: "Urban Mixed-Use — Overview",          category: "masterplan", aspect: "portrait",  project: "Urban Mixed-Use Hub"                      },
+
+  // ANIMATION (use poster frame as thumbnail)
+  { id: "anim-01",src: "/images/animation/villa-palm/poster.jpg",   alt: "Palm Jumeirah Villa — Walkthrough",   category: "animation",  aspect: "landscape", project: "Villa Walkthrough",       featured: true  },
+  { id: "anim-02",src: "/images/animation/downtown-tower/poster.jpg",alt: "Downtown Tower — Flythrough",        category: "animation",  aspect: "landscape", project: "Tower Flythrough"                         },
+
+  // PANORAMA (always landscape)
+  { id: "pan-01", src: "/images/panorama/villa-palm/360.jpg",       alt: "Palm Jumeirah Villa — 360° View",     category: "panorama",   aspect: "landscape", project: "Villa 360°",              featured: true  },
+  { id: "pan-02", src: "/images/panorama/penthouse-difc/360.jpg",   alt: "DIFC Penthouse — 360° View",          category: "panorama",   aspect: "landscape", project: "Penthouse 360°"                           },
+];
+
+const EASE_ENTER: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+// ── Aspect ratio helper ───────────────────────────────────────────────────────
+function aspectClass(aspect: GalleryItem["aspect"], featured?: boolean) {
+  // Featured landscape items span 2 columns on md+
+  if (featured && aspect === "landscape") return "md:col-span-2 aspect-[16/9]";
+  if (aspect === "portrait")  return "aspect-[3/4]";
+  if (aspect === "landscape") return "aspect-[16/9]";
+  return "aspect-square";
+}
+
+// ── Single gallery card ───────────────────────────────────────────────────────
+function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <section
-      ref={sectionRef}
-      className="bg-[#0a0a08] py-28 md:py-40 px-6 md:px-12 lg:px-20 xl:px-28"
+    <motion.div
+      className={`relative overflow-hidden bg-surface cursor-pointer group ${aspectClass(item.aspect, item.featured)}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.6, delay: index * 0.06, ease: EASE_ENTER }}
+      layout
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
     >
-      {/* Section header */}
+      {/* Image */}
+      <Image
+        src={item.src}
+        alt={item.alt}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className="object-cover transition-transform duration-700 ease-expo-out group-hover:scale-105"
+      />
+
+      {/* Hover overlay */}
       <motion.div
-        style={{ y: headerY, opacity: headerOpacity }}
-        className="mb-20 md:mb-28 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
+        className="absolute inset-0 bg-ink/30 flex flex-col justify-end p-5 md:p-7"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.35 }}
       >
-        <div>
-          <p className="text-[10px] tracking-[0.28em] uppercase text-stone-500 font-sans font-light mb-5">
-            Portfolio
+        {/* Category pill */}
+        <span className="font-sans text-[9px] tracking-[0.24em] uppercase text-gold mb-2">
+          {CATEGORIES.find(c => c.key === item.category)?.label}
+        </span>
+        {/* Project name */}
+        {item.project && (
+          <p className="font-serif text-lg font-light text-page leading-tight">
+            {item.project}
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl xl:text-6xl text-stone-100 font-light leading-[1.1] tracking-tight">
-            Selected
-            <br />
-            <em className="not-italic text-stone-400">Works</em>
+        )}
+        {/* View indicator */}
+        <div className="flex items-center gap-1.5 mt-3">
+          <div className="h-px w-6 bg-gold" />
+          <span className="font-sans text-[8px] tracking-[0.2em] uppercase text-gold/80">
+            View
+          </span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Main Gallery component ────────────────────────────────────────────────────
+export default function Gallery() {
+  const [active, setActive] = useState<Category>("all");
+
+  const filtered = active === "all"
+    ? GALLERY_ITEMS
+    : GALLERY_ITEMS.filter(item => item.category === active);
+
+  return (
+    <section id="portfolio" className="px-6 md:px-16 lg:px-24 py-section">
+
+      {/* Section header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-14">
+        <div>
+          <p className="heading-sm text-ink-faint mb-4">Selected Projects</p>
+          <h2 className="font-serif text-display-lg font-light text-ink leading-[1.05]">
+            The Work
           </h2>
         </div>
 
-        <div className="md:max-w-[340px]">
-          <p className="text-stone-500 font-sans text-sm leading-relaxed font-light tracking-wide">
-            A curated selection of architectural visualisations spanning residential,
-            commercial, and civic commissions across three continents.
-          </p>
-          <div className="mt-6 flex items-center gap-3 group cursor-pointer">
-            <span className="text-stone-400 font-sans text-xs tracking-[0.16em] uppercase font-light group-hover:text-stone-200 transition-colors duration-300">
-              View all projects
-            </span>
-            <div className="h-px w-10 bg-stone-600 group-hover:w-16 group-hover:bg-stone-400 transition-all duration-500" />
-          </div>
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-x-8 gap-y-3">
+          {CATEGORIES.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActive(key)}
+              className={`
+                font-sans text-[9px] tracking-[0.18em] uppercase font-light
+                transition-colors duration-300 pb-1 border-b
+                ${active === key
+                  ? "text-gold border-gold"
+                  : "text-ink-faint border-transparent hover:text-ink hover:border-border-strong"
+                }
+              `}
+            >
+              {label}
+            </button>
+          ))}
         </div>
-      </motion.div>
+      </div>
 
-      {/* ── EDITORIAL GRID ── */}
+      {/* ── Responsive masonry-style grid ─────────────────────────────────── */}
       {/*
-        Layout philosophy:
-        Row 1: Large hero (8 cols) | Tall portrait (4 cols)
-        Row 2: Inset portrait (3 cols) | Wide landscape (9 cols)
-        Row 3: Medium square (5 cols) | Medium landscape (7 cols)
-        Row 4: Full-width cinematic
+        Layout logic:
+        - Mobile:  1 column, full width
+        - Tablet:  2 columns, featured items span both
+        - Desktop: 3 columns, featured landscape items span 2 cols
+        
+        The `featured` flag on certain items causes md:col-span-2, creating
+        a natural editorial rhythm without a true masonry JS library.
+        For true masonry (different row heights), consider 'react-masonry-css'
+        or CSS column-count as an alternative.
       */}
-
-      {/* Desktop asymmetric grid */}
-      <div className="hidden md:grid grid-cols-12 gap-3 lg:gap-4">
-
-        {/* Row 1 — hero piece + portrait */}
-        <div className="col-span-8 h-[520px] lg:h-[600px] xl:h-[660px]">
-          <GalleryItem {...projects[0]} index={0} className="h-full" priority />
-        </div>
-        <div className="col-span-4 h-[520px] lg:h-[600px] xl:h-[660px]">
-          <GalleryItem {...projects[1]} index={1} className="h-full" />
-        </div>
-
-        {/* Breathing space between rows */}
-        <div className="col-span-12 h-1" />
-
-        {/* Row 2 — inset portrait + wide landscape */}
-        <div className="col-start-1 col-span-4 h-[420px] lg:h-[480px]">
-          <GalleryItem {...projects[2]} index={2} className="h-full" />
-        </div>
-        <div className="col-span-8 h-[420px] lg:h-[480px]">
-          <GalleryItem {...projects[3]} index={3} className="h-full" />
-        </div>
-
-        {/* Breathing space */}
-        <div className="col-span-12 h-1" />
-
-        {/* Row 3 — medium + wide */}
-        <div className="col-span-5 h-[380px] lg:h-[440px]">
-          <GalleryItem {...projects[4]} index={4} className="h-full" />
-        </div>
-        <div className="col-span-7 h-[380px] lg:h-[440px]">
-          <GalleryItem {...projects[5]} index={5} className="h-full" />
-        </div>
-
-        {/* Breathing space */}
-        <div className="col-span-12 h-1" />
-
-        {/* Row 4 — cinematic full-width */}
-        <div className="col-span-12 h-[320px] lg:h-[380px] xl:h-[440px]">
-          <GalleryItem {...projects[6]} index={6} className="h-full" />
-        </div>
-      </div>
-
-      {/* Mobile stacked layout */}
-      <div className="md:hidden flex flex-col gap-3">
-        {projects.map((project, i) => (
-          <div
-            key={project.title}
-            className={`w-full ${
-              i === 0
-                ? "h-[70vw]"
-                : i % 3 === 0
-                ? "h-[85vw]"
-                : "h-[60vw]"
-            }`}
-          >
-            <GalleryItem
-              {...project}
-              index={i}
-              className="h-full"
-              priority={i === 0}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Bottom counter / editorial footnote */}
       <motion.div
-        className="mt-20 md:mt-28 flex items-center justify-between border-t border-stone-800/60 pt-6"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.3 }}
+        layout
+        className="
+          grid gap-3 md:gap-4
+          grid-cols-1
+          md:grid-cols-2
+          lg:grid-cols-3
+        "
       >
-        <p className="text-stone-600 font-sans text-[10px] tracking-[0.22em] uppercase font-light">
-          Archviz Craft — Selected Works
-        </p>
-        <p className="text-stone-600 font-sans text-[10px] tracking-[0.18em] font-light">
-          {String(projects.length).padStart(2, "0")} Projects
-        </p>
+        <AnimatePresence mode="popLayout">
+          {filtered.map((item, i) => (
+            <GalleryCard key={item.id} item={item} index={i} />
+          ))}
+        </AnimatePresence>
       </motion.div>
+
+      {/* Empty state */}
+      {filtered.length === 0 && (
+        <div className="text-center py-24">
+          <p className="font-serif text-xl text-ink-faint font-light italic">
+            No projects in this category yet.
+          </p>
+        </div>
+      )}
+
+      {/* Load more / Enquiry CTA */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-20">
+        <a href="#contact" className="btn-accent">
+          Enquire About a Project
+        </a>
+        <a href="#contact" className="btn-ghost">
+          View All Credentials →
+        </a>
+      </div>
     </section>
   );
 }

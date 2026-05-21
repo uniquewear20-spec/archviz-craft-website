@@ -55,50 +55,73 @@ export default function Hero() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Dark overlay — matches iCreate depth */}
-      <div className="absolute inset-0 bg-black/45 z-10" />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/50 z-10" />
 
-      {/* ── CENTERED CONTENT — iCreate style ── */}
+      {/* ── CONTENT ── */}
       {mounted && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+
+          {/* Status pill — like Zenith's "By application only" */}
+          <motion.div
+            className="flex items-center gap-2 mb-10"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.0, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#A8885A] animate-pulse" />
+            <span className="font-sans text-[10px] tracking-[0.32em] uppercase text-white/50 font-light">
+              By Appointment Only · Dubai
+            </span>
+          </motion.div>
 
           {/* Main headline */}
           <motion.h1
             className="font-serif text-white font-light leading-tight tracking-tight"
-            style={{ fontSize: "clamp(2.4rem, 7vw, 7rem)" }}
+            style={{ fontSize: "clamp(2.8rem, 7vw, 7rem)" }}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
             The Power Of
             <br />
-            3D Visualisation
+            <span style={{ color: "#A8885A", fontStyle: "italic" }}>
+              3D Visualisation
+            </span>
           </motion.h1>
 
           {/* Subtitle */}
           <motion.p
-            className="font-sans text-white/75 font-light mt-5 tracking-wide"
-            style={{ fontSize: "clamp(0.95rem, 2vw, 1.25rem)" }}
+            className="font-sans text-white/60 font-light mt-6 tracking-wide max-w-md"
+            style={{ fontSize: "clamp(0.9rem, 1.8vw, 1.1rem)" }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             Presenting new developments before they&apos;re built
           </motion.p>
 
-          {/* CTA button — matches iCreate */}
+          {/* CTAs — Zenith style: filled gold + ghost */}
           <motion.div
-            className="mt-10 flex items-center gap-4"
+            className="mt-12 flex items-center gap-6"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.0, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
           >
             <a
               href="#work"
-              className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-white/60 text-white font-sans text-sm font-light tracking-[0.12em] px-8 py-4 transition-all duration-500 backdrop-blur-sm"
+              className="inline-flex items-center gap-2 font-sans text-[11px] font-light tracking-[0.2em] uppercase px-8 py-4 rounded-full transition-all duration-400"
+              style={{ backgroundColor: "#A8885A", color: "#fff" }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#8C6E42")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#A8885A")}
             >
-              See our work
-              <span className="text-lg">›</span>
+              View Our Work
+            </a>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 font-sans text-[11px] font-light tracking-[0.2em] uppercase text-white/70 hover:text-white transition-colors duration-300"
+            >
+              Enquire Now →
             </a>
           </motion.div>
 
@@ -115,9 +138,12 @@ export default function Hero() {
                 onClick={() => setIndex(i)}
                 className={`rounded-full transition-all duration-500 ${
                   i === index
-                    ? "w-6 h-1.5 bg-white"
-                    : "w-1.5 h-1.5 bg-white/35 hover:bg-white/60"
+                    ? "w-6 h-1.5"
+                    : "w-1.5 h-1.5 hover:bg-white/60"
                 }`}
+                style={{
+                  backgroundColor: i === index ? "#A8885A" : "rgba(255,255,255,0.3)"
+                }}
               />
             ))}
           </motion.div>

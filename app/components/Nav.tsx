@@ -15,24 +15,24 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
     >
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 transition-all duration-600 ${
+        className={`absolute inset-0 transition-all duration-500 ${
           scrolled
-            ? "bg-black/85 backdrop-blur-md border-b border-white/8"
+            ? "bg-black/90 backdrop-blur-md border-b border-white/8"
             : "bg-transparent"
         }`}
       />
 
-      {/* Logo — bigger, cleaner */}
+      {/* Logo */}
       <a href="#" className="relative z-10 flex items-center gap-3">
         <Image
           src="/logo-avc.png"
           alt="Archviz Craft"
-          width={56}
-          height={56}
+          width={48}
+          height={48}
           className="object-contain drop-shadow-lg"
           priority
         />
-        <span className="hidden lg:block font-sans text-white/80 text-xs tracking-[0.24em] uppercase font-light">
+        <span className="hidden lg:block font-sans text-white/70 text-[10px] tracking-[0.28em] uppercase font-light">
           Archviz Craft
         </span>
       </a>
@@ -43,14 +43,19 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
           <a
             key={link}
             href={`#${link.toLowerCase()}`}
-            className="font-sans text-white/70 hover:text-white text-sm font-light tracking-[0.1em] transition-colors duration-300"
+            className="font-sans text-white/60 hover:text-white text-[11px] font-light tracking-[0.18em] uppercase transition-colors duration-300"
           >
             {link}
           </a>
         ))}
+
+        {/* Enquire — gold pill like Zenith */}
         <a
           href="#contact"
-          className="font-sans text-sm font-light tracking-[0.1em] text-white/80 hover:text-white border border-white/30 hover:border-white px-6 py-2.5 transition-all duration-400"
+          className="relative z-10 font-sans text-[11px] font-light tracking-[0.18em] uppercase text-white px-6 py-2.5 rounded-full transition-all duration-300"
+          style={{ backgroundColor: "#A8885A" }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#8C6E42")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#A8885A")}
         >
           Enquire
         </a>
