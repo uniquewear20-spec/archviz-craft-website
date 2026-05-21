@@ -93,18 +93,17 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Headline — line 1: large, white, bold serif */}
+          {/* Headline — light weight, matching nav link elegance */}
           <motion.h1
-            className="font-serif font-bold leading-[1.1] tracking-tight"
+            className="font-serif font-light leading-[1.1] tracking-tight"
             style={{ fontSize: "clamp(3rem, 8vw, 6rem)" }}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span className="block text-white">The Power of Architectural</span>
-            {/* Line 2: gold italic, same large size — matches Zenith's second line treatment */}
+            <span className="block text-white font-light">The Power of Architectural</span>
             <span
-              className="block font-serif font-bold italic"
+              className="block font-serif font-light italic"
               style={{ color: "#A8885A", fontSize: "clamp(3rem, 8vw, 6rem)" }}
             >
               Visualization
