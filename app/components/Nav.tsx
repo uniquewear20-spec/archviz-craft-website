@@ -8,7 +8,7 @@ const navLinks = ["Work", "Studio", "Process", "Contact"];
 export default function Nav({ scrolled }: { scrolled: boolean }) {
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-16 py-5"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-16 py-4"
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -22,22 +22,22 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         }`}
       />
 
-      {/* Logo */}
+      {/* Logo — bigger, cleaner */}
       <a href="#" className="relative z-10 flex items-center gap-3">
         <Image
           src="/logo-avc.png"
           alt="Archviz Craft"
-          width={42}
-          height={42}
-          className="object-contain"
+          width={56}
+          height={56}
+          className="object-contain drop-shadow-lg"
           priority
         />
-        <span className="hidden md:block font-sans text-white/70 text-xs tracking-[0.22em] uppercase font-light">
+        <span className="hidden lg:block font-sans text-white/80 text-xs tracking-[0.24em] uppercase font-light">
           Archviz Craft
         </span>
       </a>
 
-      {/* Desktop nav — iCreate style */}
+      {/* Desktop nav */}
       <nav className="relative z-10 hidden md:flex items-center gap-8 lg:gap-12">
         {navLinks.map((link) => (
           <a

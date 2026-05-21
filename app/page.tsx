@@ -3,12 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import Gallery from "./components/Gallery";
+import Hero from "./components/Hero";
+import Nav from "./components/Nav";
 import Contact from "./components/Contact";
 import Services from "./components/Services";
 import About from "./components/About";
-import Hero from "./components/Hero";
-import Nav from "./components/Nav";
 
 const EASE: [number, number, number, number] = [0.83, 0, 0.17, 1];
 const EASE_ENTER: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -32,9 +31,9 @@ function PageLoader({ onComplete }: { onComplete: () => void }) {
         <Image
           src="/logo-avc.png"
           alt="Archviz Craft"
-          width={56}
-          height={56}
-          className="object-contain opacity-80"
+          width={72}
+          height={72}
+          className="object-contain"
           priority
         />
         <p className="font-sans text-[9px] tracking-[0.36em] uppercase text-white/40 font-light">
@@ -65,15 +64,13 @@ function Hairline() {
   );
 }
 
-// ── Section reveal wrapper ────────────────────────────────────────────────────
+// ── Section reveal ────────────────────────────────────────────────────────────
 function SectionReveal({
   children,
   id,
-  delay = 0,
 }: {
   children: React.ReactNode;
   id?: string;
-  delay?: number;
 }) {
   return (
     <motion.section
@@ -81,7 +78,7 @@ function SectionReveal({
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 1.0, delay, ease: EASE_ENTER }}
+      transition={{ duration: 1.0, ease: EASE_ENTER }}
     >
       {children}
     </motion.section>
@@ -126,28 +123,22 @@ export default function Home() {
         {/* Nav */}
         <Nav scrolled={scrolled} />
 
-        {/* 1 — Hero (your existing cinematic slideshow) */}
+        {/* 1 — Hero slideshow (5 images, no duplicates anywhere else) */}
         <Hero />
 
-        {/* 2 — Gallery (your existing editorial grid) */}
-        <Hairline />
-        <SectionReveal id="work">
-          <Gallery />
-        </SectionReveal>
-
-        {/* 3 — About / Studio */}
+        {/* 2 — About / Studio */}
         <Hairline />
         <SectionReveal id="studio">
           <About />
         </SectionReveal>
 
-        {/* 4 — Services / Process */}
+        {/* 3 — Services / Process */}
         <Hairline />
         <SectionReveal id="process">
           <Services />
         </SectionReveal>
 
-        {/* 5 — Contact */}
+        {/* 4 — Contact */}
         <Hairline />
         <SectionReveal id="contact">
           <Contact />
@@ -162,20 +153,20 @@ export default function Home() {
           transition={{ duration: 1.0 }}
         >
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Image
                 src="/logo-avc.png"
                 alt="Archviz Craft"
-                width={28}
-                height={28}
-                className="object-contain opacity-40"
+                width={36}
+                height={36}
+                className="object-contain opacity-50"
               />
-              <span className="font-sans text-[9px] tracking-[0.28em] uppercase text-white/20 font-light">
+              <span className="font-sans text-[9px] tracking-[0.28em] uppercase text-white/25 font-light">
                 Archviz Craft
               </span>
             </div>
             <nav className="flex items-center gap-8">
-              {["Work", "Studio", "Process", "Contact"].map((label) => (
+              {["Studio", "Process", "Contact"].map((label) => (
                 <a
                   key={label}
                   href={`#${label.toLowerCase()}`}
