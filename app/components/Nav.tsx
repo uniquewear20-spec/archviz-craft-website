@@ -21,36 +21,39 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         }`}
       />
 
-      <div className="relative z-10 flex items-center justify-between px-16 md:px-20 lg:px-24 py-4">
+      {/* Three-column layout: logo | nav center | enquire */}
+      <div className="relative z-10 grid grid-cols-3 items-center px-10 md:px-16 lg:px-20 py-4">
 
-        {/* Logo — large, pulled in from left edge */}
-        <a href="#" className="flex-shrink-0 ml-2">
+        {/* LEFT — Logo */}
+        <a href="#" className="flex-shrink-0 justify-self-start">
           <Image
             src="/logo-avc.png"
             alt="Archviz Craft"
-            width={200}
-            height={200}
-            className="object-contain drop-shadow-lg brightness-150"
+            width={180}
+            height={180}
+            className="object-contain drop-shadow-lg"
             priority
           />
         </a>
 
-        {/* Nav links + Enquire */}
-        <nav className="hidden md:flex items-center gap-10 lg:gap-12">
+        {/* CENTER — Nav links */}
+        <nav className="hidden md:flex items-center justify-center gap-8 lg:gap-12">
           {navLinks.map((link) => (
             <a
               key={link}
               href={`#${link.toLowerCase()}`}
-              className="font-sans text-white text-[13px] font-light tracking-[0.16em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
+              className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
             >
               {link}
             </a>
           ))}
+        </nav>
 
-          {/* Enquire — pulled in with mr-8 so it's not at the very edge */}
+        {/* RIGHT — Enquire */}
+        <div className="hidden md:flex justify-end">
           <a
             href="#contact"
-            className="font-sans text-[13px] font-light tracking-[0.14em] uppercase text-white px-6 py-3 mr-8 transition-all duration-300"
+            className="font-sans text-[12px] font-light tracking-[0.14em] uppercase text-white px-7 py-3 transition-all duration-300"
             style={{ backgroundColor: "#A8885A" } as React.CSSProperties}
             onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
               e.currentTarget.style.backgroundColor = "#8C6E42";
@@ -61,10 +64,10 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
           >
             Enquire
           </a>
-        </nav>
+        </div>
 
         {/* Mobile hamburger */}
-        <div className="md:hidden flex flex-col gap-1.5 cursor-pointer p-1">
+        <div className="md:hidden flex flex-col gap-1.5 cursor-pointer p-1 justify-self-end col-start-3">
           <span className="w-6 h-px bg-white" />
           <span className="w-4 h-px bg-white" />
           <span className="w-5 h-px bg-white" />

@@ -99,7 +99,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            The Power Of 3D Visualization
+            The Power of Architectural Visualization
           </motion.h1>
 
           <motion.div
@@ -113,7 +113,7 @@ export default function Hero() {
               className="font-sans text-white/75 font-light tracking-wide"
               style={{ fontSize: "clamp(0.85rem, 1.6vw, 1.05rem)" }}
             >
-              Presenting new developments before they&apos;re built
+              Bringing visionary developments to life before construction begins
             </p>
             <div className="h-px w-10" style={{ backgroundColor: "#A8885A" }} />
           </motion.div>
