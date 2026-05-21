@@ -1,37 +1,179 @@
 "use client";
-import { motion } from "framer-motion";
-import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
-import { portfolioImages } from "./data/gallery";
-const EASE = [0.16, 1, 0.3, 1];
+import AnimatedTestimonials from "./components/ui/circular-testimonials";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 const GOLD = "#A8885A";
+
+const bedroomTestimonials = [
+  {
+    quote:
+      "The morning light in our master suite looked like a photograph, not a render.",
+    name: "Sarah Jenkins",
+    designation: "Principal, Jenkins Howe Interiors — London",
+    src: "/images/gallery/bedrooms/elegant-master-bedroom1.png",
+  },
+  {
+    quote:
+      "Their visualizations became the investment deck. Three anchor investors cited the imagery specifically.",
+    name: "Marcello Rossi",
+    designation: "Development Director, Rossi Hospitality Group — Dubai",
+    src: "/images/gallery/bedrooms/elegant-master-bedroom3.png",
+  },
+  {
+    quote: "Indistinguishable from photography of a completed space.",
+    name: "Elena Rodriguez",
+    designation: "Founder, Studio Elara — Abu Dhabi",
+    src: "/images/gallery/bedrooms/elegant-master-bedroom5.png",
+  },
+];
+
 export default function HomePage() {
-  const bedroomImages = portfolioImages.filter((img) => img.category === "bedrooms");
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#080808", color: "#F0EBE3" }}>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#080808", color: "#F0EBE3" }}
+    >
       <Nav scrolled={false} />
       <Hero />
-      <section className="px-8 md:px-16 lg:px-24 py-24">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9 }} className="mb-14">
-          <span className="font-sans text-[9px] tracking-[0.5em] uppercase font-light block mb-4" style={{ color: GOLD }}>01. Bedrooms — Private Sanctuaries</span>
-          <p className="font-serif fonextralight italic leading-relaxed" style={{ fontSize: "clamp(1rem, 1.8vw, 1.3rem)", color: "#71717a", maxWidth: "560px" }}>Each bedroom is a study in controlled absence — where light enters not to illuminate, but to reveal.</p>
+
+      {/* ── BEDROOM SECTION ── */}
+      <section
+        className="px-8 md:px-16 lg:px-24"
+        style={{ paddingTop: "clamp(6rem, 10vw, 10rem)", paddingBottom: "clamp(6rem, 10vw, 10rem)" }}
+      >
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 1.1, ease: EASE }}
+          className="mb-20"
+        >
+          {/* Gold label */}
+          <span
+            className="block font-sans font-light tracking-[0.45em] uppercase mb-8"
+            style={{
+              fontSize: "clamp(0.6rem, 0.9vw, 0.75rem)",
+              color: GOLD,
+              letterSpacing: "0.45em",
+            }}
+          >
+            01. BEDROOMS — PRIVATE SANCTUARIES
+          </span>
+
+          {/* Massive italic serif headline */}
+          <h2
+            className="font-serif italic font-extralight leading-[1.05]"
+            style={{
+              fontSize: "clamp(2rem, 4.5vw, 4.2rem)",
+              color: "#F0EBE3",
+              maxWidth: "900px",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Each bedroom is a study in controlled absence — where light enters
+            not to illuminate, but to reveal.
+          </h2>
+
+          {/* Thin rule */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.4, delay: 0.3, ease: EASE }}
+            className="origin-left mt-10"
+            style={{
+              height: "1px",
+              width: "clamp(80px, 12vw, 160px)",
+              backgroundColor: GOLD,
+              opacity: 0.5,
+            }}
+          />
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {bedroomImages.map((img, i) => (
-            <motion.div key={img.src} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: i * 0.08 }} className="group relative overflow-hidden bg-zinc-900" style={{ aspectRatio: "4/5" }}>
-              <Image src={img.src} alt="Luxury Bedroom" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)" }} />
-            </motion.div>
-          ))}
-        </div>
-        <div className="mt-10">
-          <a href="/work" className="font-sans text-[10px] tracking-[0.3em] uppercase font-light" style={{ color: GOLD, borderBottom: "1px solid #A8885A", paddingBottom: "2px" }}>View Full Portfolio</a>
-        </div>
+
+        {/* Circular Testimonials carousel */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.1, delay: 0.15, ease: EASE }}
+        >
+          <AnimatedTestimonials
+            testimonials={bedroomTestimonials}
+            autoplay={true}
+            colors={{
+              name: "#F0EBE3",
+              designation: "#A8885A",
+              testimony: "#9A948E",
+              arrowBackground: "#1C1916",
+              arrowForeground: "#F0EBE3",
+              arrowHoverBackground: "#A8885A",
+            }}
+          />
+        </motion.div>
+
+        {/* View portfolio CTA */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, delay: 0.4 }}
+          className="mt-20"
+        >
+          <a
+            href="/work"
+            className="inline-flex items-center gap-4 font-sans font-light tracking-[0.35em] uppercase group"
+            style={{
+              fontSize: "clamp(0.6rem, 0.85vw, 0.72rem)",
+              color: GOLD,
+            }}
+          >
+            <span
+              style={{
+                borderBottom: "1px solid #A8885A",
+                paddingBottom: "2px",
+                transition: "opacity 0.3s ease",
+              }}
+              className="group-hover:opacity-60"
+            >
+              View Full Portfolio
+            </span>
+            <span
+              style={{
+                display: "inline-block",
+                width: "32px",
+                height: "1px",
+                backgroundColor: GOLD,
+                transition: "width 0.4s ease",
+              }}
+              className="group-hover:w-12"
+            />
+          </a>
+        </motion.div>
       </section>
-      <footer className="px-8 md:px-16 lg:px-24 py-8 flex items-center justify-between" style={{ borderTop: "1px solid #1C1916" }}>
-        <a href="/work" className="font-sans text-[9px] tracking-[0.28em] uppercase font-light" style={{ color: "#4A4540" }}>View Portfolio</a>
-        <p className="font-sans text-[9px] font-light tracking-wide" style={{ color: "#2A2520" }}>{new Date().getFullYear()} Archviz Craft Dubai</p>
+
+      {/* ── FOOTER ── */}
+      <footer
+        className="px-8 md:px-16 lg:px-24 py-10 flex items-center justify-between"
+        style={{ borderTop: "1px solid #1A1714" }}
+      >
+        <a
+          href="/work"
+          className="font-sans font-light tracking-[0.3em] uppercase"
+          style={{ fontSize: "0.6rem", color: "#3A342E" }}
+        >
+          View Portfolio
+        </a>
+
+        <p
+          className="font-sans font-light tracking-wide"
+          style={{ fontSize: "0.6rem", color: "#2A2520" }}
+        >
+          {new Date().getFullYear()} Archviz Craft Dubai
+        </p>
       </footer>
     </div>
   );
