@@ -2,8 +2,14 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
-const navLinks = ["Work", "Studio", "Process", "Contact"];
+const navLinks = [
+  { label: "Work",    href: "/#work" },
+  { label: "Studio",  href: "/studio" },
+  { label: "Process", href: "/#process" },
+  { label: "Contact", href: "/#contact" },
+];
 
 export default function Nav({ scrolled }: { scrolled: boolean }) {
   return (
@@ -25,7 +31,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
       <div className="relative z-10 grid grid-cols-3 items-center px-10 md:px-16 lg:px-20 py-4">
 
         {/* LEFT — Logo */}
-        <a href="#" className="flex-shrink-0 justify-self-start">
+        <Link href="/" className="flex-shrink-0 justify-self-start">
           <Image
             src="/logo-avc.png"
             alt="Archviz Craft"
@@ -34,19 +40,19 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
             className="object-contain drop-shadow-lg"
             priority
           />
-        </a>
+        </Link>
 
         {/* CENTER — Nav links */}
         <nav className="hidden md:flex items-center justify-center gap-8 lg:gap-12">
-          {navLinks.map(function (link) {
+          {navLinks.map(function ({ label, href }) {
             return (
-              <a
-                key={link}
-                href={"#" + link.toLowerCase()}
+              <Link
+                key={label}
+                href={href}
                 className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
               >
-                {link}
-              </a>
+                {label}
+              </Link>
             );
           })}
         </nav>
