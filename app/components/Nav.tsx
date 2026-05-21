@@ -21,20 +21,22 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         }`}
       />
 
-      <div className="relative z-10 flex items-center justify-between px-10 md:px-16 lg:px-20 py-4">
+      <div className="relative z-10 flex items-center justify-between px-8 md:px-12 lg:px-16 py-3">
 
+        {/* Logo — large, left-aligned, matches iCreate scale */}
         <a href="#" className="flex-shrink-0">
           <Image
             src="/logo-avc.png"
             alt="Archviz Craft"
-            width={140}
-            height={140}
-            className="object-contain drop-shadow-lg"
+            width={160}
+            height={160}
+            className="object-contain drop-shadow-lg brightness-125"
             priority
           />
         </a>
 
-        <nav className="hidden md:flex items-center gap-10 lg:gap-14">
+        {/* Nav links + Enquire */}
+        <nav className="hidden md:flex items-center gap-10 lg:gap-12">
           {navLinks.map((link) => (
             <a
               key={link}
@@ -45,9 +47,10 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
             </a>
           ))}
 
+          {/* Enquire — pulled in from edge with mr-4 */}
           <a
             href="#contact"
-            className="font-sans text-[13px] font-light tracking-[0.14em] uppercase text-white px-7 py-3 transition-all duration-300"
+            className="font-sans text-[13px] font-light tracking-[0.14em] uppercase text-white px-6 py-3 mr-4 transition-all duration-300"
             style={{ backgroundColor: "#A8885A" } as React.CSSProperties}
             onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
               e.currentTarget.style.backgroundColor = "#8C6E42";
@@ -60,6 +63,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
           </a>
         </nav>
 
+        {/* Mobile hamburger */}
         <div className="md:hidden flex flex-col gap-1.5 cursor-pointer p-1">
           <span className="w-6 h-px bg-white" />
           <span className="w-4 h-px bg-white" />
