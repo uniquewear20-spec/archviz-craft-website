@@ -3,72 +3,64 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-const EASE: [number, number, number, number] = [0.25, 0.1, 0.0, 1.0];
 const navLinks = ["Work", "Studio", "Process", "Contact"];
 
 export default function Nav({ scrolled }: { scrolled: boolean }) {
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-16 lg:px-24 py-5 md:py-6"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-16 py-5"
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.6, ease: EASE, delay: 0.4 }}
+      transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Backdrop — using className toggle instead of animating backgroundColor */}
+      {/* Backdrop */}
       <div
-        className={`absolute inset-0 border-b border-white/5 transition-all duration-700 ${
+        className={`absolute inset-0 transition-all duration-600 ${
           scrolled
-            ? "backdrop-blur-md bg-[#0a0a08]/85"
-            : "backdrop-blur-none bg-transparent"
+            ? "bg-black/85 backdrop-blur-md border-b border-white/8"
+            : "bg-transparent"
         }`}
       />
 
       {/* Logo */}
-      <a href="#" className="relative z-10 flex items-center gap-3 group opacity-90 hover:opacity-60 transition-opacity duration-300">
+      <a href="#" className="relative z-10 flex items-center gap-3">
         <Image
           src="/logo-avc.png"
-          alt="Arch Viz Craft"
-          width={44}
-          height={44}
+          alt="Archviz Craft"
+          width={42}
+          height={42}
           className="object-contain"
           priority
         />
-        <span className="hidden lg:block text-stone-400 font-sans text-[9px] tracking-[0.28em] uppercase font-light">
-          Arch Viz Craft
+        <span className="hidden md:block font-sans text-white/70 text-xs tracking-[0.22em] uppercase font-light">
+          Archviz Craft
         </span>
       </a>
 
-      {/* Desktop nav */}
-      <nav className="relative z-10 hidden md:flex items-center gap-10">
-        {navLinks.map((link, i) => (
-          <motion.a
+      {/* Desktop nav — iCreate style */}
+      <nav className="relative z-10 hidden md:flex items-center gap-8 lg:gap-12">
+        {navLinks.map((link) => (
+          <a
             key={link}
             href={`#${link.toLowerCase()}`}
-            className="relative text-stone-500 hover:text-stone-200 font-sans text-[9px] uppercase tracking-[0.2em] font-light transition-colors duration-300 group"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 + i * 0.08, ease: EASE }}
+            className="font-sans text-white/70 hover:text-white text-sm font-light tracking-[0.1em] transition-colors duration-300"
           >
             {link}
-            <span className="absolute -bottom-1 left-0 w-0 h-px bg-stone-400 group-hover:w-full transition-all duration-500" />
-          </motion.a>
+          </a>
         ))}
-
-        <motion.a
+        <a
           href="#contact"
-          className="relative z-10 border border-stone-700 hover:border-stone-400 text-stone-400 hover:text-stone-200 font-sans text-[9px] uppercase tracking-[0.2em] font-light px-5 py-2 transition-all duration-400"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.0, ease: EASE }}
+          className="font-sans text-sm font-light tracking-[0.1em] text-white/80 hover:text-white border border-white/30 hover:border-white px-6 py-2.5 transition-all duration-400"
         >
           Enquire
-        </motion.a>
+        </a>
       </nav>
 
-      {/* Mobile menu */}
-      <div className="relative z-10 md:hidden flex flex-col gap-[5px] cursor-pointer group">
-        <span className="w-6 h-px bg-stone-400 group-hover:bg-stone-200 transition-colors duration-300" />
-        <span className="w-4 h-px bg-stone-400 group-hover:bg-stone-200 transition-colors duration-300" />
+      {/* Mobile hamburger */}
+      <div className="relative z-10 md:hidden flex flex-col gap-1.5 cursor-pointer p-1">
+        <span className="w-6 h-px bg-white/70" />
+        <span className="w-4 h-px bg-white/70" />
+        <span className="w-5 h-px bg-white/70" />
       </div>
     </motion.header>
   );
