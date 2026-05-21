@@ -26,7 +26,7 @@ export default function HomePage() {
     <div className="min-h-screen" style={{ backgroundColor: "#080808", color: "#F0EBE3" }}>
       <Nav scrolled={false} />
       <Hero />
-      <section className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(6rem,10vw,10rem)", paddingBottom: "clamp(6rem,10vw,10rem)" }}>
+      <section id="bedrooms" className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(6rem,10vw,10rem)", paddingBottom: "clamp(6rem,10vw,10rem)" }}>
         <motion.div initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1.1 }} className="mb-16">
           <span className="block font-sans font-light uppercase mb-6" style={{ fontSize: "clamp(0.6rem,0.9vw,0.75rem)", color: GOLD, letterSpacing: "0.45em" }}>01. BEDROOMS — PRIVATE SANCTUARIES</span>
           <h2 className="font-serif italic font-extralight leading-[1.05]" style={{ fontSize: "clamp(2rem,4.5vw,4.2rem)", color: "#F0EBE3", maxWidth: "900px" }}>Each bedroom is a study in controlled absence — where light enters not to illuminate, but to reveal.</h2>
