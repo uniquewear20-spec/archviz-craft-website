@@ -39,13 +39,21 @@ export default function StudioPage() {
       <Nav scrolled={true} />
 
       {/* ── Hero split ───────────────────────────────────────────── */}
-      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      {/*
+        On mobile: single column, portrait on top then bio below.
+        On desktop (lg+): 2-column grid side by side.
+        pt-24 on mobile ensures content never overlaps the fixed nav.
+      */}
+      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-24 lg:pt-0">
 
         {/* LEFT — Portrait */}
-        <div className="relative overflow-hidden" style={{ minHeight: "60vh" }}>
+        <div
+          className="relative overflow-hidden"
+          style={{ minHeight: "55vw", maxHeight: "100vh" }}
+        >
           {/* Subtle grain overlay */}
           <div
-            className="absolute inset-0 z-10 pointer-events-none opacity-30"
+            className="absolute inset-0 z-10 pointer-events-none opacity-20"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
               backgroundSize: "200px 200px",
@@ -58,30 +66,40 @@ export default function StudioPage() {
           >
             <Image
               src="/images/wasim-akram.jpg"
-              alt="Wasim Akram"
+              alt="Wasim Akram — Senior 3D Visualizer"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover object-top grayscale transition-all duration-700 ease-in-out group-hover:grayscale-0"
               style={{ objectPosition: "center 10%" }}
             />
-            {/* Bottom gradient fade into dark bg */}
+
+            {/* Bottom gradient fade */}
             <div
               className="absolute bottom-0 left-0 right-0 h-40 z-20"
               style={{
                 background: "linear-gradient(to top, #080808 0%, transparent 100%)",
               }}
             />
-            {/* Right edge fade for desktop */}
+
+            {/* Right-edge fade — desktop only */}
             <div
               className="hidden lg:block absolute top-0 right-0 bottom-0 w-32 z-20"
               style={{
                 background: "linear-gradient(to left, #080808 0%, transparent 100%)",
               }}
             />
+
+            {/* Top gradient — ensures nav area stays readable */}
+            <div
+              className="absolute top-0 left-0 right-0 h-40 z-20"
+              style={{
+                background: "linear-gradient(to bottom, #080808 0%, transparent 100%)",
+              }}
+            />
           </motion.div>
 
-          {/* THE STUDIO label — bottom-left of image */}
+          {/* THE STUDIO label */}
           <motion.div
             className="absolute bottom-10 left-8 z-30"
             initial={{ opacity: 0, x: -16 }}
@@ -98,7 +116,7 @@ export default function StudioPage() {
         </div>
 
         {/* RIGHT — Biography */}
-        <div className="flex flex-col justify-center px-8 md:px-14 lg:px-16 py-24 lg:py-32">
+        <div className="flex flex-col justify-center px-8 md:px-14 lg:px-16 py-16 lg:py-32">
 
           {/* Name */}
           <motion.div
@@ -114,7 +132,11 @@ export default function StudioPage() {
             </h1>
             <h1
               className="font-serif font-extralight leading-[1.0] tracking-tight"
-              style={{ fontSize: "clamp(2.8rem, 5vw, 4.2rem)", color: "#A8885A", fontStyle: "italic" }}
+              style={{
+                fontSize: "clamp(2.8rem, 5vw, 4.2rem)",
+                color: "#A8885A",
+                fontStyle: "italic",
+              }}
             >
               Akram
             </h1>
@@ -122,13 +144,13 @@ export default function StudioPage() {
 
           {/* Subtitle */}
           <motion.p
-            className="font-sans font-light tracking-[0.12em] uppercase mt-5 mb-8"
+            className="font-sans font-light uppercase mt-5 mb-8"
             style={{ fontSize: "0.68rem", color: "#6B6560", letterSpacing: "0.22em" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.0, delay: 0.45, ease: EASE_ENTER }}
           >
-            Senior 3D Visualizer & Interior Designer
+            Senior 3D Visualizer &amp; Interior Designer
           </motion.p>
 
           {/* Gold hairline */}
@@ -143,18 +165,22 @@ export default function StudioPage() {
           {/* Biography */}
           <motion.p
             className="font-sans font-light leading-[1.85] mb-12"
-            style={{ fontSize: "clamp(0.85rem, 1.1vw, 0.95rem)", color: "#9A948E", maxWidth: "520px" }}
+            style={{
+              fontSize: "clamp(0.85rem, 1.1vw, 0.95rem)",
+              color: "#9A948E",
+              maxWidth: "520px",
+            }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.7, ease: EASE_ENTER }}
           >
-            Senior 3D Visualizer & Interior Designer with over 12 years of global experience,
+            Senior 3D Visualizer &amp; Interior Designer with over 12 years of global experience,
             including 4+ years in the high-end UAE market. I specialize in crafting photorealistic
-            architectural visualizations and cinematic animations for luxury villas, commercial spaces,
-            and large-scale apartments. I bridge the gap between technical precision and artistic
-            storytelling using a powerful tech stack including Unreal Engine, 3ds Max, Corona, and
-            V-Ray. My expertise lies in advanced lighting, material composition, and creating immersive
-            environments that bring unbuilt architecture to life.
+            architectural visualizations and cinematic animations for luxury villas, commercial
+            spaces, and large-scale apartments. I bridge the gap between technical precision and
+            artistic storytelling using a powerful tech stack including Unreal Engine, 3ds Max,
+            Corona, and V-Ray. My expertise lies in advanced lighting, material composition, and
+            creating immersive environments that bring unbuilt architecture to life.
           </motion.p>
 
           {/* Skills */}
@@ -167,19 +193,17 @@ export default function StudioPage() {
             {skills.map((skill) => (
               <span
                 key={skill}
-                className="font-sans text-[9px] tracking-[0.14em] uppercase font-light px-3 py-1.5 transition-colors duration-300"
-                style={{
-                  border: "1px solid #2A2520",
-                  color: "#6B6560",
-                  cursor: "default",
+                className="font-sans text-[9px] tracking-[0.14em] uppercase font-light px-3 py-1.5 transition-colors duration-300 cursor-default"
+                style={{ border: "1px solid #2A2520", color: "#6B6560" }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLSpanElement;
+                  el.style.borderColor = "#A8885A";
+                  el.style.color = "#A8885A";
                 }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLSpanElement).style.borderColor = "#A8885A";
-                  (e.currentTarget as HTMLSpanElement).style.color = "#A8885A";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLSpanElement).style.borderColor = "#2A2520";
-                  (e.currentTarget as HTMLSpanElement).style.color = "#6B6560";
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLSpanElement;
+                  el.style.borderColor = "#2A2520";
+                  el.style.color = "#6B6560";
                 }}
               >
                 {skill}
@@ -189,7 +213,7 @@ export default function StudioPage() {
 
           {/* Stats row */}
           <motion.div
-            className="grid grid-cols-4 gap-4"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4"
             style={{ borderTop: "1px solid #1C1916", paddingTop: "2rem" }}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -215,7 +239,7 @@ export default function StudioPage() {
         </div>
       </section>
 
-      {/* ── Quote / Philosophy strip ──────────────────────────────── */}
+      {/* ── Philosophy strip ──────────────────────────────────────── */}
       <motion.section
         className="px-8 md:px-16 lg:px-24 py-24"
         style={{ borderTop: "1px solid #1C1916" }}
@@ -235,7 +259,8 @@ export default function StudioPage() {
             className="font-serif font-extralight leading-[1.4] italic"
             style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)", color: "#F0EBE3" }}
           >
-            "Architecture exists first in the imagination. My role is to make that vision undeniable — before a single foundation is poured."
+            &ldquo;Architecture exists first in the imagination. My role is to make that vision
+            undeniable — before a single foundation is poured.&rdquo;
           </blockquote>
           <div
             className="h-px w-10 mx-auto mt-10"
@@ -253,8 +278,8 @@ export default function StudioPage() {
           href="/"
           className="font-sans text-[9px] tracking-[0.28em] uppercase font-light transition-colors duration-300"
           style={{ color: "#4A4540" }}
-          onMouseEnter={e => (e.currentTarget.style.color = "#A8885A")}
-          onMouseLeave={e => (e.currentTarget.style.color = "#4A4540")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#A8885A")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#4A4540")}
         >
           ← Back to Home
         </a>
