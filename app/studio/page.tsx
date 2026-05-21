@@ -18,13 +18,6 @@ const skills = [
   "Photorealistic Rendering",
 ];
 
-const stats = [
-  { value: "12+", label: "Years Experience" },
-  { value: "4+",  label: "Years in UAE" },
-  { value: "200+", label: "Projects Delivered" },
-  { value: "3",   label: "Continents" },
-];
-
 export default function StudioPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
@@ -36,14 +29,10 @@ export default function StudioPage() {
       className="min-h-screen"
       style={{ backgroundColor: "#080808", color: "#F0EBE3" }}
     >
-      <Nav scrolled={true} />
+      {/* Pass scrolled={false} so nav stays transparent — no dark bar over his head */}
+      <Nav scrolled={false} />
 
       {/* ── Hero split ───────────────────────────────────────────── */}
-      {/*
-        On mobile: single column, portrait on top then bio below.
-        On desktop (lg+): 2-column grid side by side.
-        pt-24 on mobile ensures content never overlaps the fixed nav.
-      */}
       <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-24 lg:pt-0">
 
         {/* LEFT — Portrait */}
@@ -51,7 +40,7 @@ export default function StudioPage() {
           className="relative overflow-hidden"
           style={{ minHeight: "55vw", maxHeight: "100vh" }}
         >
-          {/* Subtle grain overlay */}
+          {/* Grain overlay */}
           <div
             className="absolute inset-0 z-10 pointer-events-none opacity-20"
             style={{
@@ -60,10 +49,7 @@ export default function StudioPage() {
             }}
           />
 
-          <motion.div
-            className="absolute inset-0 group"
-            style={{ y: imgY }}
-          >
+          <motion.div className="absolute inset-0 group" style={{ y: imgY }}>
             <Image
               src="/images/wasim-akram.jpg"
               alt="Wasim Akram — Senior 3D Visualizer"
@@ -74,28 +60,15 @@ export default function StudioPage() {
               style={{ objectPosition: "center 10%" }}
             />
 
-            {/* Bottom gradient fade */}
+            {/* Bottom gradient */}
             <div
               className="absolute bottom-0 left-0 right-0 h-40 z-20"
-              style={{
-                background: "linear-gradient(to top, #080808 0%, transparent 100%)",
-              }}
+              style={{ background: "linear-gradient(to top, #080808 0%, transparent 100%)" }}
             />
-
             {/* Right-edge fade — desktop only */}
             <div
               className="hidden lg:block absolute top-0 right-0 bottom-0 w-32 z-20"
-              style={{
-                background: "linear-gradient(to left, #080808 0%, transparent 100%)",
-              }}
-            />
-
-            {/* Top gradient — ensures nav area stays readable */}
-            <div
-              className="absolute top-0 left-0 right-0 h-40 z-20"
-              style={{
-                background: "linear-gradient(to bottom, #080808 0%, transparent 100%)",
-              }}
+              style={{ background: "linear-gradient(to left, #080808 0%, transparent 100%)" }}
             />
           </motion.div>
 
@@ -185,7 +158,7 @@ export default function StudioPage() {
 
           {/* Skills */}
           <motion.div
-            className="flex flex-wrap gap-2 mb-14"
+            className="flex flex-wrap gap-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.0, delay: 0.85, ease: EASE_ENTER }}
@@ -208,32 +181,6 @@ export default function StudioPage() {
               >
                 {skill}
               </span>
-            ))}
-          </motion.div>
-
-          {/* Stats row */}
-          <motion.div
-            className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4"
-            style={{ borderTop: "1px solid #1C1916", paddingTop: "2rem" }}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, delay: 1.0, ease: EASE_ENTER }}
-          >
-            {stats.map(({ value, label }) => (
-              <div key={label} className="flex flex-col gap-1">
-                <span
-                  className="font-serif font-extralight"
-                  style={{ fontSize: "clamp(1.5rem, 2.5vw, 2rem)", color: "#A8885A" }}
-                >
-                  {value}
-                </span>
-                <span
-                  className="font-sans font-light tracking-[0.12em] uppercase"
-                  style={{ fontSize: "0.6rem", color: "#4A4540", lineHeight: 1.4 }}
-                >
-                  {label}
-                </span>
-              </div>
             ))}
           </motion.div>
         </div>
@@ -262,10 +209,7 @@ export default function StudioPage() {
             &ldquo;Architecture exists first in the imagination. My role is to make that vision
             undeniable — before a single foundation is poured.&rdquo;
           </blockquote>
-          <div
-            className="h-px w-10 mx-auto mt-10"
-            style={{ backgroundColor: "#2A2520" }}
-          />
+          <div className="h-px w-10 mx-auto mt-10" style={{ backgroundColor: "#2A2520" }} />
         </div>
       </motion.section>
 
@@ -283,10 +227,7 @@ export default function StudioPage() {
         >
           ← Back to Home
         </a>
-        <p
-          className="font-sans text-[9px] font-light tracking-wide"
-          style={{ color: "#2A2520" }}
-        >
+        <p className="font-sans text-[9px] font-light tracking-wide" style={{ color: "#2A2520" }}>
           © {new Date().getFullYear()} Archviz Craft · Dubai
         </p>
       </footer>

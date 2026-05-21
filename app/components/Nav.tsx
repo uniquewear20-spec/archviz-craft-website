@@ -7,6 +7,7 @@ import Link from "next/link";
 const navLinks = [
   { label: "Work",    href: "/#work" },
   { label: "Studio",  href: "/studio" },
+  { label: "About",   href: "/about" },
   { label: "Process", href: "/#process" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -44,17 +45,15 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
 
         {/* CENTER — Nav links */}
         <nav className="hidden md:flex items-center justify-center gap-8 lg:gap-12">
-          {navLinks.map(function ({ label, href }) {
-            return (
-              <Link
-                key={label}
-                href={href}
-                className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
-              >
-                {label}
-              </Link>
-            );
-          })}
+          {navLinks.map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className="font-sans text-white text-[12px] font-light tracking-[0.18em] uppercase transition-colors duration-300 hover:text-[#A8885A]"
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
 
         {/* RIGHT — spacer */}
@@ -66,7 +65,6 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
           <span className="w-4 h-px bg-white" />
           <span className="w-5 h-px bg-white" />
         </div>
-
       </div>
     </motion.header>
   );
