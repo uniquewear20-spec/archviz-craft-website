@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navLinks = [
-  { label: "Work", href: "/work" },
+  { label: "Work",    href: "/work" },
   { label: "Studio",  href: "/studio" },
   { label: "About",   href: "/studio" },
   { label: "Process", href: "/#process" },
@@ -31,7 +31,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
 
       <div className="relative z-10 grid grid-cols-3 items-center px-10 md:px-16 lg:px-20 py-3">
 
-        {/* LEFT — Logo, smaller and refined */}
+        {/* LEFT — Logo */}
         <Link href="/" className="flex-shrink-0 justify-self-start">
           <Image
             src="/logo-avc.png"
