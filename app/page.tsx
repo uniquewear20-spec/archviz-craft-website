@@ -70,13 +70,13 @@ const LIVING_SLIDES: PortfolioSlide[] = [
 ];
 
 const VILLA_SLIDES: PortfolioSlide[] = [
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior1.jpg", title: "Villa Exterior · Golden Hour",       desc: "The facade at the hour it was designed for — warm tungsten emerging from the interior as daylight retreats." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior2.jpg", title: "Private Residence · Pool Terrace",   desc: "Water, stone, and landscape in calibrated proportion. The exterior as a sequence of threshold experiences." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior3.jpg", title: "Villa · Arrival Sequence",           desc: "The approach rendered as architectural narrative — how a guest reads a property before reaching the door." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior4.jpg", title: "Residential · Landscape Integration",desc: "Architecture dissolving into its site. The render argues that a villa's quality is measured at its boundary." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior5.jpg", title: "Villa · Evening Facade",             desc: "Exterior lighting as composition. Each aperture a considered decision about what is revealed after dark." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior6.jpg", title: "Estate · Aerial Perspective",        desc: "The massing render — communicating scale, site relationship, and the logic of the plan from above." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior7.jpg", title: "Villa · Material Weathering Study",  desc: "A render that considers patina — how stone, timber, and water features evolve with inhabitation." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior1.jpg", title: "Villa Exterior · Golden Hour",        desc: "The facade at the hour it was designed for — warm tungsten emerging from the interior as daylight retreats." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior2.jpg", title: "Private Residence · Pool Terrace",    desc: "Water, stone, and landscape in calibrated proportion. The exterior as a sequence of threshold experiences." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior3.jpg", title: "Villa · Arrival Sequence",            desc: "The approach rendered as architectural narrative — how a guest reads a property before reaching the door." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior4.jpg", title: "Residential · Landscape Integration", desc: "Architecture dissolving into its site. The render argues that a villa's quality is measured at its boundary." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior5.jpg", title: "Villa · Evening Facade",              desc: "Exterior lighting as composition. Each aperture a considered decision about what is revealed after dark." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior6.jpg", title: "Estate · Aerial Perspective",         desc: "The massing render — communicating scale, site relationship, and the logic of the plan from above." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior7.jpg", title: "Villa · Material Weathering Study",   desc: "A render that considers patina — how stone, timber, and water features evolve with inhabitation." },
 ];
 
 const WASHROOM_SLIDES: PortfolioSlide[] = [
@@ -84,7 +84,7 @@ const WASHROOM_SLIDES: PortfolioSlide[] = [
   { src: "/images/portfolio/washrooms/premium-suite-bathroom2.jpg",  title: "Spa Suite · Morning Light",          desc: "The render captures the bathroom at the moment of use — morning light through obscured glass, the quality of softness." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom3.jpg",  title: "Ensuite · Freestanding Form",        desc: "Freestanding bath as sculptural centrepiece. The room organised around the ritual of bathing." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom4.jpg",  title: "Washroom · Dark Palette",            desc: "Deep charcoal stone and matte brass. A bathroom that communicates restraint as the highest luxury." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom5.jpg",  title: "Powder Room · Jewel Box",            desc: "The powder room as a single considered gesture — where intensity of material is appropriate precisely because the space is small." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom5.jpg",  title: "Powder Room · Jewel Box",            desc: "The powder room as a single considered gesture — intensity of material appropriate to a small space." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom6.jpg",  title: "Hotel Bath · Operational Luxury",    desc: "Hospitality intelligence applied to the private bathroom. Vanity positioning, towel reach, mirror angle — all operational decisions." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom7.jpg",  title: "Suite Bathroom · Layered Light",     desc: "Three lighting circuits rendered in sequence — task, ambient, and accent — showing how a room transforms across a day." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom8.jpg",  title: "Bathroom · Natural Materials",       desc: "Unlacquered timber, honed travertine, hand-thrown ceramic. Materials chosen for how they age, not only how they appear new." },
@@ -92,30 +92,19 @@ const WASHROOM_SLIDES: PortfolioSlide[] = [
   { src: "/images/portfolio/washrooms/premium-suite-bathroom10.jpg", title: "Master Bath · Double Vanity",        desc: "Two occupants, two rituals, one spatial logic. The double vanity rendered as a study in domestic choreography." },
 ];
 
-// ── Testimonials ───────────────────────────────────────────────────────────
-const T_BEDROOMS = [
+// ── ALL testimonials consolidated ─────────────────────────────────────────
+const ALL_TESTIMONIALS = [
   { quote: "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.", name: "Priya Mehta", role: "Design Principal", company: "Foster + Partners, London", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&h=120&fit=crop&crop=face" },
   { quote: "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.", name: "Khalid Al Mansoori", role: "Managing Director", company: "Mansoori Capital Developments, Dubai", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&h=120&fit=crop&crop=face" },
+  { quote: "The operational intelligence embedded in their kitchen renders is unlike anything I've encountered. They understood service flow, mise en place zones, the way brigade movement shapes a space.", name: "Marco Benedetti", role: "Executive Chef & Partner", company: "Benedetti Hospitality Group, Milan", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face" },
   { quote: "They understand how a room feels, not just how it looks. The light quality in our master suite visualisation was indistinguishable from a completed space. The hospitality intelligence here is genuinely rare.", name: "Isabelle Fournier", role: "Founder", company: "Atelier Fournier, Paris", img: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=120&h=120&fit=crop&crop=face" },
-];
-const T_KITCHENS = [
-  { quote: "The operational intelligence embedded in their kitchen renders is unlike anything I've encountered. They understood service flow, mise en place zones, the way brigade movement shapes a space. This wasn't a render — it was a functioning concept.", name: "Marco Benedetti", role: "Executive Chef & Partner", company: "Benedetti Hospitality Group, Milan", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face" },
-  { quote: "When we brought this to our client board, three members asked when the photography was taken. That's not a compliment — it's an architectural argument won before a single tile was laid.", name: "Hana Yoshida", role: "Senior Interior Architect", company: "Yabu Pushelberg, Toronto", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&h=120&fit=crop&crop=face" },
-  { quote: "Our client wanted to feel the kitchen before committing to the investment. The light at 07:30, the warmth of the stone against morning sun — they approved the full specification within 48 hours.", name: "Rania Al-Farsi", role: "Project Director", company: "Aldar Properties, Abu Dhabi", img: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=120&h=120&fit=crop&crop=face" },
-];
-const T_LIVING = [
   { quote: "The salon render captured precisely the quality of light we experience at that latitude — the way afternoon sun diffuses across limestone. It reads as a place, not a projection.", name: "Thomas Brecker", role: "Principal Architect", company: "Snøhetta, Oslo", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" },
-  { quote: "Our buyers don't purchase square footage — they purchase a way of living. These visualisations communicated the social register of the space with a confidence we hadn't seen outside the finest architectural photography.", name: "Celeste Moreau", role: "Head of Luxury Residential", company: "Savills, Paris", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&crop=face" },
-  { quote: "The circulation logic, the conversation zones, the way the furniture composition guides movement through the space — whoever briefed this team understood hospitality design at its most sophisticated level.", name: "Omar Kassem", role: "Chief Design Officer", company: "FIVE Hotels & Resorts, Dubai", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face" },
-];
-const T_VILLAS = [
   { quote: "The exterior renders communicated a sense of arrival that no site plan or elevation could achieve. Every prospective buyer who saw them placed a reservation within the same meeting.", name: "Sheikh Hamdan Al Rashid", role: "Chief Investment Officer", company: "Al Rashid Developments, Dubai", img: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=120&h=120&fit=crop&crop=face" },
-  { quote: "We used their villa exterior series to secure planning permission. The renders demonstrated not just design intent but environmental sensitivity — how the building reads from the public realm at different hours.", name: "Nicolas Dupont", role: "Lead Architect", company: "Zaha Hadid Architects, London", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&h=120&fit=crop&crop=face" },
-  { quote: "The landscaping integration in their exterior renders is extraordinary. You understand the relationship between building and site immediately — before a spade has touched the ground.", name: "Layla Hassan", role: "Development Director", company: "Emaar Properties, Dubai", img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=120&h=120&fit=crop&crop=face" },
-];
-const T_WASHROOMS = [
+  { quote: "Our buyers don't purchase square footage — they purchase a way of living. These visualisations communicated the social register of the space with a confidence we hadn't seen outside the finest architectural photography.", name: "Celeste Moreau", role: "Head of Luxury Residential", company: "Savills, Paris", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&crop=face" },
   { quote: "The bathroom renders communicated material quality at a level I had not seen before. The weight of the stone, the temperature of the brass — a client who had never visited a showroom approved the entire specification.", name: "Stefano Ricci Jr.", role: "Creative Director", company: "Ricci Interiors, Florence", img: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=120&h=120&fit=crop&crop=face" },
+  { quote: "When we brought this to our client board, three members asked when the photography was taken. That's not a compliment — it's an architectural argument won before a single tile was laid.", name: "Hana Yoshida", role: "Senior Interior Architect", company: "Yabu Pushelberg, Toronto", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&h=120&fit=crop&crop=face" },
   { quote: "In twelve years of hospitality development, I have never seen bathroom renders that communicate the experience of bathing rather than the appearance of a bathroom. This team understands wellness as architecture.", name: "Dr. Amira Khalil", role: "VP Hospitality", company: "Jumeirah Group, Dubai", img: "https://images.unsplash.com/photo-1494790108755-2616b612b9bc?w=120&h=120&fit=crop&crop=face" },
+  { quote: "We used their villa exterior series to secure planning permission. The renders demonstrated not just design intent but environmental sensitivity — how the building reads from the public realm at different hours.", name: "Nicolas Dupont", role: "Lead Architect", company: "Zaha Hadid Architects, London", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&h=120&fit=crop&crop=face" },
   { quote: "The powder room render alone sold the penthouse. A single image that communicated everything about the register of the property — without showing a single other room.", name: "James Whitmore", role: "Sales Director", company: "Knight Frank Prime, London", img: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=120&h=120&fit=crop&crop=face" },
 ];
 
@@ -214,7 +203,7 @@ function ThemeToggle() {
   );
 }
 
-// ── NavArrow ───────────────────────────────────────────────────────────────
+// ── Nav Arrow ──────────────────────────────────────────────────────────────
 function NavArrow({ onClick, direction }: { onClick: () => void; direction: "prev" | "next" }) {
   const [h, setH] = useState(false);
   return (
@@ -246,8 +235,6 @@ function PortfolioCircular({ slides, activeSlide, setActiveSlide, viewAllHref = 
     if (isR) return { zIndex: 2, opacity: 1, pointerEvents: "auto", transform: `translateX(${gap}px) translateY(-${su}px) scale(0.84) rotateY(-14deg)`, transition: "all 0.85s cubic-bezier(.16,1,.3,1)" };
     return { zIndex: 1, opacity: 0, pointerEvents: "none", transition: "all 0.85s cubic-bezier(.16,1,.3,1)" };
   }
-  function prev() { setActiveSlide(p => (p - 1 + n) % n); }
-  function next() { setActiveSlide(p => (p + 1) % n); }
   const current = slides[activeSlide];
   return (
     <div style={{ width: "100%", paddingBottom: "3rem" }}>
@@ -277,12 +264,11 @@ function PortfolioCircular({ slides, activeSlide, setActiveSlide, viewAllHref = 
             </motion.div>
           </AnimatePresence>
           <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
-            <NavArrow onClick={prev} direction="prev" />
-            <NavArrow onClick={next} direction="next" />
+            <NavArrow onClick={() => setActiveSlide(p => (p - 1 + n) % n)} direction="prev" />
+            <NavArrow onClick={() => setActiveSlide(p => (p + 1) % n)} direction="next" />
           </div>
         </div>
       </div>
-      {/* Thumbnail strip */}
       <div style={{ padding: "1.2rem clamp(2rem,6vw,6rem)", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
           {slides.map((slide, i) => (
@@ -300,38 +286,6 @@ function PortfolioCircular({ slides, activeSlide, setActiveSlide, viewAllHref = 
         >View Full Portfolio →</a>
       </div>
       <style>{`@media (max-width: 768px) { .portfolio-grid { grid-template-columns: 1fr !important; } }`}</style>
-    </div>
-  );
-}
-
-// ── Testimonials Row ───────────────────────────────────────────────────────
-function TestimonialsRow({ testimonials }: { testimonials: typeof T_BEDROOMS }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1px", background: "var(--border)" }} className="testimonials-grid">
-      {testimonials.map((t, i) => (
-        <Reveal key={t.name} delay={i * 0.1}>
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: "clamp(2rem,4vw,3rem)", background: "var(--bg)" }}>
-            <div style={{ display: "flex", gap: "3px", marginBottom: "2rem" }}>
-              {Array.from({ length: 5 }).map((_, si) => (
-                <svg key={si} width="10" height="10" viewBox="0 0 14 14" fill="var(--gold)" opacity="0.6"><path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" /></svg>
-              ))}
-            </div>
-            <p className="font-serif italic font-light" style={{ fontSize: "clamp(0.95rem,1.4vw,1.1rem)", color: "var(--text-mid)", lineHeight: 1.8, flex: 1, marginBottom: "2rem" }}>
-              &ldquo;{t.quote}&rdquo;
-            </p>
-            <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: "36px", height: "36px", borderRadius: "50%", overflow: "hidden", border: "1px solid rgba(168,136,90,0.2)", flexShrink: 0 }}>
-                <img src={t.img} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(55%)" }} />
-              </div>
-              <div>
-                <p className="font-sans font-light" style={{ fontSize: "0.7rem", color: "var(--text-loud)", letterSpacing: "0.05em" }}>{t.name}</p>
-                <p className="font-sans font-light" style={{ fontSize: "0.58rem", color: "var(--text-muted)", letterSpacing: "0.06em" }}>{t.role} · {t.company}</p>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      ))}
-      <style>{`@media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr !important; } }`}</style>
     </div>
   );
 }
@@ -354,133 +308,99 @@ function SectionHeader({ number, eyebrow, title, body }: { number: string; eyebr
   );
 }
 
-// ── Testimonial Block ──────────────────────────────────────────────────────
-function TestimonialsBlock({ title, subtitle, testimonials }: { title: string; subtitle: React.ReactNode; testimonials: typeof T_BEDROOMS }) {
+// ── Testimonial Marquee ────────────────────────────────────────────────────
+function TestimonialCard({ t }: { t: typeof ALL_TESTIMONIALS[0] }) {
   return (
-    <div className="px-8 md:px-16 lg:px-24 pt-16 pb-20" style={{ borderTop: "1px solid var(--border)" }}>
-      <Reveal className="mb-14">
-        <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>Client Record</p>
-        <h3 className="font-serif font-extralight" style={{ fontSize: "clamp(1.5rem,3vw,2.6rem)", color: "var(--text-loud)" }}>
-          {title}<br /><em className="italic" style={{ color: "var(--text-mid)" }}>{subtitle}</em>
-        </h3>
-      </Reveal>
-      <TestimonialsRow testimonials={testimonials} />
+    <div style={{
+      flexShrink: 0,
+      width: "clamp(300px, 32vw, 420px)",
+      margin: "0 1rem",
+      padding: "clamp(1.5rem,2.5vw,2.5rem)",
+      border: "1px solid var(--border)",
+      backgroundColor: "var(--bg)",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1.25rem",
+    }}>
+      {/* Stars */}
+      <div style={{ display: "flex", gap: "3px" }}>
+        {Array.from({ length: 5 }).map((_, si) => (
+          <svg key={si} width="10" height="10" viewBox="0 0 14 14" fill="var(--gold)" opacity="0.7">
+            <path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" />
+          </svg>
+        ))}
+      </div>
+      {/* Quote */}
+      <p className="font-serif italic font-light" style={{ fontSize: "clamp(0.88rem,1.2vw,1rem)", color: "var(--text-mid)", lineHeight: 1.8, flex: 1 }}>
+        &ldquo;{t.quote}&rdquo;
+      </p>
+      {/* Attribution */}
+      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ width: "34px", height: "34px", borderRadius: "50%", overflow: "hidden", border: "1px solid rgba(168,136,90,0.2)", flexShrink: 0 }}>
+          <img src={t.img} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(55%)" }} />
+        </div>
+        <div>
+          <p className="font-sans font-light" style={{ fontSize: "0.68rem", color: "var(--text-loud)", letterSpacing: "0.05em" }}>{t.name}</p>
+          <p className="font-sans font-light" style={{ fontSize: "0.56rem", color: "var(--text-muted)", letterSpacing: "0.06em" }}>{t.role} · {t.company}</p>
+        </div>
+      </div>
     </div>
   );
 }
 
-// ── Feedback Section ───────────────────────────────────────────────────────
-function FeedbackSection() {
-  const [submitted, setSubmitted] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(0);
-  const [form, setForm] = useState({ name: "", email: "", feedback: "", type: "General" });
-  const types = ["General", "Project Enquiry", "Quality Feedback", "Collaboration"];
+function TestimonialMarquee() {
+  // Split into two rows — alternating
+  const row1 = ALL_TESTIMONIALS.filter((_, i) => i % 2 === 0);
+  const row2 = ALL_TESTIMONIALS.filter((_, i) => i % 2 === 1);
+
   return (
-    <section className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(7rem,11vw,12rem)", paddingBottom: "clamp(7rem,11vw,12rem)", borderBottom: "1px solid var(--border)" }}>
-      <Reveal className="mb-16">
-        <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>Share Your Experience</p>
-        <h2 className="font-serif font-extralight" style={{ fontSize: "clamp(2rem,4vw,4rem)", color: "var(--text-loud)" }}>
-          Your perspective<br /><em className="italic" style={{ color: "var(--text-mid)" }}>shapes our craft.</em>
-        </h2>
-      </Reveal>
-      {submitted ? (
+    <section style={{ borderBottom: "1px solid var(--border)", paddingTop: "clamp(6rem,10vw,10rem)", paddingBottom: "clamp(6rem,10vw,10rem)", overflow: "hidden" }}>
+      {/* Header */}
+      <div className="px-8 md:px-16 lg:px-24 mb-16">
         <Reveal>
-          <div style={{ maxWidth: "540px", padding: "4rem 0" }}>
-            <div style={{ width: "36px", height: "1px", backgroundColor: "var(--gold)", marginBottom: "2rem" }} />
-            <h3 className="font-serif font-extralight italic" style={{ fontSize: "clamp(1.5rem,3vw,2.2rem)", color: "var(--text-loud)" }}>
-              Thank you, {form.name || "friend"}.
-            </h3>
-            <p className="font-sans font-light" style={{ fontSize: "0.9rem", color: "var(--text-soft)", lineHeight: 1.9, marginTop: "1rem" }}>
-              Your feedback has been received. Every response is read personally and shapes how we work.
-            </p>
-          </div>
+          <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>The Record</p>
+          <h2 className="font-serif font-extralight" style={{ fontSize: "clamp(2rem,4vw,4rem)", color: "var(--text-loud)" }}>
+            Results that speak<br />
+            <em className="italic" style={{ color: "var(--text-mid)" }}>before we do.</em>
+          </h2>
         </Reveal>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "start" }} className="feedback-grid">
-          {/* Left — context */}
-          <Reveal>
-            <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: "2rem" }}>
-              <p className="font-sans font-light" style={{ fontSize: "0.9rem", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "2rem" }}>
-                Whether you've worked with us or simply experienced our work — we value every perspective. Your feedback informs how we render, how we communicate, and how we grow.
-              </p>
-              {/* Star rating */}
-              <div style={{ marginBottom: "2.5rem" }}>
-                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>Your Rating</p>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  {[1,2,3,4,5].map(star => (
-                    <button key={star} onClick={() => setRating(star)} onMouseEnter={() => setHover(star)} onMouseLeave={() => setHover(0)}
-                      style={{ background: "none", border: "none", cursor: "pointer", padding: "2px" }}>
-                      <svg width="20" height="20" viewBox="0 0 14 14" fill={star <= (hover || rating) ? "var(--gold)" : "none"} stroke="var(--gold)" strokeWidth="0.5" opacity={star <= (hover || rating) ? 1 : 0.35}>
-                        <path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" />
-                      </svg>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* Type selector */}
-              <div>
-                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>Feedback Type</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                  {types.map(type => (
-                    <button key={type} onClick={() => setForm(p => ({ ...p, type }))}
-                      className="font-sans font-light uppercase"
-                      style={{ fontSize: "0.5rem", letterSpacing: "0.18em", padding: "0.5rem 1rem", border: `1px solid ${form.type === type ? "var(--gold)" : "var(--border)"}`, color: form.type === type ? "var(--gold)" : "var(--text-muted)", background: "transparent", cursor: "pointer", transition: "all 0.3s" }}>
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Reveal>
-          {/* Right — form */}
-          <Reveal delay={0.15}>
-            <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} className="space-y-8">
-              {[
-                { key: "name", label: "Your Name", type: "text" },
-                { key: "email", label: "Email Address", type: "email" },
-              ].map(field => (
-                <div key={field.key}>
-                  <p className="font-sans font-light uppercase mb-3" style={{ fontSize: "0.5rem", letterSpacing: "0.2em", color: "var(--text-muted)" }}>{field.label}</p>
-                  <input type={field.type} required placeholder={field.label}
-                    value={form[field.key as "name" | "email"]}
-                    onChange={e => setForm(p => ({ ...p, [field.key]: e.target.value }))}
-                    style={{ width: "100%", background: "transparent", borderBottom: "1px solid var(--border)", padding: "0.75rem 0", fontSize: "0.9rem", color: "var(--text-loud)", outline: "none", fontFamily: "var(--font-dm), sans-serif", fontWeight: 300 }}
-                    onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--gold)"; }}
-                    onBlur={e =>  { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }}
-                  />
-                </div>
-              ))}
-              <div>
-                <p className="font-sans font-light uppercase mb-3" style={{ fontSize: "0.5rem", letterSpacing: "0.2em", color: "var(--text-muted)" }}>Your Feedback</p>
-                <textarea rows={5} required placeholder="Tell us about your experience..."
-                  value={form.feedback} onChange={e => setForm(p => ({ ...p, feedback: e.target.value }))}
-                  style={{ width: "100%", background: "transparent", borderBottom: "1px solid var(--border)", padding: "0.75rem 0", fontSize: "0.9rem", color: "var(--text-loud)", outline: "none", resize: "none", fontFamily: "var(--font-dm), sans-serif", fontWeight: 300 }}
-                  onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--gold)"; }}
-                  onBlur={e =>  { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }}
-                />
-              </div>
-              <button type="submit" className="font-sans font-light uppercase"
-                style={{ fontSize: "0.6rem", letterSpacing: "0.3em", color: "var(--text-mid)", border: "1px solid var(--border)", padding: "1rem 2.5rem", background: "transparent", cursor: "pointer", transition: "all 0.4s" }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = "var(--gold)"; el.style.borderColor = "var(--gold)"; }}
-                onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = "var(--text-mid)"; el.style.borderColor = "var(--border)"; }}
-              >Submit Feedback</button>
-            </form>
-          </Reveal>
+      </div>
+
+      {/* Row 1 — left to right (standard) */}
+      <div style={{ overflow: "hidden", marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", animation: "marquee-ltr 40s linear infinite", width: "max-content" }}>
+          {[...row1, ...row1].map((t, i) => <TestimonialCard key={i} t={t} />)}
         </div>
-      )}
-      <style>{`@media (max-width: 768px) { .feedback-grid { grid-template-columns: 1fr !important; } }`}</style>
+      </div>
+
+      {/* Row 2 — right to left (reverse) */}
+      <div style={{ overflow: "hidden" }}>
+        <div style={{ display: "flex", animation: "marquee-rtl 40s linear infinite", width: "max-content" }}>
+          {[...row2, ...row2].map((t, i) => <TestimonialCard key={i} t={t} />)}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes marquee-ltr {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-rtl {
+          0%   { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+      `}</style>
     </section>
   );
 }
 
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [s0, ss0] = useState(0); // bedrooms
-  const [s1, ss1] = useState(0); // kitchens
-  const [s2, ss2] = useState(0); // living
-  const [s3, ss3] = useState(0); // villas
-  const [s4, ss4] = useState(0); // washrooms
+  const [s0, ss0] = useState(0);
+  const [s1, ss1] = useState(0);
+  const [s2, ss2] = useState(0);
+  const [s3, ss3] = useState(0);
+  const [s4, ss4] = useState(0);
   const [contactSubmitted, setContactSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
@@ -494,11 +414,8 @@ export default function HomePage() {
       {/* Grain */}
       <div className="pointer-events-none fixed inset-0 z-[100] opacity-[0.032]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: "200px" }} />
 
-      {/* Nav — original untouched */}
       <Nav scrolled={false} />
-      {/* Toggle — fixed top right */}
       <ThemeToggle />
-      {/* Hero — fullscreen, untouched */}
       <Hero />
 
       {/* ── METRICS ── */}
@@ -530,7 +447,6 @@ export default function HomePage() {
       <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader number="01" eyebrow="Private Sanctuaries" title={<>The private suite,<br />before the walls exist.</>} />
         <PortfolioCircular slides={BEDROOM_SLIDES} activeSlide={s0} setActiveSlide={ss0} />
-        <TestimonialsBlock title="Results that speak" subtitle="before we do." testimonials={T_BEDROOMS} />
       </section>
 
       {/* ══ 02 KITCHENS ══ */}
@@ -540,7 +456,6 @@ export default function HomePage() {
           body="A kitchen is not a room — it is an operational system. We render culinary spaces from a position of genuine hospitality knowledge: service flow, brigade movement, mise en place logic, and the psychology of the guest threshold."
         />
         <PortfolioCircular slides={KITCHEN_SLIDES} activeSlide={s1} setActiveSlide={ss1} />
-        <TestimonialsBlock title="The kitchen approved" subtitle="before the drawings were final." testimonials={T_KITCHENS} />
       </section>
 
       {/* ══ 03 LIVING SPACES ══ */}
@@ -550,7 +465,6 @@ export default function HomePage() {
           body="Every living space communicates a social register before a guest sits down. We render arrival sequences, conversation geometries, sightline hierarchies, and the emotional temperature of a room at its intended hour of use."
         />
         <PortfolioCircular slides={LIVING_SLIDES} activeSlide={s2} setActiveSlide={ss2} />
-        <TestimonialsBlock title="The room felt inhabited" subtitle="before construction began." testimonials={T_LIVING} />
       </section>
 
       {/* ══ 04 VILLA EXTERIORS ══ */}
@@ -560,17 +474,15 @@ export default function HomePage() {
           body="An exterior render is not a documentation of a building — it is an argument for a way of living. We render villa exteriors as arrival sequences, communicating site relationship, material quality, and the experience of approach before a foundation is poured."
         />
         <PortfolioCircular slides={VILLA_SLIDES} activeSlide={s3} setActiveSlide={ss3} />
-        <TestimonialsBlock title="The exterior sold the property" subtitle="before the interior was shown." testimonials={T_VILLAS} />
       </section>
 
       {/* ══ 05 WASHROOMS ══ */}
       <section id="washrooms" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader number="05" eyebrow="Premium Bathrooms"
           title={<>The bathroom as ritual,<br />not merely function.</>}
-          body="A bathroom communicates the register of an entire residence. We render washrooms with an understanding of how water, light, and material interact — not at the moment of installation, but at the moment of use. The difference between a luxurious specification and a luxury experience."
+          body="A bathroom communicates the register of an entire residence. We render washrooms with an understanding of how water, light, and material interact — not at the moment of installation, but at the moment of use."
         />
         <PortfolioCircular slides={WASHROOM_SLIDES} activeSlide={s4} setActiveSlide={ss4} />
-        <TestimonialsBlock title="A single render" subtitle="that approved the entire specification." testimonials={T_WASHROOMS} />
       </section>
 
       {/* ── SERVICES ── */}
@@ -630,8 +542,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── FEEDBACK ── */}
-      <FeedbackSection />
+      {/* ── TESTIMONIALS MARQUEE — single consolidated section near footer ── */}
+      <TestimonialMarquee />
 
       {/* ── CONTACT ── */}
       <section id="contact" className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(7rem,11vw,12rem)", paddingBottom: "clamp(7rem,11vw,12rem)", borderBottom: "1px solid var(--border)" }}>
@@ -643,7 +555,10 @@ export default function HomePage() {
         </Reveal>
         <div className="grid md:grid-cols-12 gap-16 md:gap-0">
           <div className="md:col-span-4 md:pr-12 space-y-14">
-            {[{ label: "WhatsApp", href: "https://wa.me/971500000000", text: "+971 50 000 0000", ext: true }, { label: "Email", href: "mailto:studio@archvizcraft.com", text: "studio@archvizcraft.com", ext: false }].map((item, idx) => (
+            {[
+              { label: "WhatsApp", href: "https://wa.me/971500000000", text: "+971 50 000 0000", ext: true },
+              { label: "Email", href: "mailto:studio@archvizcraft.com", text: "studio@archvizcraft.com", ext: false },
+            ].map((item, idx) => (
               <Reveal key={item.label} delay={idx * 0.1}>
                 <div>
                   <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>{item.label}</p>
@@ -670,13 +585,16 @@ export default function HomePage() {
               ) : (
                 <form onSubmit={e => { e.preventDefault(); setContactSubmitted(true); }} className="space-y-8">
                   {(["name", "email"] as const).map(field => (
-                    <input key={field} type={field === "email" ? "email" : "text"} required placeholder={field.charAt(0).toUpperCase() + field.slice(1)} value={form[field]} onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
+                    <input key={field} type={field === "email" ? "email" : "text"} required
+                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                      value={form[field]} onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
                       style={{ width: "100%", background: "transparent", borderBottom: "1px solid var(--border)", padding: "0.75rem 0", fontSize: "0.9rem", color: "var(--text-loud)", outline: "none", fontFamily: "var(--font-dm), sans-serif", fontWeight: 300 }}
                       onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--gold)"; }}
                       onBlur={e =>  { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }}
                     />
                   ))}
-                  <textarea rows={5} required placeholder="Tell us about your project" value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                  <textarea rows={5} required placeholder="Tell us about your project"
+                    value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                     style={{ width: "100%", background: "transparent", borderBottom: "1px solid var(--border)", padding: "0.75rem 0", fontSize: "0.9rem", color: "var(--text-loud)", outline: "none", resize: "none", fontFamily: "var(--font-dm), sans-serif", fontWeight: 300 }}
                     onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--gold)"; }}
                     onBlur={e =>  { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }}
