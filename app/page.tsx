@@ -126,6 +126,273 @@ function CountUp({ target }: { target: string }) {
   return <span ref={ref}>{display}</span>;
 }
 
+// ── BedroomCircular — self-contained, uses plain img tags ─────────────────
+interface BedroomCircularProps {
+  slides: { src: string }[];
+  testimonials: { quote: string; name: string; role: string; company: string; img: string }[];
+  activeSlide: number;
+  setActiveSlide: React.Dispatch<React.SetStateAction<number>>;
+  activeTestimonial: number;
+  setActiveTestimonial: React.Dispatch<React.SetStateAction<number>>;
+}
+
+function BedroomCircular({
+  slides, testimonials, activeSlide, setActiveSlide, activeTestimonial, setActiveTestimonial,
+}: BedroomCircularProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(600);
+
+  useEffect(() => {
+    function measure() {
+      if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const n = slides.length;
+
+  function getImgStyle(i: number): React.CSSProperties {
+    const gap = Math.min(80, containerWidth * 0.13);
+    const stickUp = gap * 0.8;
+    const isActive = i === activeSlide;
+    const isLeft  = i === (activeSlide - 1 + n) % n;
+    const isRight = i === (activeSlide + 1) % n;
+    if (isActive) return {
+      zIndex: 3, opacity: 1, pointerEvents: "auto",
+      transform: "translateX(0) translateY(0) scale(1) rotateY(0deg)",
+      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+    };
+    if (isLeft) return {
+      zIndex: 2, opacity: 1, pointerEvents: "auto",
+      transform: `translateX(-${gap}px) translateY(-${stickUp}px) scale(0.85) rotateY(15deg)`,
+      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+    };
+    if (isRight) return {
+      zIndex: 2, opacity: 1, pointerEvents: "auto",
+      transform: `translateX(${gap}px) translateY(-${stickUp}px) scale(0.85) rotateY(-15deg)`,
+      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+    };
+    return { zIndex: 1, opacity: 0, pointerEvents: "none", transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
+  }
+
+  function prev() {
+    setActiveSlide(p => (p - 1 + n) % n);
+    setActiveTestimonial(p => (p - 1 + testimonials.length) % testimonials.length);
+  }
+  function next() {
+    setActiveSlide(p => (p + 1) % n);
+    setActiveTestimonial(p => (p + 1) % testimonials.length);
+  }
+
+  const t = testimonials[activeTestimonial];
+
+  return (
+    <div style={{ width: "100%", padding: "0 0 2rem 0" }}>
+
+      {/* ── Main grid: image stack LEFT + quote RIGHT ── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "5rem",
+        padding: "0 clamp(2rem,6vw,6rem)",
+        marginBottom: "3rem",
+      }}
+        className="flex-col-mobile"
+      >
+        {/* LEFT — image stack with perspective */}
+        <div
+          ref={containerRef}
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "clamp(320px,40vw,520px)",
+            perspective: "1000px",
+          }}
+        >
+          {slides.map((slide, i) => (
+            <img
+              key={slide.src}
+              src={slide.src}
+              alt={`Bedroom render ${i + 1}`}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "6px",
+                boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
+                ...getImgStyle(i),
+              }}
+            />
+          ))}
+        </div>
+
+        {/* RIGHT — name, designation, quote, arrows */}
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "320px" }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTestimonial}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <p
+                className="font-serif"
+                style={{ fontSize: "clamp(1.4rem,2.2vw,2rem)", color: CREAM, fontWeight: 300, marginBottom: "0.25rem" }}
+              >
+                {t.name}
+              </p>
+              <p
+                className="font-sans font-light uppercase"
+                style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.22em", marginBottom: "2rem" }}
+              >
+                {t.role} · {t.company}
+              </p>
+              {/* Word-by-word blur reveal exactly like the prompt */}
+              <p className="font-serif italic" style={{ lineHeight: 1.8, color: "#6B6560", fontSize: "clamp(0.95rem,1.5vw,1.2rem)" }}>
+                {`"${t.quote}"`.split(" ").map((word, wi) => (
+                  <motion.span
+                    key={wi}
+                    initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
+                    animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                    transition={{ duration: 0.22, ease: "easeInOut", delay: 0.025 * wi }}
+                    style={{ display: "inline-block", marginRight: "0.25em" }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Arrow buttons — styled like the prompt */}
+          <div style={{ display: "flex", gap: "1rem", paddingTop: "2.5rem" }}>
+            {[prev, next].map((fn, i) => (
+              <button
+                key={i}
+                onClick={fn}
+                aria-label={i === 0 ? "Previous" : "Next"}
+                style={{
+                  width: "46px", height: "46px",
+                  borderRadius: "50%",
+                  border: "none",
+                  backgroundColor: GOLD,
+                  color: "#080808",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer",
+                  fontSize: "1rem",
+                  transition: "background-color 0.3s, transform 0.2s",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#C4A882"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = GOLD; }}
+              >
+                {i === 0 ? "←" : "→"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── FULL-BLEED active image ── */}
+      <div style={{ position: "relative", width: "100%", height: "clamp(400px,55vw,700px)", overflow: "hidden" }}>
+        <AnimatePresence mode="sync">
+          <motion.img
+            key={activeSlide}
+            src={slides[activeSlide].src}
+            alt="Featured bedroom"
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </AnimatePresence>
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to top, rgba(8,8,8,0.75) 0%, transparent 55%)",
+          pointerEvents: "none",
+        }} />
+        {/* Counter */}
+        <span
+          className="font-sans font-light"
+          style={{
+            position: "absolute", bottom: "1.5rem", right: "clamp(2rem,6vw,6rem)",
+            fontSize: "0.55rem", color: "#3A342E", letterSpacing: "0.2em",
+          }}
+        >
+          {String(activeSlide + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+        </span>
+      </div>
+
+      {/* ── THUMBNAIL STRIP — all 9 ── */}
+      <div style={{
+        padding: "1.2rem clamp(2rem,6vw,6rem)",
+        borderTop: "1px solid #0E0C0A",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "1rem",
+      }}>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          {slides.map((slide, i) => (
+            <button
+              key={i}
+              onClick={() => { setActiveSlide(i); }}
+              style={{
+                width: "clamp(56px,8vw,88px)",
+                aspectRatio: "3/2",
+                padding: 0,
+                border: i === activeSlide ? `1px solid ${GOLD}` : "1px solid transparent",
+                opacity: i === activeSlide ? 1 : 0.3,
+                cursor: "pointer",
+                background: "none",
+                overflow: "hidden",
+                transition: "all 0.4s ease",
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.3"; }}
+            >
+              <img
+                src={slide.src}
+                alt={`Bedroom ${i + 1}`}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+            </button>
+          ))}
+        </div>
+        <a
+          href="/work"
+          className="font-sans font-light uppercase"
+          style={{
+            fontSize: "0.55rem", color: GOLD, letterSpacing: "0.3em",
+            textDecoration: "none", whiteSpace: "nowrap",
+            borderBottom: `1px solid ${GOLD}`, paddingBottom: "2px",
+            transition: "opacity 0.3s",
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.5"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}
+        >
+          View Full Portfolio →
+        </a>
+      </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .flex-col-mobile { grid-template-columns: 1fr !important; gap: 3rem !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function HomePage() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -236,210 +503,16 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── CIRCULAR LAYOUT: 3 stacked images left + quote right ── */}
-        <div className="px-8 md:px-16 lg:px-24 pb-20">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+        {/* ── CIRCULAR TESTIMONIALS — exact component pattern ── */}
+        <BedroomCircular
+          slides={BEDROOM_SLIDES}
+          testimonials={TESTIMONIALS}
+          activeSlide={activeSlide}
+          setActiveSlide={setActiveSlide}
+          activeTestimonial={activeTestimonial}
+          setActiveTestimonial={setActiveTestimonial}
+        />
 
-            {/* LEFT — 3 overlapping images with perspective */}
-            <div
-              className="relative"
-              style={{ height: "420px", perspective: "1000px" }}
-            >
-              {BEDROOM_SLIDES.slice(0, 3).map((slide, i) => {
-                const isActive = i === activeSlide % 3;
-                const isLeft = i === ((activeSlide % 3) - 1 + 3) % 3;
-                const isRight = i === ((activeSlide % 3) + 1) % 3;
-                const gap = 72;
-                let transform = "";
-                let zIndex = 1;
-                let opacity = 0;
-                if (isActive) {
-                  transform = "translateX(0px) translateY(0px) scale(1) rotateY(0deg)";
-                  zIndex = 3; opacity = 1;
-                } else if (isLeft) {
-                  transform = `translateX(-${gap}px) translateY(-${gap * 0.8}px) scale(0.85) rotateY(15deg)`;
-                  zIndex = 2; opacity = 1;
-                } else if (isRight) {
-                  transform = `translateX(${gap}px) translateY(-${gap * 0.8}px) scale(0.85) rotateY(-15deg)`;
-                  zIndex = 2; opacity = 1;
-                }
-                return (
-                  <div
-                    key={i}
-                    className="absolute inset-0 overflow-hidden"
-                    style={{
-                      borderRadius: "4px",
-                      transform,
-                      zIndex,
-                      opacity,
-                      transition: "all 0.8s cubic-bezier(0.4,2,0.3,1)",
-                      boxShadow: isActive ? "0 24px 60px rgba(0,0,0,0.6)" : "0 8px 24px rgba(0,0,0,0.4)",
-                    }}
-                  >
-                    <Image
-                      src={slide.src}
-                      alt={`Bedroom render ${i + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover"
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* RIGHT — quote + name + arrows */}
-            <div className="flex flex-col justify-between" style={{ minHeight: "380px" }}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTestimonial}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -14 }}
-                  transition={{ duration: 0.55, ease: EASE }}
-                >
-                  {/* Name + role */}
-                  <p
-                    className="font-serif font-light mb-1"
-                    style={{ fontSize: "clamp(1.3rem,2vw,1.8rem)", color: CREAM }}
-                  >
-                    {TESTIMONIALS[activeTestimonial].name}
-                  </p>
-                  <p
-                    className="font-sans font-light uppercase mb-10"
-                    style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.22em" }}
-                  >
-                    {TESTIMONIALS[activeTestimonial].role} · {TESTIMONIALS[activeTestimonial].company}
-                  </p>
-                  {/* Quote — word-by-word blur reveal */}
-                  <p
-                    className="font-serif italic font-light"
-                    style={{ fontSize: "clamp(1rem,1.6vw,1.25rem)", color: "#6B6560", lineHeight: 1.75 }}
-                  >
-                    &ldquo;{TESTIMONIALS[activeTestimonial].quote}&rdquo;
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Arrows */}
-              <div className="flex items-center gap-4 mt-12">
-                {[
-                  () => {
-                    setActiveTestimonial(p => (p - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
-                    setActiveSlide(p => (p - 1 + BEDROOM_SLIDES.length) % BEDROOM_SLIDES.length);
-                  },
-                  () => {
-                    setActiveTestimonial(p => (p + 1) % TESTIMONIALS.length);
-                    setActiveSlide(p => (p + 1) % BEDROOM_SLIDES.length);
-                  },
-                ].map((fn, i) => (
-                  <button
-                    key={i}
-                    onClick={fn}
-                    className="flex items-center justify-center transition-all duration-300"
-                    style={{
-                      width: "48px", height: "48px",
-                      borderRadius: "50%",
-                      border: "1px solid rgba(168,136,90,0.35)",
-                      color: CREAM,
-                      background: "#141210",
-                      fontSize: "1rem",
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={e => {
-                      const el = e.currentTarget as HTMLButtonElement;
-                      el.style.background = GOLD;
-                      el.style.borderColor = GOLD;
-                    }}
-                    onMouseLeave={e => {
-                      const el = e.currentTarget as HTMLButtonElement;
-                      el.style.background = "#141210";
-                      el.style.borderColor = "rgba(168,136,90,0.35)";
-                    }}
-                  >
-                    {i === 0 ? "←" : "→"}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── FULL BLEED FEATURED IMAGE — active slide ── */}
-        <div className="relative w-full overflow-hidden" style={{ height: "75vh", minHeight: "480px" }}>
-          <AnimatePresence mode="sync">
-            <motion.div
-              key={activeSlide}
-              className="absolute inset-0"
-              initial={{ opacity: 0, scale: 1.04 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
-            >
-              <Image
-                src={BEDROOM_SLIDES[activeSlide].src}
-                alt="Luxury bedroom"
-                fill
-                sizes="100vw"
-                className="object-cover"
-                priority
-              />
-              <div
-                className="absolute inset-0"
-                style={{ background: "linear-gradient(to top, rgba(8,8,8,0.7) 0%, transparent 50%)" }}
-              />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Slide counter bottom-right */}
-          <div className="absolute bottom-8 right-8 md:right-16 lg:right-24 z-10 flex items-center gap-3">
-            <span className="font-sans font-light" style={{ fontSize: "0.55rem", color: "#3A342E", letterSpacing: "0.18em" }}>
-              {String(activeSlide + 1).padStart(2, "0")} / {String(BEDROOM_SLIDES.length).padStart(2, "0")}
-            </span>
-          </div>
-        </div>
-
-        {/* ── THUMBNAIL GRID — all 9 images ── */}
-        <div
-          className="px-8 md:px-16 lg:px-24 py-8"
-          style={{ borderTop: "1px solid #0E0C0A" }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <p className="font-sans font-light uppercase" style={{ fontSize: "0.55rem", color: "#2A2520", letterSpacing: "0.28em" }}>
-              All Renders — Bedrooms
-            </p>
-            <a
-              href="/work"
-              className="inline-flex items-center gap-2 font-sans font-light uppercase transition-opacity duration-300 hover:opacity-50"
-              style={{ fontSize: "0.55rem", color: GOLD, letterSpacing: "0.3em", textDecoration: "none" }}
-            >
-              <span style={{ borderBottom: "1px solid #A8885A", paddingBottom: "1px" }}>View Full Portfolio</span>
-              <span style={{ display: "inline-block", width: "20px", height: "1px", backgroundColor: GOLD }} />
-            </a>
-          </div>
-          {/* 9-image grid */}
-          <div className="grid grid-cols-3 md:grid-cols-9 gap-2">
-            {BEDROOM_SLIDES.map((slide, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveSlide(i)}
-                className="relative overflow-hidden transition-all duration-500"
-                style={{
-                  aspectRatio: "3/2",
-                  opacity: i === activeSlide ? 1 : 0.3,
-                  border: i === activeSlide ? `1px solid ${GOLD}` : "1px solid transparent",
-                  padding: 0,
-                  background: "none",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.75"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.3"; }}
-              >
-                <Image src={slide.src} alt={`Bedroom ${i + 1}`} fill sizes="150px" className="object-cover" />
-              </button>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* ── SERVICES ─────────────────────────────────────────────────────── */}
