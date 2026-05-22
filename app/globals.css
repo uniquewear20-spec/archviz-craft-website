@@ -1,232 +1,43 @@
-@import "tailwindcss";
+/* ═══════════════════════════════════════════════════════════════════════════
+   ARCHVIZ CRAFT — THEME VARIABLES
+   Paste this block at the bottom of your globals.css
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Design Tokens ─────────────────────────────────────────────────────────── */
-:root {
-  --font-dm:          'DM Sans', sans-serif;
-  --font-cormorant:   'Cormorant Garamond', serif;
-
-  --bg-page:          #F5F0E8;
-  --bg-surface:       #EDE8DF;
-  --bg-elevated:      #E8E2D8;
-
-  --text-primary:     #1C1917;
-  --text-secondary:   #6B6560;
-  --text-tertiary:    #A09890;
-  --text-inverse:     #F5F0E8;
-
-  --accent:           #A8885A;
-  --accent-light:     #C4A882;
-  --accent-dark:      #8C6E42;
-  --accent-subtle:    #D4C4A8;
-
-  --border:           #E2D9CC;
-  --border-strong:    #C8BFB2;
-
-  --shadow-soft:      0 2px 16px rgba(28, 25, 23, 0.06);
-  --shadow-card:      0 4px 32px rgba(28, 25, 23, 0.10);
-  --shadow-lifted:    0 8px 48px rgba(28, 25, 23, 0.14);
+/* ── Dark mode (default — matches your existing site) ─────────────────── */
+:root,
+html.dark-mode {
+  --bg:          #080808;
+  --bg-subtle:   #0E0C0A;
+  --border:      #141210;
+  --border-mid:  #2A2520;
+  --text-loud:   #F0EBE3;
+  --text-mid:    #4A4540;
+  --text-soft:   #3A342E;
+  --text-muted:  #1E1A16;
+  --gold:        #A8885A;
+  --gold-light:  #C4A882;
 }
 
-/* ── Reset & Base ───────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ── Light mode ────────────────────────────────────────────────────────── */
+html.light-mode {
+  --bg:          #F5F0E8;
+  --bg-subtle:   #EDE8DF;
+  --border:      #DDD8CE;
+  --border-mid:  #C8C0B4;
+  --text-loud:   #0E0C0A;
+  --text-mid:    #4A4540;
+  --text-soft:   #7A7268;
+  --text-muted:  #A09890;
+  --gold:        #8C6E42;
+  --gold-light:  #A8885A;
 }
 
+/* ── Smooth transition when switching themes ───────────────────────────── */
 html {
-  scroll-behavior: smooth;
-  font-size: 16px;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 body {
-  background-color: var(--bg-page);
-  color: var(--text-primary);
-  font-family: var(--font-dm);
-  font-weight: 300;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  line-height: 1.6;
-}
-
-/* ── Typography ─────────────────────────────────────────────────────────────── */
-
-.display-xl {
-  font-family: var(--font-cormorant);
-  font-size: clamp(3rem, 7vw, 6rem);
-  font-weight: 300;
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
-}
-
-.display-lg {
-  font-family: var(--font-cormorant);
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  font-weight: 300;
-  line-height: 1.1;
-  color: var(--text-primary);
-}
-
-.display-italic {
-  font-family: var(--font-cormorant);
-  font-style: italic;
-  color: var(--accent);
-}
-
-.heading-sm {
-  font-family: var(--font-dm);
-  font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
-.body-lg {
-  font-family: var(--font-dm);
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.75;
-  color: var(--text-secondary);
-}
-
-/* ── Selection ──────────────────────────────────────────────────────────────── */
-::selection {
-  background: var(--accent-subtle);
-  color: var(--text-primary);
-}
-
-/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-page); }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-subtle); }
-
-/* ── Utility Classes ────────────────────────────────────────────────────────── */
-
-.bg-page    { background-color: var(--bg-page); }
-.bg-surface { background-color: var(--bg-surface); }
-.text-primary   { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-accent    { color: var(--accent); }
-.border-subtle  { border-color: var(--border); }
-
-/* ── Buttons ────────────────────────────────────────────────────────────────── */
-
-.btn-accent {
-  background-color: var(--accent);
-  color: var(--text-inverse);
-  font-family: var(--font-dm);
-  font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  padding: 0.875rem 2rem;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-accent:hover {
-  background-color: var(--accent-dark);
-  transform: translateY(-1px);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-dm);
-  font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  padding: 0.875rem 0;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: color 0.3s ease;
-}
-
-.btn-ghost::after {
-  content: '';
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: var(--text-primary);
-  transform: scaleX(0.3);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.btn-ghost:hover::after {
-  transform: scaleX(1);
-}
-
-/* ── Status Pill ────────────────────────────────────────────────────────────── */
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-dm);
-  font-size: 0.625rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
-.status-pill::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse-dot 2.5s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.8); }
-}
-
-/* ── Hairline ───────────────────────────────────────────────────────────────── */
-
-.hairline {
-  height: 1px;
-  background: var(--border);
-  margin: 0 1.5rem;
-}
-
-@media (min-width: 768px)  { .hairline { margin: 0 4rem; } }
-@media (min-width: 1024px) { .hairline { margin: 0 6rem; } }
-
-/* ── Image hover lift ───────────────────────────────────────────────────────── */
-
-.img-lift {
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.img-lift:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--shadow-lifted);
-}
-
-/* ── Focus visible ──────────────────────────────────────────────────────────── */
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+  background-color: var(--bg);
+  color: var(--text-loud);
 }
