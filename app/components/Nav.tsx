@@ -31,10 +31,10 @@ export default function Nav({ scrolled }: { scrolled?: boolean }) {
 
   return (
     <>
-      {/* ── Logo — fixed top-left ─────────────────────────────────────── */}
+      {/* ── Logo — ABSOLUTE (stays in hero only, does not follow scroll) ── */}
       <div
         style={{
-          position: "fixed",
+          position: "absolute",   // ← changed from "fixed" to "absolute"
           top: 0,
           left: 0,
           zIndex: 50,
@@ -61,7 +61,7 @@ export default function Nav({ scrolled }: { scrolled?: boolean }) {
         </Link>
       </div>
 
-      {/* ── Nav links — fixed top-center ─────────────────────────────── */}
+      {/* ── Nav links — fixed top-center, fades out on scroll ── */}
       <motion.nav
         style={{
           position: "fixed",
