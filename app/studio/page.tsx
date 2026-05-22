@@ -1,65 +1,409 @@
 "use client";
+
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Nav from "../components/Nav";
 
-const skills = ["Unreal Engine","3ds Max","Corona Renderer","V-Ray","Advanced Lighting","Material Composition","Cinematic Animation","Photorealistic Rendering"];
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+const SKILLS = [
+  "Unreal Engine",
+  "3ds Max",
+  "Corona Renderer",
+  "V-Ray",
+  "Advanced Lighting",
+  "Material Composition",
+  "Cinematic Animation",
+  "Photorealistic Rendering",
+];
 
 export default function StudioPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#080808", color: "#F0EBE3" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#080808",
+        color: "#F0EBE3",
+        fontFamily: "var(--font-cormorant), serif",
+      }}
+    >
+      {/* Nav — locked, untouched */}
       <Nav scrolled={true} />
-      <div style={{ paddingTop: "100px" }}>
-        <section className="grid grid-cols-1 lg:grid-cols-2" style={{ minHeight: "90vh" }}>
-          <div className="relative overflow-hidden" style={{ minHeight: "60vh" }}>
-            <Image src="/images/wasim-akram.jpg" alt="Wasim Akram" fill priority sizes="(max-width:1024px) 100vw, 50vw" className="object-cover object-top grayscale hover:grayscale-0 transition-all duration-700" style={{ objectPosition: "center 10%" }} />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #080808 0%, transparent 60%)" }} />
-            <div className="hidden lg:block absolute top-0 right-0 bottom-0 w-32" style={{ background: "linear-gradient(to left, #080808 0%, transparent 100%)" }} />
-            <div className="absolute bottom-10 left-8 z-10">
-              <span className="font-sans font-light tracking-[0.44em] uppercase" style={{ fontSize: "0.6rem", color: "#A8885A" }}>The Studio</span>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center px-8 md:px-14 lg:px-16 py-24">
-            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 0.2 }}>
-              <h1 className="font-serif font-extralight leading-none" style={{ fontSize: "clamp(2.8rem,5vw,4.2rem)", color: "#F0EBE3" }}>Wasim</h1>
-              <h1 className="font-serif font-extralight leading-none italic" style={{ fontSize: "clamp(2.8rem,5vw,4.2rem)", color: "#A8885A" }}>Akram</h1>
-            </motion.div>
-            <motion.p
-              className="font-sans font-light uppercase mt-5 mb-2"
-              style={{ fontSize: "0.68rem", color: "#6B6560", letterSpacing: "0.12em" }}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.0, delay: 0.45 }}
-            >Senior 3D Visualizer &amp; Interior Designer</motion.p>
-            <div className="mb-8 mt-6" style={{ height: "1px", backgroundColor: "#A8885A", width: "48px" }} />
-            <motion.p
-              className="font-sans font-light leading-relaxed mb-10"
-              style={{ fontSize: "clamp(0.85rem,1.1vw,0.95rem)", color: "#9A948E", maxWidth: "520px" }}
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, delay: 0.7 }}
-            >Senior 3D Visualizer and Interior Designer with over 12 years of global experience, including 4+ years in the high-end UAE market. I specialize in crafting photorealistic architectural visualizations and cinematic animations for luxury villas, commercial spaces, and large-scale apartments.</motion.p>
-            <motion.div
-              className="flex flex-wrap gap-2"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.0, delay: 0.85 }}
-            >
-              {skills.map((s) => (
-                <span key={s} className="font-sans font-light px-3 py-1.5 uppercase" style={{ fontSize: "0.6rem", letterSpacing: "0.14em", border: "1px solid #2A2520", color: "#6B6560" }}>{s}</span>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-        <motion.section
-          className="px-8 md:px-16 lg:px-24 py-24"
-          style={{ borderTop: "1px solid #1C1916" }}
-          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1.0 }}
+
+      {/* ── Main split layout ───────────────────────────────────────────── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          minHeight: "100vh",
+        }}
+        className="studio-grid"
+      >
+        {/* ── LEFT — Portrait photograph ─────────────────────────────── */}
+        <div
+          style={{
+            position: "relative",
+            overflow: "hidden",
+            minHeight: "100vh",
+            backgroundColor: "#050505",
+          }}
         >
-          <div className="max-w-3xl mx-auto text-center">
-            <span className="font-sans font-light uppercase block mb-8" style={{ fontSize: "0.6rem", color: "#A8885A", letterSpacing: "0.44em" }}>Philosophy</span>
-            <blockquote className="font-serif font-extralight leading-snug italic" style={{ fontSize: "clamp(1.4rem,3vw,2.2rem)", color: "#F0EBE3" }}>Architecture exists first in the imagination. My role is to make that vision undeniable before a single foundation is poured.</blockquote>
-          </div>
-        </motion.section>
+          <motion.div
+            style={{ position: "absolute", inset: 0 }}
+            initial={{ scale: 1.04 }}
+            animate={{ scale: 1.0 }}
+            transition={{ duration: 1.8, ease: EASE }}
+          >
+            <Image
+              src="/images/wasim-akram.jpg"
+              alt="Wasim Akram — ArchViz Craft"
+              fill
+              priority
+              sizes="50vw"
+              style={{
+                objectFit: "cover",
+                objectPosition: "center 8%",
+                filter: "grayscale(18%)",
+              }}
+            />
+          </motion.div>
+
+          {/* Bottom fade into background */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to right, transparent 60%, #080808 100%)",
+              zIndex: 2,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "30%",
+              background: "linear-gradient(to top, #080808 0%, transparent 100%)",
+              zIndex: 2,
+            }}
+          />
+
+          {/* Studio label — bottom left */}
+          <motion.div
+            style={{
+              position: "absolute",
+              bottom: "clamp(2rem,4vw,3.5rem)",
+              left: "clamp(2rem,4vw,3.5rem)",
+              zIndex: 10,
+            }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.0, delay: 0.6, ease: EASE }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontSize: "clamp(8px,0.75vw,10px)",
+                letterSpacing: "0.44em",
+                textTransform: "uppercase",
+                color: "#A8885A",
+                fontWeight: 300,
+              }}
+            >
+              The Studio
+            </span>
+          </motion.div>
+        </div>
+
+        {/* ── RIGHT — Content ────────────────────────────────────────────── */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding:
+              "clamp(6rem,10vw,9rem) clamp(3rem,6vw,6rem) clamp(4rem,6vw,6rem) clamp(3rem,5vw,5rem)",
+            position: "relative",
+          }}
+        >
+          {/* Name */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.3, delay: 0.15, ease: EASE }}
+          >
+            <h1
+              style={{
+                fontFamily: "var(--font-cormorant), serif",
+                fontWeight: 300,
+                lineHeight: 0.95,
+                margin: 0,
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "clamp(3rem,5.5vw,5rem)",
+                  color: "#F0EBE3",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Wasim
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "clamp(3rem,5.5vw,5rem)",
+                  color: "#A8885A",
+                  fontStyle: "italic",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Akram
+              </span>
+            </h1>
+          </motion.div>
+
+          {/* Title */}
+          <motion.p
+            style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "clamp(9px,0.8vw,11px)",
+              color: "#4A4540",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              fontWeight: 300,
+              marginTop: "1.4rem",
+              marginBottom: 0,
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.0, delay: 0.4, ease: EASE }}
+          >
+            Senior 3D Visualizer &amp; Interior Designer
+          </motion.p>
+
+          {/* Gold rule */}
+          <motion.div
+            style={{
+              height: "1px",
+              width: "48px",
+              backgroundColor: "#A8885A",
+              marginTop: "2rem",
+              marginBottom: "2rem",
+              opacity: 0.65,
+            }}
+            initial={{ scaleX: 0, transformOrigin: "left" }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.9, delay: 0.55, ease: EASE }}
+          />
+
+          {/* Description */}
+          <motion.p
+            style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "clamp(0.82rem,1.1vw,0.92rem)",
+              color: "#6B6560",
+              lineHeight: 1.95,
+              fontWeight: 300,
+              maxWidth: "480px",
+              marginBottom: "2.5rem",
+            }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.1, delay: 0.65, ease: EASE }}
+          >
+            Senior 3D Visualizer &amp; Interior Designer with over 12 years of
+            global experience, including 4+ years in the high-end UAE market.
+            I specialize in crafting photorealistic architectural visualizations
+            and cinematic animations for luxury villas, commercial spaces, and
+            large-scale apartments.
+            <br />
+            <br />
+            I bridge the gap between technical precision and artistic
+            storytelling using a powerful tech stack including Unreal Engine,
+            3ds Max, Corona, and V-Ray. My expertise lies in advanced lighting,
+            material composition, and creating immersive environments that bring
+            unbuilt architecture to life.
+          </motion.p>
+
+          {/* Skill tags */}
+          <motion.div
+            style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.0, delay: 0.85, ease: EASE }}
+          >
+            {SKILLS.map((skill) => (
+              <span
+                key={skill}
+                style={{
+                  fontFamily: "var(--font-dm), sans-serif",
+                  fontSize: "clamp(8px,0.7vw,9px)",
+                  letterSpacing: "0.16em",
+                  textTransform: "uppercase",
+                  fontWeight: 300,
+                  color: "#3A342E",
+                  border: "1px solid #1C1916",
+                  padding: "0.4rem 0.85rem",
+                  transition: "color 0.35s ease, border-color 0.35s ease",
+                  cursor: "default",
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLSpanElement;
+                  el.style.color = "#A8885A";
+                  el.style.borderColor = "rgba(168,136,90,0.3)";
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLSpanElement;
+                  el.style.color = "#3A342E";
+                  el.style.borderColor = "#1C1916";
+                }}
+              >
+                {skill}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* Back link */}
+          <motion.div
+            style={{ marginTop: "clamp(3rem,5vw,4.5rem)" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.0, delay: 1.0, ease: EASE }}
+          >
+            <a
+              href="/"
+              style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontSize: "clamp(8px,0.75vw,10px)",
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                fontWeight: 300,
+                color: "#2A2520",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                transition: "color 0.35s ease",
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#2A2520"; }}
+            >
+              <span style={{ display: "inline-block", width: "20px", height: "1px", backgroundColor: "currentColor" }} />
+              Back to Home
+            </a>
+          </motion.div>
+        </div>
       </div>
-      <footer className="px-8 md:px-16 lg:px-24 py-8 flex items-center justify-between" style={{ borderTop: "1px solid #1C1916" }}>
-        <a href="/" className="font-sans font-light uppercase" style={{ fontSize: "0.6rem", color: "#4A4540", letterSpacing: "0.3em" }}>Back to Home</a>
-        <p className="font-sans font-light" style={{ fontSize: "0.6rem", color: "#2A2520" }}>{new Date().getFullYear()} Archviz Craft Dubai</p>
+
+      {/* Philosophy section */}
+      <motion.section
+        style={{
+          borderTop: "1px solid #141210",
+          padding: "clamp(5rem,8vw,8rem) clamp(2rem,6vw,6rem)",
+        }}
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, ease: EASE }}
+      >
+        <div style={{ maxWidth: "720px", margin: "0 auto", textAlign: "center" }}>
+          <span
+            style={{
+              display: "block",
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "clamp(8px,0.75vw,10px)",
+              letterSpacing: "0.44em",
+              textTransform: "uppercase",
+              color: "#A8885A",
+              fontWeight: 300,
+              marginBottom: "2.5rem",
+            }}
+          >
+            Philosophy
+          </span>
+          <blockquote
+            style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontWeight: 300,
+              fontStyle: "italic",
+              fontSize: "clamp(1.4rem,2.8vw,2.2rem)",
+              color: "#F0EBE3",
+              lineHeight: 1.35,
+              margin: 0,
+            }}
+          >
+            Architecture exists first in the imagination.
+            <br />
+            My role is to make that vision undeniable
+            <br />
+            before a single foundation is poured.
+          </blockquote>
+          <div
+            style={{
+              height: "1px",
+              width: "40px",
+              backgroundColor: "#A8885A",
+              opacity: 0.5,
+              margin: "2.5rem auto 0",
+            }}
+          />
+        </div>
+      </motion.section>
+
+      {/* Footer */}
+      <footer
+        style={{
+          borderTop: "1px solid #141210",
+          padding: "2rem clamp(2rem,6vw,6rem)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <a
+          href="/"
+          style={{
+            fontFamily: "var(--font-dm), sans-serif",
+            fontSize: "clamp(8px,0.75vw,10px)",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            fontWeight: 300,
+            color: "#2A2520",
+            textDecoration: "none",
+            transition: "color 0.35s ease",
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#2A2520"; }}
+        >
+          Back to Home
+        </a>
+        <p
+          style={{
+            fontFamily: "var(--font-dm), sans-serif",
+            fontSize: "clamp(8px,0.75vw,10px)",
+            color: "#1C1916",
+            letterSpacing: "0.14em",
+            fontWeight: 300,
+          }}
+        >
+          © {new Date().getFullYear()} Archviz Craft · Dubai
+        </p>
       </footer>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .studio-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .studio-grid > div:first-child {
+            min-height: 60vh !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
