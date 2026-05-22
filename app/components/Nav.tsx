@@ -13,7 +13,6 @@ const navLinks = [
   { label: "Contact", href: "/#contact" },
 ];
 
-// ── Inline SVG icons — no extra deps ──────────────────────────────────────
 function SunIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -40,12 +39,13 @@ function MoonIcon() {
   );
 }
 
-// ── Theme toggle — self-contained ─────────────────────────────────────────
 function ThemeToggle() {
   const [isDark, setIsDark] = useState(true);
   const [hovered, setHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem("archviz-theme");
     const dark = saved ? saved === "dark" : true;
     setIsDark(dark);
@@ -55,7 +55,7 @@ function ThemeToggle() {
   function applyTheme(dark: boolean) {
     const root = document.documentElement;
     root.classList.toggle("light-mode", !dark);
-    root.classList.toggle("dark-mode",  dark);
+    root.classList.toggle("dark-mode", dark);
     localStorage.setItem("archviz-theme", dark ? "dark" : "light");
   }
 
@@ -64,6 +64,8 @@ function ThemeToggle() {
     setIsDark(next);
     applyTheme(next);
   }
+
+  if (!mounted) return null;
 
   return (
     <button
@@ -79,44 +81,43 @@ function ThemeToggle() {
         border: "none",
         cursor: "pointer",
         padding: "4px 0",
-        color: hovered ? GOLD : "#3A342E",
+        color: hovered ? GOLD : "rgba(255,255,255,0.4)",
         transition: "color 0.3s",
       }}
     >
       {/* Track */}
       <div style={{
         position: "relative",
-        width: "34px",
-        height: "18px",
-        borderRadius: "9px",
+        width: "30px",
+        height: "16px",
+        borderRadius: "8px",
         border: `1px solid ${isDark ? "#2A2520" : "#C4A882"}`,
         backgroundColor: isDark ? "#0E0C0A" : "#F0EBE3",
         transition: "background-color 0.4s ease, border-color 0.4s ease",
         flexShrink: 0,
       }}>
         <motion.div
-          animate={{ x: isDark ? 16 : 0 }}
+          animate={{ x: isDark ? 14 : 0 }}
           transition={{ type: "spring", stiffness: 400, damping: 28 }}
           style={{
             position: "absolute",
             top: "2px",
             left: "2px",
-            width: "12px",
-            height: "12px",
+            width: "10px",
+            height: "10px",
             borderRadius: "50%",
             backgroundColor: GOLD,
           }}
         />
       </div>
 
-      {/* Icon */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={isDark ? "moon" : "sun"}
           initial={{ opacity: 0, rotate: -30, scale: 0.7 }}
           animate={{ opacity: 1, rotate: 0,   scale: 1   }}
           exit={{    opacity: 0, rotate:  30,  scale: 0.7 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.25 }}
           style={{ display: "flex", alignItems: "center" }}
         >
           {isDark ? <MoonIcon /> : <SunIcon />}
@@ -126,7 +127,6 @@ function ThemeToggle() {
   );
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────
 export default function Nav({ scrolled }: { scrolled: boolean }) {
   const [atTop, setAtTop] = useState(true);
 
@@ -138,7 +138,7 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
 
   return (
     <>
-      {/* Logo — always fixed top-left */}
+      {/* ── Logo — fixed top-LEFT ── */}
       <div className="fixed top-0 left-0 z-50 px-10 md:px-16 lg:px-20 py-3">
         <Link href="/">
           <Image
@@ -152,7 +152,20 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
         </Link>
       </div>
 
-      {/* Nav — fades out on scroll */}
+      {/* ── Theme toggle — fixed top-RIGHT ── */}
+      <div
+        className="fixed top-0 right-0 z-50 px-10 md:px-16 lg:px-20"
+        style={{
+          paddingTop: "1.6rem",
+          opacity: atTop ? 1 : 0,
+          pointerEvents: atTop ? "auto" : "none",
+          transition: "opacity 0.4s",
+        }}
+      >
+        <ThemeToggle />
+      </div>
+
+      {/* ── Nav links — fixed top-CENTER ── */}
       <motion.nav
         className="fixed top-0 left-0 right-0 z-40 flex justify-center items-center py-6"
         animate={{ opacity: atTop ? 1 : 0, pointerEvents: atTop ? "auto" : "none" }}
@@ -168,18 +181,6 @@ export default function Nav({ scrolled }: { scrolled: boolean }) {
               {label}
             </Link>
           ))}
-
-          {/* Divider */}
-          <span style={{
-            display: "inline-block",
-            width: "1px",
-            height: "14px",
-            backgroundColor: "#2A2520",
-            flexShrink: 0,
-          }} />
-
-          {/* Theme toggle */}
-          <ThemeToggle />
         </div>
       </motion.nav>
     </>

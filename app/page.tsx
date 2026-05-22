@@ -1,16 +1,11 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 
-// ── Static tokens (gold only — everything else uses CSS vars) ──────────────
-const GOLD     = "var(--gold)";
-const GOLD_L   = "var(--gold-light)";
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-// ── Data ───────────────────────────────────────────────────────────────────
 const STATS = [
   { value: "120+", label: "Projects Delivered" },
   { value: "14",   label: "Countries" },
@@ -52,24 +47,23 @@ const SERVICES = [
 ];
 
 const BEDROOM_SLIDES = [
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg", title: "Master Suite · Neutral Palette",    desc: "Warm oak tones, cove lighting, and floor-to-ceiling curtains. Rendered at golden hour." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg", title: "Guest Suite · Minimal Luxury",      desc: "Clean lines, pendant lighting, and layered textiles. Focus on material contrast." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg", title: "Primary Bedroom · Classical Detail", desc: "Boiserie panelling, botanical pendant lights, and a wave-form headboard in stone linen." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom4.jpg", title: "Study Retreat · Monochrome Interior",desc: "Built-in shelving, herringbone floor, and soft northern light through sheer curtains." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg", title: "Grand Bedroom · Serene Atmosphere",  desc: "Sculptural headboard, dual pendant drops, and silk bedding rendered in full depth." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom6.jpg", title: "Corridor Suite · Deep Perspective",  desc: "Long-axis composition revealing layered spaces — study, dressing, and sleeping zone." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom7.jpg", title: "Bedside Detail · Soft Focus",        desc: "Tulip pendants, dark oak nightstand, and marble slab top. Rendered at dusk." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom8.jpg", title: "Morning Light Suite · Open Plan",    desc: "Sheer curtains diffusing daylight, ring chandelier, and a floating bed platform." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg", title: "Evening Suite · Warm Render",        desc: "Leather headboard, cylinder pendant, and ambient wall light — cinematic shadow play." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg", title: "Master Suite · Neutral Palette",     desc: "Warm oak tones, cove lighting, and floor-to-ceiling curtains. Rendered at golden hour." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg", title: "Guest Suite · Minimal Luxury",       desc: "Clean lines, pendant lighting, and layered textiles. Focus on material contrast." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg", title: "Primary Bedroom · Classical Detail",  desc: "Boiserie panelling, botanical pendant lights, and a wave-form headboard in stone linen." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom4.jpg", title: "Study Retreat · Monochrome Interior", desc: "Built-in shelving, herringbone floor, and soft northern light through sheer curtains." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg", title: "Grand Bedroom · Serene Atmosphere",   desc: "Sculptural headboard, dual pendant drops, and silk bedding rendered in full depth." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom6.jpg", title: "Corridor Suite · Deep Perspective",   desc: "Long-axis composition revealing layered spaces — study, dressing, and sleeping zone." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom7.jpg", title: "Bedside Detail · Soft Focus",         desc: "Tulip pendants, dark oak nightstand, and marble slab top. Rendered at dusk." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom8.jpg", title: "Morning Light Suite · Open Plan",     desc: "Sheer curtains diffusing daylight, ring chandelier, and a floating bed platform." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg", title: "Evening Suite · Warm Render",         desc: "Leather headboard, cylinder pendant, and ambient wall light — cinematic shadow play." },
 ];
 
-// ── Utility components ─────────────────────────────────────────────────────
+// ── Utility ────────────────────────────────────────────────────────────────
 function Reveal({ children, delay = 0, y = 28, className = "" }: {
   children: React.ReactNode; delay?: number; y?: number; className?: string;
 }) {
   return (
-    <motion.div
-      className={className}
+    <motion.div className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
@@ -110,12 +104,11 @@ function CountUp({ target }: { target: string }) {
     const num = parseFloat(target.replace(/[^0-9.]/g, ""));
     if (isNaN(num)) { setDisplay(target); return; }
     const suffix = target.match(/[^0-9.]+$/)?.[0] ?? "";
-    const prefix = target.match(/^[^0-9]*/)?.[0] ?? "";
     const dur = 1600; const start = performance.now();
     const tick = (now: number) => {
       const p = Math.min((now - start) / dur, 1);
       const ease = 1 - Math.pow(1 - p, 3);
-      setDisplay(`${prefix}${Math.round(ease * num)}${suffix}`);
+      setDisplay(`${Math.round(ease * num)}${suffix}`);
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -124,22 +117,19 @@ function CountUp({ target }: { target: string }) {
   return <span ref={ref}>{display}</span>;
 }
 
-// ── BedroomCircular ────────────────────────────────────────────────────────
+// ── Bedroom Circular ───────────────────────────────────────────────────────
 interface BedroomSlide { src: string; title: string; desc: string; }
-interface BedroomCircularProps {
+
+function BedroomCircular({ slides, activeSlide, setActiveSlide }: {
   slides: BedroomSlide[];
   activeSlide: number;
   setActiveSlide: React.Dispatch<React.SetStateAction<number>>;
-}
-
-function BedroomCircular({ slides, activeSlide, setActiveSlide }: BedroomCircularProps) {
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(600);
 
   useEffect(() => {
-    function measure() {
-      if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth);
-    }
+    function measure() { if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth); }
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
@@ -154,7 +144,7 @@ function BedroomCircular({ slides, activeSlide, setActiveSlide }: BedroomCircula
     const isLeft   = i === (activeSlide - 1 + n) % n;
     const isRight  = i === (activeSlide + 1) % n;
     if (isActive) return { zIndex: 3, opacity: 1, pointerEvents: "auto", transform: "translateX(0) translateY(0) scale(1) rotateY(0deg)", transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
-    if (isLeft)   return { zIndex: 2, opacity: 1, pointerEvents: "auto", transform: `translateX(-${gap}px) translateY(-${stickUp}px) scale(0.85) rotateY(15deg)`,  transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
+    if (isLeft)   return { zIndex: 2, opacity: 1, pointerEvents: "auto", transform: `translateX(-${gap}px) translateY(-${stickUp}px) scale(0.85) rotateY(15deg)`, transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
     if (isRight)  return { zIndex: 2, opacity: 1, pointerEvents: "auto", transform: `translateX(${gap}px) translateY(-${stickUp}px) scale(0.85) rotateY(-15deg)`, transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
     return { zIndex: 1, opacity: 0, pointerEvents: "none", transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
   }
@@ -165,32 +155,29 @@ function BedroomCircular({ slides, activeSlide, setActiveSlide }: BedroomCircula
 
   return (
     <div style={{ width: "100%", paddingBottom: "3rem" }}>
-      <div style={{
+      <div className="bedroom-grid" style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: "clamp(2rem,5vw,5rem)",
         padding: "0 clamp(2rem,6vw,6rem) 3rem",
         alignItems: "center",
-      }} className="bedroom-grid">
-
-        {/* LEFT — image stack */}
+      }}>
+        {/* Image stack */}
         <div ref={containerRef} style={{ position: "relative", width: "100%", height: "clamp(300px,38vw,500px)", perspective: "1000px" }}>
           {slides.map((slide, i) => (
             <img key={slide.src} src={slide.src} alt={slide.title} style={{
-              position: "absolute", width: "100%", height: "100%", objectFit: "cover",
-              borderRadius: "4px",
+              position: "absolute", width: "100%", height: "100%", objectFit: "cover", borderRadius: "4px",
               boxShadow: i === activeSlide ? "0 24px 60px rgba(0,0,0,0.65)" : "0 8px 28px rgba(0,0,0,0.4)",
               ...getImgStyle(i),
             }} />
           ))}
         </div>
 
-        {/* RIGHT — caption */}
+        {/* Caption */}
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.5rem" }}>
           <p className="font-sans font-light" style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.22em" }}>
             {String(activeSlide + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
           </p>
-
           <AnimatePresence mode="wait">
             <motion.div key={activeSlide} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.45, ease: EASE }}>
               <h3 className="font-serif font-light" style={{ fontSize: "clamp(1.3rem,2.2vw,2rem)", color: "var(--text-loud)", marginBottom: "0.75rem", lineHeight: 1.2 }}>
@@ -206,8 +193,6 @@ function BedroomCircular({ slides, activeSlide, setActiveSlide }: BedroomCircula
               </p>
             </motion.div>
           </AnimatePresence>
-
-          {/* Arrows */}
           <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
             {[prev, next].map((fn, i) => (
               <button key={i} onClick={fn} aria-label={i === 0 ? "Previous" : "Next"} style={{
@@ -288,11 +273,13 @@ export default function HomePage() {
       }} />
 
       <Nav scrolled={false} />
+
+      {/* ── HERO — Hero component handles its own bg/images, untouched ── */}
       <Hero />
 
       {/* ── METRICS STRIP ──────────────────────────────────────────────── */}
       <section style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-        <div className="grid grid-cols-2 md:grid-cols-4">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }} className="metrics-grid">
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08}>
               <div className="flex flex-col items-start" style={{
@@ -356,24 +343,19 @@ export default function HomePage() {
             Full-spectrum visualisation for architecture and real estate. Every deliverable a considered composition.
           </p>
         </Reveal>
-
         <div style={{ borderTop: "1px solid var(--border)" }}>
           {SERVICES.map((svc, i) => (
             <Reveal key={svc.n} delay={i * 0.05}>
               <div className="group py-9 md:py-11 grid md:grid-cols-12 gap-4 md:gap-0 cursor-default" style={{ borderBottom: "1px solid var(--border)" }}>
-                <span className="md:col-span-1 font-sans font-light pt-1" style={{ fontSize: "0.55rem", letterSpacing: "0.2em", color: "var(--border-mid)" }}>
-                  {svc.n}
-                </span>
+                <span className="md:col-span-1 font-sans font-light pt-1" style={{ fontSize: "0.55rem", letterSpacing: "0.2em", color: "var(--border-mid)" }}>{svc.n}</span>
                 <h3 className="md:col-span-5 font-serif font-light transition-colors duration-500" style={{ fontSize: "clamp(1.1rem,2vw,1.65rem)", color: "var(--text-mid)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLHeadingElement).style.color = "var(--text-loud)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLHeadingElement).style.color = "var(--text-mid)"; }}
-                >
+                  onMouseLeave={e => { (e.currentTarget as HTMLHeadingElement).style.color = "var(--text-mid)"; }}>
                   {svc.title}
                 </h3>
-                <p className="md:col-span-5 font-sans font-light leading-relaxed transition-colors duration-500" style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.85 }}
+                <p className="md:col-span-5 font-sans font-light leading-relaxed" style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.85 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLParagraphElement).style.color = "var(--text-mid)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLParagraphElement).style.color = "var(--text-muted)"; }}
-                >
+                  onMouseLeave={e => { (e.currentTarget as HTMLParagraphElement).style.color = "var(--text-muted)"; }}>
                   {svc.desc}
                 </p>
                 <div className="md:col-span-1 flex justify-end items-start">
@@ -425,7 +407,6 @@ export default function HomePage() {
             <em className="italic" style={{ color: "var(--text-mid)" }}>before we do.</em>
           </h2>
         </Reveal>
-
         <div className="grid md:grid-cols-3 gap-px" style={{ background: "var(--border)" }}>
           {TESTIMONIALS.map((t, i) => (
             <Reveal key={t.name} delay={i * 0.1}>
@@ -464,26 +445,28 @@ export default function HomePage() {
             <em className="italic" style={{ color: "var(--text-mid)" }}>with us.</em>
           </h2>
         </Reveal>
-
         <div className="grid md:grid-cols-12 gap-16 md:gap-0">
           <div className="md:col-span-4 md:pr-12 space-y-14">
-            {[
-              { label: "WhatsApp", href: "https://wa.me/971500000000", text: "+971 50 000 0000" },
-              { label: "Email",    href: "mailto:studio@archvizcraft.com", text: "studio@archvizcraft.com" },
-            ].map((item, i) => (
-              <Reveal key={item.label} delay={i * 0.1}>
-                <div>
-                  <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>{item.label}</p>
-                  <a href={item.href} target={item.label === "WhatsApp" ? "_blank" : undefined} rel="noopener noreferrer"
-                    className="font-serif transition-colors duration-500 block" style={{ fontSize: "1.2rem", color: "var(--text-mid)", textDecoration: "none" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}
-                  >
-                    {item.text}
-                  </a>
-                </div>
-              </Reveal>
-            ))}
+            <Reveal>
+              <div>
+                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>WhatsApp</p>
+                <a href="https://wa.me/971500000000" target="_blank" rel="noopener noreferrer" className="font-serif transition-colors duration-500 block" style={{ fontSize: "1.2rem", color: "var(--text-mid)", textDecoration: "none" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}>
+                  +971 50 000 0000
+                </a>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div>
+                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>Email</p>
+                <a href="mailto:studio@archvizcraft.com" className="font-serif transition-colors duration-500 block" style={{ fontSize: "1.2rem", color: "var(--text-mid)", textDecoration: "none" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}>
+                  studio@archvizcraft.com
+                </a>
+              </div>
+            </Reveal>
             <Reveal delay={0.2}>
               <div>
                 <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>Location</p>
@@ -491,7 +474,6 @@ export default function HomePage() {
               </div>
             </Reveal>
           </div>
-
           <Reveal delay={0.1} className="md:col-span-8">
             <div className="md:pl-16" style={{ borderLeft: "1px solid var(--border)" }}>
               {contactSubmitted ? (
@@ -509,27 +491,24 @@ export default function HomePage() {
                       onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
                       style={{
                         width: "100%", background: "transparent",
-                        borderBottom: "1px solid var(--border)",
-                        padding: "0.75rem 0", fontSize: "0.9rem",
-                        color: "var(--text-loud)", outline: "none",
+                        borderBottom: "1px solid var(--border)", padding: "0.75rem 0",
+                        fontSize: "0.9rem", color: "var(--text-loud)", outline: "none",
                         fontFamily: "var(--font-dm), sans-serif", fontWeight: 300,
                       }}
                       onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border-mid)"; }}
-                      onBlur={e => {  (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }}
+                      onBlur={e =>  { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }}
                     />
                   ))}
                   <textarea rows={5} required placeholder="Tell us about your project"
-                    value={form.message}
-                    onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                    value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                     style={{
                       width: "100%", background: "transparent",
-                      borderBottom: "1px solid var(--border)",
-                      padding: "0.75rem 0", fontSize: "0.9rem",
-                      color: "var(--text-loud)", outline: "none", resize: "none",
+                      borderBottom: "1px solid var(--border)", padding: "0.75rem 0",
+                      fontSize: "0.9rem", color: "var(--text-loud)", outline: "none", resize: "none",
                       fontFamily: "var(--font-dm), sans-serif", fontWeight: 300,
                     }}
                     onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border-mid)"; }}
-                    onBlur={e => {  (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }}
+                    onBlur={e =>  { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }}
                   />
                   <button type="submit" className="font-sans font-light uppercase tracking-widest transition-all duration-500"
                     style={{ fontSize: "0.6rem", color: "var(--text-mid)", border: "1px solid var(--border)", padding: "1rem 2.5rem", background: "transparent", cursor: "pointer", letterSpacing: "0.3em" }}
@@ -569,6 +548,12 @@ export default function HomePage() {
           © {new Date().getFullYear()} Archviz Craft · Dubai
         </p>
       </footer>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .metrics-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </div>
   );
 }

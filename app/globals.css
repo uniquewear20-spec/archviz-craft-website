@@ -1,9 +1,9 @@
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════
    ARCHVIZ CRAFT — THEME VARIABLES
-   Paste this block at the bottom of your globals.css
-   ═══════════════════════════════════════════════════════════════════════════ */
+   Paste this at the BOTTOM of your globals.css
+   ═══════════════════════════════════════════════════════════════════ */
 
-/* ── Dark mode (default — matches your existing site) ─────────────────── */
+/* ── Dark mode (default) ───────────────────────────────────────────── */
 :root,
 html.dark-mode {
   --bg:          #080808;
@@ -18,7 +18,7 @@ html.dark-mode {
   --gold-light:  #C4A882;
 }
 
-/* ── Light mode ────────────────────────────────────────────────────────── */
+/* ── Light mode ────────────────────────────────────────────────────── */
 html.light-mode {
   --bg:          #F5F0E8;
   --bg-subtle:   #EDE8DF;
@@ -32,7 +32,7 @@ html.light-mode {
   --gold-light:  #A8885A;
 }
 
-/* ── Smooth transition when switching themes ───────────────────────────── */
+/* ── Smooth transition ─────────────────────────────────────────────── */
 html {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
@@ -40,4 +40,11 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text-loud);
+}
+
+/* ── CRITICAL: Hero section must always stay black/dark ────────────── */
+/* The Hero has its own bg-black and overlay — never let theme affect it */
+section.hero-section,
+section.hero-section * {
+  transition: none !important;
 }
