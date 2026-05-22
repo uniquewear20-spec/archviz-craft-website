@@ -54,15 +54,15 @@ const SERVICES = [
 ];
 
 const BEDROOM_SLIDES = [
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom4.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom6.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom7.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom8.jpg" },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg" },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg", title: "Master Suite · Neutral Palette", desc: "Warm oak tones, cove lighting, and floor-to-ceiling curtains. Rendered at golden hour." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg", title: "Guest Suite · Minimal Luxury", desc: "Clean lines, pendant lighting, and layered textiles. Focus on material contrast." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg", title: "Primary Bedroom · Classical Detail", desc: "Boiserie panelling, botanical pendant lights, and a wave-form headboard in stone linen." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom4.jpg", title: "Study Retreat · Monochrome Interior", desc: "Built-in shelving, herringbone floor, and soft northern light through sheer curtains." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg", title: "Grand Bedroom · Serene Atmosphere", desc: "Sculptural headboard, dual pendant drops, and silk bedding rendered in full depth." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom6.jpg", title: "Corridor Suite · Deep Perspective", desc: "Long-axis composition revealing layered spaces — study, dressing, and sleeping zone." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom7.jpg", title: "Bedside Detail · Soft Focus", desc: "Tulip pendants, dark oak nightstand, and marble slab top. Rendered at dusk." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom8.jpg", title: "Morning Light Suite · Open Plan", desc: "Sheer curtains diffusing daylight, ring chandelier, and a floating bed platform." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg", title: "Evening Suite · Warm Render", desc: "Leather headboard, cylinder pendant, and ambient wall light — cinematic shadow play." },
 ];
 
 // ── Utility components ─────────────────────────────────────────────────────
@@ -126,19 +126,15 @@ function CountUp({ target }: { target: string }) {
   return <span ref={ref}>{display}</span>;
 }
 
-// ── BedroomCircular — self-contained, uses plain img tags ─────────────────
+// ── BedroomCircular — image captions, no duplicate, clean layout ──────────
+interface BedroomSlide { src: string; title: string; desc: string; }
 interface BedroomCircularProps {
-  slides: { src: string }[];
-  testimonials: { quote: string; name: string; role: string; company: string; img: string }[];
+  slides: BedroomSlide[];
   activeSlide: number;
   setActiveSlide: React.Dispatch<React.SetStateAction<number>>;
-  activeTestimonial: number;
-  setActiveTestimonial: React.Dispatch<React.SetStateAction<number>>;
 }
 
-function BedroomCircular({
-  slides, testimonials, activeSlide, setActiveSlide, activeTestimonial, setActiveTestimonial,
-}: BedroomCircularProps) {
+function BedroomCircular({ slides, activeSlide, setActiveSlide }: BedroomCircularProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(600);
 
@@ -154,11 +150,11 @@ function BedroomCircular({
   const n = slides.length;
 
   function getImgStyle(i: number): React.CSSProperties {
-    const gap = Math.min(80, containerWidth * 0.13);
+    const gap = Math.min(72, containerWidth * 0.12);
     const stickUp = gap * 0.8;
     const isActive = i === activeSlide;
-    const isLeft  = i === (activeSlide - 1 + n) % n;
-    const isRight = i === (activeSlide + 1) % n;
+    const isLeft   = i === (activeSlide - 1 + n) % n;
+    const isRight  = i === (activeSlide + 1) % n;
     if (isActive) return {
       zIndex: 3, opacity: 1, pointerEvents: "auto",
       transform: "translateX(0) translateY(0) scale(1) rotateY(0deg)",
@@ -177,37 +173,31 @@ function BedroomCircular({
     return { zIndex: 1, opacity: 0, pointerEvents: "none", transition: "all 0.8s cubic-bezier(.4,2,.3,1)" };
   }
 
-  function prev() {
-    setActiveSlide(p => (p - 1 + n) % n);
-    setActiveTestimonial(p => (p - 1 + testimonials.length) % testimonials.length);
-  }
-  function next() {
-    setActiveSlide(p => (p + 1) % n);
-    setActiveTestimonial(p => (p + 1) % testimonials.length);
-  }
+  function prev() { setActiveSlide(p => (p - 1 + n) % n); }
+  function next() { setActiveSlide(p => (p + 1) % n); }
 
-  const t = testimonials[activeTestimonial];
+  const current = slides[activeSlide];
 
   return (
-    <div style={{ width: "100%", padding: "0 0 2rem 0" }}>
+    <div style={{ width: "100%", paddingBottom: "3rem" }}>
 
-      {/* ── Main grid: image stack LEFT + quote RIGHT ── */}
+      {/* ── MAIN GRID: image stack LEFT + caption RIGHT ── */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
-        gap: "5rem",
-        padding: "0 clamp(2rem,6vw,6rem)",
-        marginBottom: "3rem",
+        gap: "clamp(2rem,5vw,5rem)",
+        padding: "0 clamp(2rem,6vw,6rem) 3rem",
+        alignItems: "center",
       }}
-        className="flex-col-mobile"
+        className="bedroom-grid"
       >
-        {/* LEFT — image stack with perspective */}
+        {/* LEFT — 3-image perspective stack */}
         <div
           ref={containerRef}
           style={{
             position: "relative",
             width: "100%",
-            height: "clamp(320px,40vw,520px)",
+            height: "clamp(300px,38vw,500px)",
             perspective: "1000px",
           }}
         >
@@ -215,50 +205,57 @@ function BedroomCircular({
             <img
               key={slide.src}
               src={slide.src}
-              alt={`Bedroom render ${i + 1}`}
+              alt={slide.title}
               style={{
                 position: "absolute",
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
-                borderRadius: "6px",
-                boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
+                borderRadius: "4px",
+                boxShadow: i === activeSlide
+                  ? "0 24px 60px rgba(0,0,0,0.65)"
+                  : "0 8px 28px rgba(0,0,0,0.4)",
                 ...getImgStyle(i),
               }}
             />
           ))}
         </div>
 
-        {/* RIGHT — name, designation, quote, arrows */}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "320px" }}>
+        {/* RIGHT — image title, description, counter, arrows */}
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.5rem" }}>
+
+          {/* Slide counter */}
+          <p className="font-sans font-light" style={{ fontSize: "0.55rem", color: "#2A2520", letterSpacing: "0.22em" }}>
+            {String(activeSlide + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
+          </p>
+
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeTestimonial}
-              initial={{ opacity: 0, y: 20 }}
+              key={activeSlide}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
-              <p
-                className="font-serif"
-                style={{ fontSize: "clamp(1.4rem,2.2vw,2rem)", color: CREAM, fontWeight: 300, marginBottom: "0.25rem" }}
+              {/* Image title */}
+              <h3
+                className="font-serif font-light"
+                style={{ fontSize: "clamp(1.3rem,2.2vw,2rem)", color: CREAM, marginBottom: "0.75rem", lineHeight: 1.2 }}
               >
-                {t.name}
-              </p>
-              <p
-                className="font-sans font-light uppercase"
-                style={{ fontSize: "0.6rem", color: GOLD, letterSpacing: "0.22em", marginBottom: "2rem" }}
-              >
-                {t.role} · {t.company}
-              </p>
-              {/* Word-by-word blur reveal exactly like the prompt */}
-              <p className="font-serif italic" style={{ lineHeight: 1.8, color: "#6B6560", fontSize: "clamp(0.95rem,1.5vw,1.2rem)" }}>
-                {`"${t.quote}"`.split(" ").map((word, wi) => (
+                {current.title}
+              </h3>
+
+              {/* Hairline */}
+              <div style={{ width: "36px", height: "1px", backgroundColor: GOLD, opacity: 0.6, marginBottom: "1.25rem" }} />
+
+              {/* Description — word blur reveal */}
+              <p className="font-sans font-light" style={{ lineHeight: 1.85, color: "#4A4540", fontSize: "clamp(0.82rem,1.2vw,0.95rem)" }}>
+                {current.desc.split(" ").map((word, wi) => (
                   <motion.span
                     key={wi}
-                    initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
-                    animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
-                    transition={{ duration: 0.22, ease: "easeInOut", delay: 0.025 * wi }}
+                    initial={{ filter: "blur(8px)", opacity: 0 }}
+                    animate={{ filter: "blur(0px)", opacity: 1 }}
+                    transition={{ duration: 0.2, ease: "easeOut", delay: 0.02 * wi }}
                     style={{ display: "inline-block", marginRight: "0.25em" }}
                   >
                     {word}
@@ -268,15 +265,15 @@ function BedroomCircular({
             </motion.div>
           </AnimatePresence>
 
-          {/* Arrow buttons — styled like the prompt */}
-          <div style={{ display: "flex", gap: "1rem", paddingTop: "2.5rem" }}>
+          {/* Arrows */}
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
             {[prev, next].map((fn, i) => (
               <button
                 key={i}
                 onClick={fn}
                 aria-label={i === 0 ? "Previous" : "Next"}
                 style={{
-                  width: "46px", height: "46px",
+                  width: "44px", height: "44px",
                   borderRadius: "50%",
                   border: "none",
                   backgroundColor: GOLD,
@@ -284,7 +281,8 @@ function BedroomCircular({
                   display: "flex", alignItems: "center", justifyContent: "center",
                   cursor: "pointer",
                   fontSize: "1rem",
-                  transition: "background-color 0.3s, transform 0.2s",
+                  flexShrink: 0,
+                  transition: "background-color 0.3s",
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#C4A882"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = GOLD; }}
@@ -296,42 +294,7 @@ function BedroomCircular({
         </div>
       </div>
 
-      {/* ── FULL-BLEED active image ── */}
-      <div style={{ position: "relative", width: "100%", height: "clamp(400px,55vw,700px)", overflow: "hidden" }}>
-        <AnimatePresence mode="sync">
-          <motion.img
-            key={activeSlide}
-            src={slides[activeSlide].src}
-            alt="Featured bedroom"
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            style={{
-              position: "absolute", inset: 0,
-              width: "100%", height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        </AnimatePresence>
-        <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(to top, rgba(8,8,8,0.75) 0%, transparent 55%)",
-          pointerEvents: "none",
-        }} />
-        {/* Counter */}
-        <span
-          className="font-sans font-light"
-          style={{
-            position: "absolute", bottom: "1.5rem", right: "clamp(2rem,6vw,6rem)",
-            fontSize: "0.55rem", color: "#3A342E", letterSpacing: "0.2em",
-          }}
-        >
-          {String(activeSlide + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
-        </span>
-      </div>
-
-      {/* ── THUMBNAIL STRIP — all 9 ── */}
+      {/* ── THUMBNAIL STRIP — all 9, no duplicate image ── */}
       <div style={{
         padding: "1.2rem clamp(2rem,6vw,6rem)",
         borderTop: "1px solid #0E0C0A",
@@ -339,30 +302,32 @@ function BedroomCircular({
         alignItems: "center",
         justifyContent: "space-between",
         gap: "1rem",
+        flexWrap: "wrap",
       }}>
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
           {slides.map((slide, i) => (
             <button
               key={i}
-              onClick={() => { setActiveSlide(i); }}
+              onClick={() => setActiveSlide(i)}
+              title={slide.title}
               style={{
-                width: "clamp(56px,8vw,88px)",
+                width: "clamp(52px,7.5vw,80px)",
                 aspectRatio: "3/2",
                 padding: 0,
-                border: i === activeSlide ? `1px solid ${GOLD}` : "1px solid transparent",
-                opacity: i === activeSlide ? 1 : 0.3,
+                border: i === activeSlide ? `1.5px solid ${GOLD}` : "1.5px solid transparent",
+                opacity: i === activeSlide ? 1 : 0.28,
                 cursor: "pointer",
                 background: "none",
                 overflow: "hidden",
-                transition: "all 0.4s ease",
+                transition: "all 0.35s ease",
                 flexShrink: 0,
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.3"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}
             >
               <img
                 src={slide.src}
-                alt={`Bedroom ${i + 1}`}
+                alt={slide.title}
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </button>
@@ -386,7 +351,7 @@ function BedroomCircular({
 
       <style>{`
         @media (max-width: 768px) {
-          .flex-col-mobile { grid-template-columns: 1fr !important; gap: 3rem !important; }
+          .bedroom-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
@@ -395,16 +360,9 @@ function BedroomCircular({
 
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [contactSubmitted, setContactSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-
-  // Auto-advance testimonials
-  useEffect(() => {
-    const t = setInterval(() => setActiveTestimonial(p => (p + 1) % TESTIMONIALS.length), 6000);
-    return () => clearInterval(t);
-  }, []);
 
   // Auto-advance bedroom slides
   useEffect(() => {
@@ -435,8 +393,11 @@ export default function HomePage() {
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08}>
               <div
-                className="flex flex-col items-start px-10 py-14"
-                style={{ borderRight: i < 3 ? "1px solid #141210" : "none" }}
+                className="flex flex-col items-start"
+                style={{
+                  padding: "3.5rem clamp(1.5rem,4vw,3rem)",
+                  borderRight: i < 3 ? "1px solid #141210" : "none",
+                }}
               >
                 <p
                   className="font-serif font-extralight leading-none mb-3"
@@ -485,8 +446,8 @@ export default function HomePage() {
       {/* ── BEDROOM SHOWCASE ─────────────────────────────────────────────── */}
       <section id="bedrooms" style={{ borderBottom: "1px solid #141210" }}>
 
-        {/* Section header */}
-        <div className="px-8 md:px-16 lg:px-24 pt-20 pb-16">
+        {/* Section header — needs z-index so images don't overlap it */}
+        <div className="px-8 md:px-16 lg:px-24 pt-20 pb-16" style={{ position: "relative", zIndex: 2 }}>
           <Reveal>
             <p className="font-sans font-light uppercase mb-5" style={{ fontSize: "0.58rem", color: GOLD, letterSpacing: "0.52em" }}>
               01 · Selected Work — Private Sanctuaries
@@ -506,11 +467,8 @@ export default function HomePage() {
         {/* ── CIRCULAR TESTIMONIALS — exact component pattern ── */}
         <BedroomCircular
           slides={BEDROOM_SLIDES}
-          testimonials={TESTIMONIALS}
           activeSlide={activeSlide}
           setActiveSlide={setActiveSlide}
-          activeTestimonial={activeTestimonial}
-          setActiveTestimonial={setActiveTestimonial}
         />
 
       </section>
