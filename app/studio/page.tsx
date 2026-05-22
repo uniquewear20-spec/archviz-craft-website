@@ -41,6 +41,7 @@ export default function StudioPage() {
       >
         {/* ── LEFT — Portrait photograph ─────────────────────────────── */}
         <div
+          className="studio-photo-wrapper"
           style={{
             position: "relative",
             overflow: "hidden",
@@ -60,10 +61,12 @@ export default function StudioPage() {
               fill
               priority
               sizes="50vw"
+              className="studio-photo"
               style={{
                 objectFit: "cover",
                 objectPosition: "center 8%",
-                filter: "grayscale(18%)",
+                filter: "grayscale(100%)",
+                transition: "filter 0.9s cubic-bezier(0.16,1,0.3,1)",
               }}
             />
           </motion.div>
@@ -395,6 +398,7 @@ export default function StudioPage() {
       </footer>
 
       <style>{`
+        .studio-photo-wrapper:hover .studio-photo { filter: grayscale(0%) !important; }
         @media (max-width: 768px) {
           .studio-grid {
             grid-template-columns: 1fr !important;
