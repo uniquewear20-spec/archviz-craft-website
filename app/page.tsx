@@ -1,17 +1,18 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const EASE_SOFT: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
 
 // ── Stats ──────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: "120+", label: "Projects Delivered" },
-  { value: "14",   label: "Countries" },
-  { value: "9",    label: "Years of Practice" },
-  { value: "40+",  label: "Awards & Recognition" },
+  { value: "120", suffix: "+", label: "Projects Delivered" },
+  { value: "14",  suffix: "",  label: "Countries" },
+  { value: "9",   suffix: "",  label: "Years of Practice" },
+  { value: "40",  suffix: "+", label: "Awards & Recognition" },
 ];
 
 // ── Services ───────────────────────────────────────────────────────────────
@@ -124,37 +125,51 @@ const LIVING_SPACE_SLIDES: PortfolioSlide[] = [
   { src: "/images/portfolio/living-spaces/spiral-staircase-detail2.jpg",  title: "Stair Detail · Light and Form",        desc: "The render isolates the stair as a sculptural object — understanding that in a residence of this quality, a circulation element is never merely functional." },
 ];
 
-// ── Utility components ─────────────────────────────────────────────────────
-function Reveal({ children, delay = 0, y = 28, className = "", style }: {
-  children: React.ReactNode; delay?: number; y?: number; className?: string; style?: React.CSSProperties;
+// ══════════════════════════════════════════════════════════════════════════
+// UTILITY COMPONENTS
+// ══════════════════════════════════════════════════════════════════════════
+
+function useRevealInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  return { ref, isInView };
+}
+
+function Reveal({
+  children, delay = 0, y = 40, className = "", style,
+}: {
+  children: React.ReactNode; delay?: number; y?: number;
+  className?: string; style?: React.CSSProperties;
 }) {
+  const { ref, isInView } = useRevealInView();
   return (
     <motion.div
+      ref={ref}
       className={className}
       style={style}
       initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 1.3, ease: EASE, delay }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 1.4, ease: EASE, delay }}
     >
       {children}
     </motion.div>
   );
 }
 
-function GoldLine({ width = "48px", delay = 0 }: { width?: string; delay?: number }) {
+function GoldRule({ delay = 0, width = "48px" }: { delay?: number; width?: string }) {
+  const { ref, isInView } = useRevealInView();
   return (
     <motion.div
-      style={{ height: "1px", width, backgroundColor: "var(--gold)", opacity: 0.55 }}
-      initial={{ scaleX: 0, transformOrigin: "left" }}
-      whileInView={{ scaleX: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 1.2, ease: EASE, delay }}
+      ref={ref}
+      style={{ height: "1px", width, backgroundColor: "#A8885A", transformOrigin: "left" }}
+      initial={{ scaleX: 0, opacity: 0 }}
+      animate={isInView ? { scaleX: 1, opacity: 0.7 } : {}}
+      transition={{ duration: 1.4, ease: EASE, delay }}
     />
   );
 }
 
-function CountUp({ target }: { target: string }) {
+function CountUp({ target, suffix }: { target: string; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState("0");
   const [triggered, setTriggered] = useState(false);
@@ -169,20 +184,19 @@ function CountUp({ target }: { target: string }) {
 
   useEffect(() => {
     if (!triggered) return;
-    const num = parseFloat(target.replace(/[^0-9.]/g, ""));
+    const num = parseFloat(target);
     if (isNaN(num)) { setDisplay(target); return; }
-    const suffix = target.match(/[^0-9.]+$/)?.[0] ?? "";
-    const dur = 1600; const start = performance.now();
+    const dur = 2000; const start = performance.now();
     const tick = (now: number) => {
       const p = Math.min((now - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setDisplay(`${Math.round(ease * num)}${suffix}`);
+      const ease = 1 - Math.pow(1 - p, 4);
+      setDisplay(`${Math.round(ease * num)}`);
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   }, [triggered, target]);
 
-  return <span ref={ref}>{display}</span>;
+  return <span ref={ref}>{display}{suffix}</span>;
 }
 
 // ── Theme Toggle ───────────────────────────────────────────────────────────
@@ -227,8 +241,8 @@ function ThemeToggle() {
           background: "transparent", border: "none", cursor: "pointer",
           padding: "4px 0", color: "rgba(255,255,255,0.4)",
         }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#A8885A"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.4)"; }}
+        onMouseEnter={e => { (e.currentTarget).style.color = "#A8885A"; }}
+        onMouseLeave={e => { (e.currentTarget).style.color = "rgba(255,255,255,0.4)"; }}
       >
         <div style={{
           position: "relative", width: "30px", height: "16px", borderRadius: "8px",
@@ -262,105 +276,382 @@ function ThemeToggle() {
   );
 }
 
-// ── Reusable Portfolio Circular Component ──────────────────────────────────
-function PortfolioCircular({
-  slides,
-  activeSlide,
-  setActiveSlide,
-  viewAllHref = "/work",
+// ══════════════════════════════════════════════════════════════════════════
+// SECTION 1 — STATS + MANIFESTO (Luxury Transition)
+// ══════════════════════════════════════════════════════════════════════════
+
+function StatsManifesto() {
+  return (
+    <section style={{
+      backgroundColor: "var(--bg)",
+      paddingTop: "clamp(7rem, 12vw, 13rem)",
+      paddingBottom: "clamp(7rem, 12vw, 13rem)",
+      borderBottom: "1px solid var(--border)",
+      overflow: "hidden",
+    }}>
+      <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem, 7vw, 8rem)" }}>
+
+        {/* ── Top label ── */}
+        <Reveal delay={0}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", marginBottom: "clamp(5rem, 8vw, 9rem)" }}>
+            <div style={{ width: "32px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
+            <p style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "0.58rem", letterSpacing: "0.52em",
+              textTransform: "uppercase", color: "#A8885A",
+              fontWeight: 300,
+            }}>
+              The Practice
+            </p>
+          </div>
+        </Reveal>
+
+        {/* ── Stats Grid ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          borderTop: "1px solid var(--border)",
+          borderLeft: "1px solid var(--border)",
+          marginBottom: "clamp(7rem, 11vw, 13rem)",
+        }}
+          className="stats-grid"
+        >
+          {STATS.map((s, i) => (
+            <Reveal key={s.label} delay={i * 0.1}>
+              <div style={{
+                padding: "clamp(2.5rem, 4vw, 4.5rem) clamp(2rem, 3vw, 3.5rem)",
+                borderRight: "1px solid var(--border)",
+                borderBottom: "1px solid var(--border)",
+                position: "relative",
+                overflow: "hidden",
+              }}>
+                {/* Decorative corner mark */}
+                <div style={{
+                  position: "absolute", top: 0, right: 0,
+                  width: "6px", height: "6px",
+                  borderTop: "1px solid rgba(168,136,90,0.3)",
+                  borderRight: "1px solid rgba(168,136,90,0.3)",
+                }} />
+                <p style={{
+                  fontFamily: "var(--font-cormorant), serif",
+                  fontWeight: 200,
+                  fontSize: "clamp(3rem, 5.5vw, 5.5rem)",
+                  color: "var(--text-loud)",
+                  lineHeight: 1,
+                  marginBottom: "1rem",
+                  letterSpacing: "-0.02em",
+                }}>
+                  <CountUp target={s.value} suffix={s.suffix} />
+                </p>
+                <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.5, marginBottom: "0.9rem" }} />
+                <p style={{
+                  fontFamily: "var(--font-dm), sans-serif",
+                  fontSize: "0.58rem",
+                  letterSpacing: "0.28em",
+                  textTransform: "uppercase",
+                  color: "var(--text-muted)",
+                  fontWeight: 300,
+                }}>
+                  {s.label}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* ── Manifesto ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "clamp(4rem, 7vw, 10rem)",
+          alignItems: "start",
+        }}
+          className="manifesto-grid"
+        >
+          {/* Left column */}
+          <Reveal delay={0.05}>
+            <p style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "0.58rem", letterSpacing: "0.52em",
+              textTransform: "uppercase", color: "#A8885A",
+              fontWeight: 300, marginBottom: "2.5rem",
+            }}>
+              Studio Manifesto
+            </p>
+            <h2 style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontWeight: 200,
+              fontStyle: "italic",
+              fontSize: "clamp(2.2rem, 4vw, 4rem)",
+              color: "var(--text-loud)",
+              lineHeight: 1.08,
+              letterSpacing: "-0.01em",
+            }}>
+              We render architecture<br />
+              through the lens of<br />
+              <span style={{ color: "var(--text-mid)" }}>hospitality.</span>
+            </h2>
+          </Reveal>
+
+          {/* Right column */}
+          <Reveal delay={0.18}>
+            <div style={{ paddingTop: "clamp(3rem, 5vw, 5.5rem)" }}>
+              <GoldRule delay={0.25} width="40px" />
+              <div style={{ marginTop: "2.5rem" }}>
+                <p style={{
+                  fontFamily: "var(--font-dm), sans-serif",
+                  fontWeight: 300,
+                  fontSize: "clamp(0.88rem, 1.3vw, 1rem)",
+                  color: "var(--text-soft)",
+                  lineHeight: 1.95,
+                  marginBottom: "1.8rem",
+                }}>
+                  Architecture speaks before it is inhabited. Our work exists in that
+                  threshold — the moment between conception and construction — where
+                  light, material, and proportion must tell the full story of a space
+                  not yet built.
+                </p>
+                <p style={{
+                  fontFamily: "var(--font-dm), sans-serif",
+                  fontWeight: 300,
+                  fontSize: "clamp(0.88rem, 1.3vw, 1rem)",
+                  color: "var(--text-muted)",
+                  lineHeight: 1.95,
+                }}>
+                  Nine years of practice. One hundred and twenty projects. Every image
+                  a deliberate act of persuasion — crafted with cinematic precision,
+                  informed by genuine hospitality intelligence, and composed to move
+                  the people who commission and commission from them.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+      </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .manifesto-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
+        }
+        @media (max-width: 540px) {
+          .stats-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PORTFOLIO SECTION HEADER
+// ══════════════════════════════════════════════════════════════════════════
+
+function SectionHeader({
+  index, label, headline, subheadline, body,
+}: {
+  index: string; label: string; headline: string;
+  subheadline?: string; body?: string;
+}) {
+  return (
+    <div style={{
+      maxWidth: "1440px", margin: "0 auto",
+      padding: "clamp(5rem, 9vw, 10rem) clamp(2rem, 7vw, 8rem) clamp(4rem, 6vw, 6rem)",
+    }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(3rem, 6vw, 8rem)" }} className="section-header-grid">
+        {/* Index number */}
+        <Reveal delay={0}>
+          <div style={{ paddingTop: "0.4rem", flexShrink: 0 }}>
+            <p style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontWeight: 200,
+              fontSize: "clamp(3rem, 6vw, 6rem)",
+              color: "rgba(168,136,90,0.12)",
+              lineHeight: 1,
+              letterSpacing: "-0.02em",
+              userSelect: "none",
+            }}>
+              {index}
+            </p>
+          </div>
+        </Reveal>
+
+        {/* Text block */}
+        <div style={{ flex: 1 }}>
+          <Reveal delay={0.05}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
+              <div style={{ width: "28px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontSize: "0.56rem", letterSpacing: "0.52em",
+                textTransform: "uppercase", color: "#A8885A", fontWeight: 300,
+              }}>
+                {label}
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <h2 style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontWeight: 200,
+              fontStyle: "italic",
+              fontSize: "clamp(2rem, 4.5vw, 4.8rem)",
+              color: "var(--text-loud)",
+              lineHeight: 1.04,
+              letterSpacing: "-0.01em",
+              maxWidth: "800px",
+            }}>
+              {headline}
+              {subheadline && (
+                <span style={{ display: "block", color: "var(--text-mid)", fontStyle: "normal" }}>
+                  {subheadline}
+                </span>
+              )}
+            </h2>
+          </Reveal>
+          {body && (
+            <Reveal delay={0.18}>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontWeight: 300,
+                fontSize: "clamp(0.82rem, 1.2vw, 0.95rem)",
+                color: "var(--text-muted)",
+                lineHeight: 1.95,
+                maxWidth: "520px",
+                marginTop: "2rem",
+              }}>
+                {body}
+              </p>
+            </Reveal>
+          )}
+          <div style={{ marginTop: "2.5rem" }}>
+            <GoldRule delay={0.28} width="clamp(60px, 10vw, 120px)" />
+          </div>
+        </div>
+      </div>
+      <style>{`.section-header-grid { flex-direction: row; } @media(max-width:640px){ .section-header-grid { flex-direction: column !important; gap: 1.5rem !important; } }`}</style>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PORTFOLIO VIEWER — Full-bleed cinematic layout
+// ══════════════════════════════════════════════════════════════════════════
+
+function PortfolioViewer({
+  slides, activeSlide, setActiveSlide, viewAllHref = "/work",
 }: {
   slides: PortfolioSlide[];
   activeSlide: number;
   setActiveSlide: React.Dispatch<React.SetStateAction<number>>;
   viewAllHref?: string;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(600);
-
-  useEffect(() => {
-    function measure() { if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth); }
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (containerRef.current) ro.observe(containerRef.current);
-    return () => ro.disconnect();
-  }, []);
-
   const n = slides.length;
-
-  function getImgStyle(i: number): React.CSSProperties {
-    const gap = Math.min(72, containerWidth * 0.12);
-    const stickUp = gap * 0.8;
-    const isActive = i === activeSlide;
-    const isLeft   = i === (activeSlide - 1 + n) % n;
-    const isRight  = i === (activeSlide + 1) % n;
-    if (isActive) return { zIndex: 3, opacity: 1, pointerEvents: "auto",  transform: "translateX(0) translateY(0) scale(1) rotateY(0deg)", transition: "all 0.85s cubic-bezier(.16,1,.3,1)" };
-    if (isLeft)   return { zIndex: 2, opacity: 1, pointerEvents: "auto",  transform: `translateX(-${gap}px) translateY(-${stickUp}px) scale(0.84) rotateY(14deg)`, transition: "all 0.85s cubic-bezier(.16,1,.3,1)" };
-    if (isRight)  return { zIndex: 2, opacity: 1, pointerEvents: "auto",  transform: `translateX(${gap}px) translateY(-${stickUp}px) scale(0.84) rotateY(-14deg)`, transition: "all 0.85s cubic-bezier(.16,1,.3,1)" };
-    return { zIndex: 1, opacity: 0, pointerEvents: "none", transition: "all 0.85s cubic-bezier(.16,1,.3,1)" };
-  }
-
-  function prev() { setActiveSlide(p => (p - 1 + n) % n); }
-  function next() { setActiveSlide(p => (p + 1) % n); }
   const current = slides[activeSlide];
+  const prev = () => setActiveSlide(p => (p - 1 + n) % n);
+  const next = () => setActiveSlide(p => (p + 1) % n);
 
   return (
-    <div style={{ width: "100%", paddingBottom: "3rem" }}>
-      <div
-        className="portfolio-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "clamp(2rem,5vw,5rem)",
-          padding: "0 clamp(2rem,6vw,6rem) 3rem",
-          alignItems: "center",
-        }}
+    <div style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
+      {/* Main image + caption layout */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 420px",
+        minHeight: "clamp(420px, 60vw, 720px)",
+      }}
+        className="portfolio-viewer-grid"
       >
-        {/* Image stack */}
-        <div
-          ref={containerRef}
-          style={{ position: "relative", width: "100%", height: "clamp(300px,38vw,500px)", perspective: "1000px" }}
-        >
-          {slides.map((slide, i) => (
-            <img
-              key={slide.src}
-              src={slide.src}
-              alt={slide.title}
-              onClick={() => setActiveSlide(i)}
-              style={{
-                position: "absolute", width: "100%", height: "100%",
-                objectFit: "cover", borderRadius: "2px",
-                boxShadow: i === activeSlide ? "0 28px 64px rgba(0,0,0,0.7)" : "0 8px 28px rgba(0,0,0,0.38)",
-                cursor: i !== activeSlide ? "pointer" : "default",
-                ...getImgStyle(i),
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Caption */}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.5rem" }}>
-          <p className="font-sans font-light" style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.22em" }}>
-            {String(activeSlide + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
-          </p>
+        {/* ── Image panel ── */}
+        <div style={{ position: "relative", overflow: "hidden", backgroundColor: "#0a0806" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSlide}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.45, ease: EASE }}
+              style={{ position: "absolute", inset: 0 }}
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.9, ease: EASE_SOFT }}
             >
-              <h3 className="font-serif font-light" style={{ fontSize: "clamp(1.3rem,2.2vw,2rem)", color: "var(--text-loud)", marginBottom: "0.75rem", lineHeight: 1.2 }}>
+              <img
+                src={current.src}
+                alt={current.title}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+              {/* Subtle gradient for text legibility */}
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "linear-gradient(to right, transparent 60%, rgba(0,0,0,0.35) 100%)",
+              }} />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Image counter — bottom left */}
+          <div style={{
+            position: "absolute", bottom: "2rem", left: "2rem",
+            display: "flex", alignItems: "center", gap: "0.75rem",
+            zIndex: 5,
+          }}>
+            <span style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontSize: "2rem", fontWeight: 200,
+              color: "rgba(255,255,255,0.9)", lineHeight: 1,
+            }}>
+              {String(activeSlide + 1).padStart(2, "0")}
+            </span>
+            <div style={{ width: "1px", height: "28px", backgroundColor: "rgba(255,255,255,0.2)" }} />
+            <span style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "0.6rem", letterSpacing: "0.2em",
+              color: "rgba(255,255,255,0.35)", fontWeight: 300,
+            }}>
+              {String(n).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+
+        {/* ── Caption panel ── */}
+        <div style={{
+          backgroundColor: "var(--bg)",
+          borderLeft: "1px solid var(--border)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "clamp(2rem, 4vw, 4rem)",
+        }}>
+          {/* Top: title + desc */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSlide}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.6, ease: EASE }}
+              style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.5rem" }}
+            >
+              <div style={{ width: "28px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
+              <h3 style={{
+                fontFamily: "var(--font-cormorant), serif",
+                fontWeight: 200,
+                fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)",
+                color: "var(--text-loud)",
+                lineHeight: 1.15,
+                letterSpacing: "-0.01em",
+              }}>
                 {current.title}
               </h3>
-              <div style={{ width: "36px", height: "1px", backgroundColor: "var(--gold)", opacity: 0.6, marginBottom: "1.25rem" }} />
-              <p className="font-sans font-light" style={{ lineHeight: 1.85, color: "var(--text-mid)", fontSize: "clamp(0.82rem,1.2vw,0.95rem)" }}>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontWeight: 300,
+                fontSize: "clamp(0.82rem, 1.1vw, 0.9rem)",
+                color: "var(--text-muted)",
+                lineHeight: 1.9,
+              }}>
                 {current.desc.split(" ").map((word, wi) => (
                   <motion.span
                     key={`${activeSlide}-${wi}`}
-                    initial={{ filter: "blur(8px)", opacity: 0 }}
+                    initial={{ filter: "blur(6px)", opacity: 0 }}
                     animate={{ filter: "blur(0px)", opacity: 1 }}
-                    transition={{ duration: 0.2, ease: "easeOut", delay: 0.015 * wi }}
+                    transition={{ duration: 0.25, ease: "easeOut", delay: 0.02 * wi }}
                     style={{ display: "inline-block", marginRight: "0.25em" }}
                   >
                     {word}
@@ -370,76 +661,118 @@ function PortfolioCircular({
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation arrows */}
-          <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
-            {[prev, next].map((fn, i) => (
-              <NavArrow key={i} onClick={fn} direction={i === 0 ? "prev" : "next"} />
-            ))}
+          {/* Bottom: navigation */}
+          <div>
+            <div style={{ height: "1px", backgroundColor: "var(--border)", marginBottom: "2rem" }} />
+            {/* Progress bar */}
+            <div style={{
+              height: "1px",
+              backgroundColor: "var(--border)",
+              marginBottom: "1.5rem",
+              position: "relative",
+            }}>
+              <motion.div
+                style={{
+                  position: "absolute",
+                  top: 0, left: 0, height: "100%",
+                  backgroundColor: "#A8885A",
+                  transformOrigin: "left",
+                }}
+                animate={{ scaleX: (activeSlide + 1) / n }}
+                transition={{ duration: 0.6, ease: EASE_SOFT }}
+              />
+            </div>
+            {/* Arrows + view all */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <ArrowButton onClick={prev} direction="prev" />
+                <ArrowButton onClick={next} direction="next" />
+              </div>
+              <a
+                href={viewAllHref}
+                style={{
+                  fontFamily: "var(--font-dm), sans-serif",
+                  fontSize: "0.55rem",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  color: "#A8885A",
+                  textDecoration: "none",
+                  borderBottom: "1px solid rgba(168,136,90,0.4)",
+                  paddingBottom: "2px",
+                  transition: "opacity 0.3s",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.5"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}
+              >
+                View All →
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Thumbnail strip */}
       <div style={{
-        padding: "1.2rem clamp(2rem,6vw,6rem)",
+        backgroundColor: "var(--bg)",
         borderTop: "1px solid var(--border)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: "1rem", flexWrap: "wrap",
+        padding: "1.2rem clamp(2rem, 7vw, 8rem)",
+        display: "flex",
+        gap: "0.4rem",
+        overflowX: "auto",
+        scrollbarWidth: "none",
       }}>
-        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          {slides.map((slide, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveSlide(i)}
-              title={slide.title}
-              style={{
-                width: "clamp(52px,7.5vw,80px)", aspectRatio: "3/2", padding: 0,
-                border: i === activeSlide ? "1.5px solid var(--gold)" : "1.5px solid transparent",
-                opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "none",
-                overflow: "hidden", transition: "all 0.35s ease", flexShrink: 0,
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}
-            >
-              <img src={slide.src} alt={slide.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            </button>
-          ))}
-        </div>
-        <a
-          href={viewAllHref}
-          className="font-sans font-light uppercase"
-          style={{ fontSize: "0.55rem", color: "var(--gold)", letterSpacing: "0.3em", textDecoration: "none", whiteSpace: "nowrap", borderBottom: "1px solid var(--gold)", paddingBottom: "2px", transition: "opacity 0.3s" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.5"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}
-        >
-          View Full Portfolio →
-        </a>
+        {slides.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveSlide(i)}
+            title={s.title}
+            style={{
+              flexShrink: 0,
+              width: "clamp(52px, 7vw, 76px)",
+              aspectRatio: "3/2",
+              padding: 0,
+              border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`,
+              opacity: i === activeSlide ? 1 : 0.25,
+              cursor: "pointer",
+              background: "none",
+              overflow: "hidden",
+              transition: "all 0.35s ease",
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.25"; }}
+          >
+            <img src={s.src} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          </button>
+        ))}
       </div>
 
       <style>{`
-        @media (max-width: 768px) { .portfolio-grid { grid-template-columns: 1fr !important; } }
+        .portfolio-viewer-grid { grid-template-columns: 1fr 380px !important; }
+        @media (max-width: 900px) { .portfolio-viewer-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </div>
   );
 }
 
-function NavArrow({ onClick, direction }: { onClick: () => void; direction: "prev" | "next" }) {
+function ArrowButton({ onClick, direction }: { onClick: () => void; direction: "prev" | "next" }) {
   const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      aria-label={direction === "prev" ? "Previous" : "Next"}
+      aria-label={direction}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        width: "44px", height: "44px", borderRadius: "50%",
-        border: "1px solid var(--border-mid)",
-        backgroundColor: hovered ? "var(--gold)" : "transparent",
-        color: hovered ? "var(--bg)" : "var(--text-mid)",
+        width: "42px", height: "42px",
         display: "flex", alignItems: "center", justifyContent: "center",
-        cursor: "pointer", fontSize: "1rem", flexShrink: 0,
-        transition: "background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease",
-        borderColor: hovered ? "var(--gold)" : "var(--border-mid)",
+        border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`,
+        borderRadius: "50%",
+        backgroundColor: hovered ? "#A8885A" : "transparent",
+        color: hovered ? "var(--bg)" : "var(--text-mid)",
+        cursor: "pointer",
+        fontSize: "0.9rem",
+        transition: "all 0.35s ease",
+        flexShrink: 0,
       }}
     >
       {direction === "prev" ? "←" : "→"}
@@ -447,409 +780,698 @@ function NavArrow({ onClick, direction }: { onClick: () => void; direction: "pre
   );
 }
 
-// ── Testimonials row ───────────────────────────────────────────────────────
-function TestimonialsRow({ testimonials }: { testimonials: typeof TESTIMONIALS_BEDROOMS }) {
+// ══════════════════════════════════════════════════════════════════════════
+// TESTIMONIALS — Cinematic single-card carousel
+// ══════════════════════════════════════════════════════════════════════════
+
+function Testimonials({ testimonials }: { testimonials: typeof TESTIMONIALS_BEDROOMS }) {
+  const [active, setActive] = useState(0);
+  const n = testimonials.length;
+
   return (
-    <div className="grid md:grid-cols-3 gap-px" style={{ background: "var(--border)" }}>
-      {testimonials.map((t, i) => (
-        <Reveal key={t.name} delay={i * 0.1}>
-          <div className="flex flex-col h-full p-10 md:p-12" style={{ background: "var(--bg)" }}>
-            <div className="flex gap-1 mb-8">
-              {Array.from({ length: 5 }).map((_, si) => (
-                <svg key={si} width="10" height="10" viewBox="0 0 14 14" fill="var(--gold)" opacity="0.55">
-                  <path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" />
-                </svg>
-              ))}
-            </div>
-            <p className="font-serif italic font-light flex-1 mb-10" style={{ fontSize: "clamp(1rem,1.5vw,1.15rem)", color: "var(--text-mid)", lineHeight: 1.75 }}>
-              &ldquo;{t.quote}&rdquo;
-            </p>
-            <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }} className="flex items-center gap-4">
-              <div className="rounded-full overflow-hidden shrink-0" style={{ width: "38px", height: "38px", border: "1px solid rgba(168,136,90,0.15)" }}>
-                <img src={t.img} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(60%)" }} />
+    <div style={{
+      backgroundColor: "var(--bg)",
+      borderTop: "1px solid var(--border)",
+      padding: "clamp(5rem, 8vw, 9rem) clamp(2rem, 7vw, 8rem)",
+    }}>
+      <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "200px 1fr",
+          gap: "clamp(3rem, 6vw, 8rem)",
+          alignItems: "start",
+        }}
+          className="testimonials-layout"
+        >
+          {/* Left: label + nav */}
+          <div>
+            <Reveal>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontSize: "0.55rem", letterSpacing: "0.5em",
+                textTransform: "uppercase", color: "#A8885A",
+                fontWeight: 300, marginBottom: "3rem",
+              }}>
+                Client Record
+              </p>
+              {/* Tab indicators */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+                {testimonials.map((t, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActive(i)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.75rem",
+                      background: "none", border: "none", cursor: "pointer",
+                      padding: "0.25rem 0", textAlign: "left",
+                    }}
+                  >
+                    <motion.div
+                      style={{ height: "1px", backgroundColor: "#A8885A", transformOrigin: "left" }}
+                      animate={{ width: i === active ? "28px" : "12px", opacity: i === active ? 0.8 : 0.25 }}
+                      transition={{ duration: 0.4, ease: EASE_SOFT }}
+                    />
+                    <span style={{
+                      fontFamily: "var(--font-dm), sans-serif",
+                      fontSize: "0.58rem",
+                      color: i === active ? "var(--text-loud)" : "var(--text-muted)",
+                      letterSpacing: "0.05em",
+                      fontWeight: 300,
+                      transition: "color 0.35s",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "140px",
+                    }}>
+                      {t.name.split(" ")[0]}
+                    </span>
+                  </button>
+                ))}
               </div>
-              <div>
-                <p className="font-sans font-light" style={{ fontSize: "0.72rem", color: "var(--text-loud)", letterSpacing: "0.05em" }}>{t.name}</p>
-                <p className="font-sans font-light" style={{ fontSize: "0.6rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>{t.role} · {t.company}</p>
-              </div>
-            </div>
+            </Reveal>
           </div>
-        </Reveal>
-      ))}
+
+          {/* Right: testimonial content */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.7, ease: EASE }}
+            >
+              {/* Stars */}
+              <div style={{ display: "flex", gap: "0.3rem", marginBottom: "2.5rem" }}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={i} width="10" height="10" viewBox="0 0 14 14" fill="#A8885A" opacity="0.6">
+                    <path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" />
+                  </svg>
+                ))}
+              </div>
+
+              <blockquote style={{
+                fontFamily: "var(--font-cormorant), serif",
+                fontStyle: "italic",
+                fontWeight: 200,
+                fontSize: "clamp(1.2rem, 2.2vw, 1.8rem)",
+                color: "var(--text-loud)",
+                lineHeight: 1.65,
+                letterSpacing: "-0.005em",
+                marginBottom: "3rem",
+              }}>
+                &ldquo;{testimonials[active].quote}&rdquo;
+              </blockquote>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                <div style={{
+                  width: "42px", height: "42px", borderRadius: "50%",
+                  overflow: "hidden", flexShrink: 0,
+                  border: "1px solid rgba(168,136,90,0.2)",
+                }}>
+                  <img
+                    src={testimonials[active].img}
+                    alt={testimonials[active].name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(50%)" }}
+                  />
+                </div>
+                <div>
+                  <p style={{
+                    fontFamily: "var(--font-dm), sans-serif",
+                    fontSize: "0.75rem",
+                    color: "var(--text-loud)",
+                    fontWeight: 300,
+                    letterSpacing: "0.04em",
+                  }}>
+                    {testimonials[active].name}
+                  </p>
+                  <p style={{
+                    fontFamily: "var(--font-dm), sans-serif",
+                    fontSize: "0.6rem",
+                    color: "var(--text-muted)",
+                    fontWeight: 300,
+                    letterSpacing: "0.07em",
+                    marginTop: "0.25rem",
+                  }}>
+                    {testimonials[active].role} · {testimonials[active].company}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+      </div>
+      <style>{`.testimonials-layout { grid-template-columns: 180px 1fr !important; } @media(max-width:700px){ .testimonials-layout { grid-template-columns: 1fr !important; gap: 2.5rem !important; } }`}</style>
     </div>
   );
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────
-export default function HomePage() {
-  const [activeBedroomSlide, setActiveBedroomSlide]     = useState(0);
-  const [activeKitchenSlide, setActiveKitchenSlide]     = useState(0);
-  const [activeLivingSlide, setActiveLivingSlide]       = useState(0);
-  const [contactSubmitted, setContactSubmitted]         = useState(false);
-  const [form, setForm]                                 = useState({ name: "", email: "", message: "" });
+// ══════════════════════════════════════════════════════════════════════════
+// SERVICES — Editorial list
+// ══════════════════════════════════════════════════════════════════════════
 
-  // Auto-advance bedroom slider
-  useEffect(() => {
-    const t = setInterval(() => setActiveBedroomSlide(p => (p + 1) % BEDROOM_SLIDES.length), 5500);
-    return () => clearInterval(t);
-  }, []);
+function ServicesSection() {
+  return (
+    <section style={{
+      backgroundColor: "var(--bg)",
+      borderBottom: "1px solid var(--border)",
+    }}>
+      <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem, 7vw, 8rem)" }}>
+
+        {/* Header */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "clamp(3rem, 6vw, 8rem)",
+          alignItems: "end",
+          padding: "clamp(6rem, 10vw, 11rem) 0 clamp(4rem, 6vw, 7rem)",
+          borderBottom: "1px solid var(--border)",
+        }}
+          className="services-header"
+        >
+          <Reveal>
+            <p style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "0.56rem", letterSpacing: "0.52em",
+              textTransform: "uppercase", color: "#A8885A",
+              fontWeight: 300, marginBottom: "2rem",
+            }}>
+              What We Deliver
+            </p>
+            <h2 style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontWeight: 200, fontStyle: "italic",
+              fontSize: "clamp(2.5rem, 5vw, 5rem)",
+              color: "var(--text-loud)", lineHeight: 1.0,
+              letterSpacing: "-0.01em",
+            }}>
+              Services
+            </h2>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontWeight: 300,
+              fontSize: "clamp(0.85rem, 1.2vw, 0.95rem)",
+              color: "var(--text-muted)",
+              lineHeight: 1.9,
+              maxWidth: "420px",
+            }}>
+              Full-spectrum visualisation for architecture and real estate.
+              Every deliverable a considered composition — technically precise,
+              atmospherically intentional, commercially decisive.
+            </p>
+          </Reveal>
+        </div>
+
+        {/* Service rows */}
+        <div>
+          {SERVICES.map((svc, i) => (
+            <ServiceRow key={svc.n} svc={svc} delay={i * 0.06} />
+          ))}
+        </div>
+
+      </div>
+      <style>{`.services-header { grid-template-columns: 1fr 1fr !important; } @media(max-width:700px){ .services-header { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
+
+function ServiceRow({ svc, delay }: { svc: typeof SERVICES[0]; delay: number }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Reveal delay={delay}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "80px 1fr 1fr 40px",
+          gap: "clamp(1rem, 3vw, 4rem)",
+          alignItems: "center",
+          padding: "clamp(2rem, 3.5vw, 3.2rem) 0",
+          borderBottom: "1px solid var(--border)",
+          cursor: "default",
+          transition: "background-color 0.4s ease",
+          backgroundColor: hovered ? "rgba(168,136,90,0.025)" : "transparent",
+        }}
+        className="service-row"
+      >
+        <span style={{
+          fontFamily: "var(--font-dm), sans-serif",
+          fontSize: "0.55rem", letterSpacing: "0.2em",
+          color: hovered ? "#A8885A" : "var(--border-mid)",
+          fontWeight: 300,
+          transition: "color 0.4s",
+        }}>
+          {svc.n}
+        </span>
+        <h3 style={{
+          fontFamily: "var(--font-cormorant), serif",
+          fontWeight: 200,
+          fontSize: "clamp(1.1rem, 2vw, 1.75rem)",
+          color: hovered ? "var(--text-loud)" : "var(--text-mid)",
+          transition: "color 0.4s",
+          letterSpacing: "-0.01em",
+        }}>
+          {svc.title}
+        </h3>
+        <p style={{
+          fontFamily: "var(--font-dm), sans-serif",
+          fontWeight: 300,
+          fontSize: "clamp(0.78rem, 1.1vw, 0.88rem)",
+          color: hovered ? "var(--text-soft)" : "var(--text-muted)",
+          lineHeight: 1.85,
+          transition: "color 0.4s",
+        }}>
+          {svc.desc}
+        </p>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <motion.span
+            animate={{ x: hovered ? 6 : 0, color: hovered ? "#A8885A" : "var(--text-muted)" }}
+            transition={{ duration: 0.35, ease: EASE_SOFT }}
+            style={{ fontSize: "0.9rem", display: "block" }}
+          >
+            →
+          </motion.span>
+        </div>
+      </div>
+      <style>{`.service-row { grid-template-columns: 80px 1fr 1fr 40px !important; } @media(max-width:900px){ .service-row { grid-template-columns: 60px 1fr !important; } .service-row p { display: none; } } @media(max-width:540px){ .service-row { grid-template-columns: 1fr !important; } .service-row span:first-child { display: none; } }`}</style>
+    </Reveal>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// ABOUT — Asymmetric editorial layout
+// ══════════════════════════════════════════════════════════════════════════
+
+function AboutSection() {
+  return (
+    <section style={{
+      backgroundColor: "var(--bg)",
+      borderBottom: "1px solid var(--border)",
+      overflow: "hidden",
+    }}>
+      <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          minHeight: "clamp(480px, 65vw, 760px)",
+        }}
+          className="about-grid"
+        >
+          {/* Left: large decorative text + headline */}
+          <div style={{
+            padding: "clamp(5rem, 9vw, 10rem) clamp(2rem, 7vw, 8rem)",
+            borderRight: "1px solid var(--border)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            position: "relative",
+            overflow: "hidden",
+          }}>
+            {/* Decorative large letter */}
+            <div style={{
+              position: "absolute",
+              bottom: "-2rem",
+              right: "-1rem",
+              fontFamily: "var(--font-cormorant), serif",
+              fontSize: "clamp(12rem, 18vw, 22rem)",
+              fontWeight: 200,
+              fontStyle: "italic",
+              color: "rgba(168,136,90,0.04)",
+              lineHeight: 1,
+              userSelect: "none",
+              pointerEvents: "none",
+              letterSpacing: "-0.04em",
+            }}>
+              A
+            </div>
+
+            <Reveal>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontSize: "0.56rem", letterSpacing: "0.52em",
+                textTransform: "uppercase", color: "#A8885A",
+                fontWeight: 300, marginBottom: "2.5rem",
+              }}>
+                The Studio
+              </p>
+              <h2 style={{
+                fontFamily: "var(--font-cormorant), serif",
+                fontWeight: 200,
+                fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
+                color: "var(--text-loud)",
+                lineHeight: 1.06,
+                letterSpacing: "-0.01em",
+                marginBottom: "2.5rem",
+              }}>
+                Architecture Rendered<br />
+                with <em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>Hospitality Intelligence.</em>
+              </h2>
+              <GoldRule delay={0.2} width="40px" />
+            </Reveal>
+          </div>
+
+          {/* Right: body copy + CTA */}
+          <div style={{
+            padding: "clamp(5rem, 9vw, 10rem) clamp(2rem, 7vw, 8rem)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}>
+            <Reveal delay={0.1}>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontWeight: 300,
+                fontSize: "clamp(0.88rem, 1.3vw, 1rem)",
+                color: "var(--text-soft)",
+                lineHeight: 1.95,
+                marginBottom: "2rem",
+              }}>
+                ArchViz Craft is a luxury architectural visualisation studio
+                serving architects, developers, and interior designers across
+                the Gulf and beyond. We bring nine years of regional expertise
+                and a hospitality-trained eye to every project.
+              </p>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontWeight: 300,
+                fontSize: "clamp(0.88rem, 1.3vw, 1rem)",
+                color: "var(--text-muted)",
+                lineHeight: 1.95,
+                marginBottom: "3.5rem",
+              }}>
+                Every image is a deliberate composition. We do not document
+                architecture — we argue for it. Fourteen countries. A hundred
+                and twenty projects. One consistent standard.
+              </p>
+              <div style={{ display: "flex", gap: "1.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                <a
+                  href="/studio"
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "0.75rem",
+                    fontFamily: "var(--font-dm), sans-serif",
+                    fontSize: "0.58rem", letterSpacing: "0.35em",
+                    textTransform: "uppercase", color: "var(--text-loud)",
+                    textDecoration: "none",
+                    borderBottom: "1px solid var(--border-mid)",
+                    paddingBottom: "3px",
+                    transition: "color 0.35s, border-color 0.35s",
+                    fontWeight: 300,
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A";
+                    (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = "#A8885A";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)";
+                    (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = "var(--border-mid)";
+                  }}
+                >
+                  Meet the Studio
+                  <span style={{ display: "inline-block", width: "18px", height: "1px", backgroundColor: "currentColor" }} />
+                </a>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+      <style>{`.about-grid { grid-template-columns: 1fr 1fr !important; } @media(max-width:768px){ .about-grid { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// CONTACT — Minimal luxury form
+// ══════════════════════════════════════════════════════════════════════════
+
+function ContactSection() {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   return (
-    <div style={{ backgroundColor: "var(--bg)", color: "var(--text-loud)", fontFamily: "var(--font-cormorant), serif" }}>
-
-      {/* Grain overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-[100] opacity-[0.032]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: "200px",
+    <section id="contact" style={{
+      backgroundColor: "var(--bg)",
+      borderBottom: "1px solid var(--border)",
+    }}>
+      <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          minHeight: "clamp(540px, 70vw, 820px)",
         }}
-      />
-
-      <Nav scrolled={false} />
-      <ThemeToggle />
-      <Hero />
-
-      {/* ── METRICS STRIP ────────────────────────────────────────────────── */}
-      <section style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }} className="metrics-grid">
-          {STATS.map((s, i) => (
-            <Reveal key={s.label} delay={i * 0.08}>
-              <div className="flex flex-col items-start" style={{
-                padding: "3.5rem clamp(1.5rem,4vw,3rem)",
-                borderRight: i < 3 ? "1px solid var(--border)" : "none",
-              }}>
-                <p className="font-serif font-extralight leading-none mb-3" style={{ fontSize: "clamp(2.2rem,4vw,3.5rem)", color: "var(--text-loud)" }}>
-                  <CountUp target={s.value} />
-                </p>
-                <p className="font-sans font-light uppercase" style={{ fontSize: "0.58rem", letterSpacing: "0.28em", color: "var(--text-soft)" }}>
-                  {s.label}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── MANIFESTO ──────────────────────────────────────────────────────── */}
-      <section className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(8rem,12vw,13rem)", paddingBottom: "clamp(8rem,12vw,13rem)", borderBottom: "1px solid var(--border)" }}>
-        <Reveal className="max-w-5xl mx-auto text-center">
-          <p className="font-sans font-light uppercase mb-10" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>
-            Studio Manifesto
-          </p>
-          <blockquote className="font-serif font-extralight italic leading-[1.3]" style={{ fontSize: "clamp(1.7rem,3.5vw,3.2rem)", color: "var(--text-loud)" }}>
-            We render architecture through the lens of hospitality —<br />
-            understanding how spaces are inhabited, not just how they appear.
-          </blockquote>
-          <div className="flex justify-center mt-14">
-            <GoldLine width="40px" delay={0.4} />
-          </div>
-        </Reveal>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          01 · BEDROOM SHOWCASE — Private Sanctuaries
-      ════════════════════════════════════════════════════════════════════ */}
-      <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div className="px-8 md:px-16 lg:px-24 pt-20 pb-16">
-          <Reveal>
-            <p className="font-sans font-light uppercase mb-5" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>
-              01 · Selected Work — Private Sanctuaries
-            </p>
-            <h2 className="font-serif font-extralight italic" style={{ fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", maxWidth: "780px", lineHeight: 1.05 }}>
-              The private suite,<br />before the walls exist.
-            </h2>
-          </Reveal>
-          <div className="mt-10">
-            <GoldLine width="clamp(80px,12vw,140px)" delay={0.3} />
-          </div>
-        </div>
-        <PortfolioCircular
-          slides={BEDROOM_SLIDES}
-          activeSlide={activeBedroomSlide}
-          setActiveSlide={setActiveBedroomSlide}
-        />
-
-        {/* Bedroom testimonials */}
-        <div className="px-8 md:px-16 lg:px-24 pt-16 pb-20" style={{ borderTop: "1px solid var(--border)" }}>
-          <Reveal className="mb-14">
-            <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>Client Record</p>
-            <h3 className="font-serif font-extralight" style={{ fontSize: "clamp(1.5rem,3vw,2.8rem)", color: "var(--text-loud)" }}>
-              Results that speak<br />
-              <em className="italic" style={{ color: "var(--text-mid)" }}>before we do.</em>
-            </h3>
-          </Reveal>
-          <TestimonialsRow testimonials={TESTIMONIALS_BEDROOMS} />
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          02 · KITCHEN SHOWCASE — Culinary Theaters
-      ════════════════════════════════════════════════════════════════════ */}
-      <section id="kitchens" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div className="px-8 md:px-16 lg:px-24 pt-20 pb-16">
-          <Reveal>
-            <p className="font-sans font-light uppercase mb-5" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>
-              02 · Culinary Theaters
-            </p>
-            <h2 className="font-serif font-extralight italic" style={{ fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", maxWidth: "820px", lineHeight: 1.05 }}>
-              Where service intelligence<br />becomes spatial architecture.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.15} className="mt-8" style={{ maxWidth: "540px" }}>
-            <p className="font-sans font-light" style={{ fontSize: "clamp(0.82rem,1.2vw,0.92rem)", color: "var(--text-muted)", lineHeight: 1.9 }}>
-              A kitchen is not a room — it is an operational system. We render culinary spaces
-              from a position of genuine hospitality knowledge: service flow, brigade movement,
-              mise en place logic, and the psychology of the guest threshold. The result is
-              not a beautiful kitchen. It is a kitchen that communicates professional authority
-              before a single brief is approved.
-            </p>
-          </Reveal>
-          <div className="mt-10">
-            <GoldLine width="clamp(80px,12vw,140px)" delay={0.3} />
-          </div>
-        </div>
-        <PortfolioCircular
-          slides={KITCHEN_SLIDES}
-          activeSlide={activeKitchenSlide}
-          setActiveSlide={setActiveKitchenSlide}
-        />
-
-        {/* Kitchen testimonials */}
-        <div className="px-8 md:px-16 lg:px-24 pt-16 pb-20" style={{ borderTop: "1px solid var(--border)" }}>
-          <Reveal className="mb-14">
-            <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>Client Record</p>
-            <h3 className="font-serif font-extralight" style={{ fontSize: "clamp(1.5rem,3vw,2.8rem)", color: "var(--text-loud)" }}>
-              The kitchen approved<br />
-              <em className="italic" style={{ color: "var(--text-mid)" }}>before the drawings were final.</em>
-            </h3>
-          </Reveal>
-          <TestimonialsRow testimonials={TESTIMONIALS_KITCHENS} />
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════════
-          03 · LIVING SPACES SHOWCASE — Social Landscapes
-      ════════════════════════════════════════════════════════════════════ */}
-      <section id="living-spaces" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div className="px-8 md:px-16 lg:px-24 pt-20 pb-16">
-          <Reveal>
-            <p className="font-sans font-light uppercase mb-5" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>
-              03 · Social Landscapes
-            </p>
-            <h2 className="font-serif font-extralight italic" style={{ fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", maxWidth: "820px", lineHeight: 1.05 }}>
-              The living room as statement<br />of how you receive the world.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.15} className="mt-8" style={{ maxWidth: "540px" }}>
-            <p className="font-sans font-light" style={{ fontSize: "clamp(0.82rem,1.2vw,0.92rem)", color: "var(--text-muted)", lineHeight: 1.9 }}>
-              Every living space communicates a social register before a guest sits down.
-              We render arrival sequences, conversation geometries, sightline hierarchies,
-              and the emotional temperature of a room at its intended hour of use.
-              Nine years of hospitality operations inform every composition — because
-              the difference between a room that impresses and one that welcomes is
-              never the furniture. It is the space between it.
-            </p>
-          </Reveal>
-          <div className="mt-10">
-            <GoldLine width="clamp(80px,12vw,140px)" delay={0.3} />
-          </div>
-        </div>
-        <PortfolioCircular
-          slides={LIVING_SPACE_SLIDES}
-          activeSlide={activeLivingSlide}
-          setActiveSlide={setActiveLivingSlide}
-        />
-
-        {/* Living space testimonials */}
-        <div className="px-8 md:px-16 lg:px-24 pt-16 pb-20" style={{ borderTop: "1px solid var(--border)" }}>
-          <Reveal className="mb-14">
-            <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>Client Record</p>
-            <h3 className="font-serif font-extralight" style={{ fontSize: "clamp(1.5rem,3vw,2.8rem)", color: "var(--text-loud)" }}>
-              The room felt inhabited<br />
-              <em className="italic" style={{ color: "var(--text-mid)" }}>before construction began.</em>
-            </h3>
-          </Reveal>
-          <TestimonialsRow testimonials={TESTIMONIALS_LIVING} />
-        </div>
-      </section>
-
-      {/* ── SERVICES ─────────────────────────────────────────────────────── */}
-      <section className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(7rem,11vw,12rem)", paddingBottom: "clamp(7rem,11vw,12rem)", borderBottom: "1px solid var(--border)" }}>
-        <Reveal className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div>
-            <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>What We Do</p>
-            <h2 className="font-serif font-extralight italic" style={{ fontSize: "clamp(2rem,4vw,4.2rem)", color: "var(--text-loud)" }}>Services</h2>
-          </div>
-          <p className="font-sans font-light leading-relaxed" style={{ fontSize: "0.85rem", color: "var(--text-soft)", maxWidth: "280px", lineHeight: 1.9 }}>
-            Full-spectrum visualisation for architecture and real estate. Every deliverable a considered composition.
-          </p>
-        </Reveal>
-        <div style={{ borderTop: "1px solid var(--border)" }}>
-          {SERVICES.map((svc, i) => (
-            <Reveal key={svc.n} delay={i * 0.05}>
-              <div className="group py-9 md:py-11 grid md:grid-cols-12 gap-4 md:gap-0 cursor-default" style={{ borderBottom: "1px solid var(--border)" }}>
-                <span className="md:col-span-1 font-sans font-light pt-1" style={{ fontSize: "0.55rem", letterSpacing: "0.2em", color: "var(--border-mid)" }}>{svc.n}</span>
-                <h3
-                  className="md:col-span-5 font-serif font-light transition-colors duration-500"
-                  style={{ fontSize: "clamp(1.1rem,2vw,1.65rem)", color: "var(--text-mid)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLHeadingElement).style.color = "var(--text-loud)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLHeadingElement).style.color = "var(--text-mid)"; }}
-                >
-                  {svc.title}
-                </h3>
-                <p
-                  className="md:col-span-5 font-sans font-light leading-relaxed"
-                  style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.85 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLParagraphElement).style.color = "var(--text-mid)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLParagraphElement).style.color = "var(--text-muted)"; }}
-                >
-                  {svc.desc}
-                </p>
-                <div className="md:col-span-1 flex justify-end items-start">
-                  <span className="font-sans text-sm transition-all duration-500 inline-block group-hover:translate-x-1" style={{ color: "var(--text-muted)" }}>→</span>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── ABOUT ────────────────────────────────────────────────────────── */}
-      <section className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(7rem,11vw,12rem)", paddingBottom: "clamp(7rem,11vw,12rem)", borderBottom: "1px solid var(--border)" }}>
-        <div className="grid md:grid-cols-12 gap-12 md:gap-0">
-          <div className="md:col-span-7 md:pr-20">
+          className="contact-grid"
+        >
+          {/* Left: info */}
+          <div style={{
+            padding: "clamp(5rem, 9vw, 11rem) clamp(2rem, 7vw, 8rem)",
+            borderRight: "1px solid var(--border)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}>
             <Reveal>
-              <p className="font-sans font-light uppercase mb-8" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>The Studio</p>
-              <h2 className="font-serif font-extralight leading-[1.1]" style={{ fontSize: "clamp(1.8rem,4vw,4rem)", color: "var(--text-loud)" }}>
-                Architecture Rendered with{" "}
-                <em className="italic" style={{ color: "var(--text-mid)" }}>Hospitality Intelligence.</em>
+              <p style={{
+                fontFamily: "var(--font-dm), sans-serif",
+                fontSize: "0.56rem", letterSpacing: "0.52em",
+                textTransform: "uppercase", color: "#A8885A",
+                fontWeight: 300, marginBottom: "2.5rem",
+              }}>
+                Begin a Project
+              </p>
+              <h2 style={{
+                fontFamily: "var(--font-cormorant), serif",
+                fontWeight: 200,
+                fontSize: "clamp(2.5rem, 5vw, 5.5rem)",
+                color: "var(--text-loud)",
+                lineHeight: 1.0,
+                letterSpacing: "-0.02em",
+              }}>
+                Let us render<br />
+                <em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>your vision.</em>
               </h2>
             </Reveal>
-          </div>
-          <div className="md:col-span-5 md:pt-14">
-            <Reveal delay={0.15}>
-              <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: "2rem" }}>
-                <p className="font-sans font-light leading-relaxed mb-6" style={{ fontSize: "0.9rem", color: "var(--text-soft)", lineHeight: 1.9 }}>
-                  ArchViz Craft is a luxury architectural visualisation studio serving architects, developers, and interior designers across the Gulf and beyond. We bring 9 years of regional expertise and a hospitality-trained eye to every project.
-                </p>
-                <p className="font-sans font-light leading-relaxed mb-10" style={{ fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.9 }}>
-                  Every image is a deliberate composition. Visualisation is not documentation. It is persuasion.
-                </p>
-                <a href="/studio" className="inline-flex items-center gap-3 font-sans font-light uppercase transition-opacity duration-300 hover:opacity-50" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.38em", textDecoration: "none" }}>
-                  <span style={{ borderBottom: "1px solid var(--gold)", paddingBottom: "2px" }}>Meet the Studio</span>
-                  <span style={{ display: "inline-block", width: "22px", height: "1px", backgroundColor: "var(--gold)" }} />
-                </a>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
 
-      {/* ── CONTACT ──────────────────────────────────────────────────────── */}
-      <section id="contact" className="px-8 md:px-16 lg:px-24" style={{ paddingTop: "clamp(7rem,11vw,12rem)", paddingBottom: "clamp(7rem,11vw,12rem)", borderBottom: "1px solid var(--border)" }}>
-        <Reveal className="mb-20">
-          <p className="font-sans font-light uppercase mb-6" style={{ fontSize: "0.58rem", color: "var(--gold)", letterSpacing: "0.52em" }}>Get In Touch</p>
-          <h2 className="font-serif font-extralight" style={{ fontSize: "clamp(2rem,5vw,5rem)", color: "var(--text-loud)" }}>
-            Begin a project<br />
-            <em className="italic" style={{ color: "var(--text-mid)" }}>with us.</em>
-          </h2>
-        </Reveal>
-        <div className="grid md:grid-cols-12 gap-16 md:gap-0">
-          <div className="md:col-span-4 md:pr-12 space-y-14">
-            <Reveal>
-              <div>
-                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>WhatsApp</p>
-                <a href="https://wa.me/971500000000" target="_blank" rel="noopener noreferrer" className="font-serif transition-colors duration-500 block" style={{ fontSize: "1.2rem", color: "var(--text-mid)", textDecoration: "none" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}>
-                  +971 50 000 0000
-                </a>
-              </div>
-            </Reveal>
             <Reveal delay={0.1}>
-              <div>
-                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>Email</p>
-                <a href="mailto:studio@archvizcraft.com" className="font-serif transition-colors duration-500 block" style={{ fontSize: "1.2rem", color: "var(--text-mid)", textDecoration: "none" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}>
-                  studio@archvizcraft.com
-                </a>
-              </div>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <div>
-                <p className="font-sans font-light uppercase mb-4" style={{ fontSize: "0.55rem", letterSpacing: "0.22em", color: "var(--text-muted)" }}>Location</p>
-                <p className="font-serif" style={{ fontSize: "1.2rem", color: "var(--text-mid)" }}>By Appointment · Dubai</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+                {[
+                  { label: "WhatsApp", value: "+971 50 000 0000", href: "https://wa.me/971500000000" },
+                  { label: "Email",    value: "studio@archvizcraft.com", href: "mailto:studio@archvizcraft.com" },
+                  { label: "Location", value: "By Appointment · Dubai", href: undefined },
+                ].map(item => (
+                  <div key={item.label}>
+                    <p style={{
+                      fontFamily: "var(--font-dm), sans-serif",
+                      fontSize: "0.52rem", letterSpacing: "0.25em",
+                      textTransform: "uppercase", color: "var(--text-muted)",
+                      fontWeight: 300, marginBottom: "0.6rem",
+                    }}>
+                      {item.label}
+                    </p>
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        style={{
+                          fontFamily: "var(--font-cormorant), serif",
+                          fontSize: "clamp(1.1rem, 1.8vw, 1.5rem)",
+                          fontWeight: 200,
+                          color: "var(--text-mid)",
+                          textDecoration: "none",
+                          transition: "color 0.35s",
+                          display: "block",
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}
+                      >
+                        {item.value}
+                      </a>
+                    ) : (
+                      <p style={{
+                        fontFamily: "var(--font-cormorant), serif",
+                        fontSize: "clamp(1.1rem, 1.8vw, 1.5rem)",
+                        fontWeight: 200,
+                        color: "var(--text-mid)",
+                      }}>
+                        {item.value}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             </Reveal>
           </div>
-          <Reveal delay={0.1} className="md:col-span-8">
-            <div className="md:pl-16" style={{ borderLeft: "1px solid var(--border)" }}>
-              {contactSubmitted ? (
-                <div className="py-20">
-                  <h3 className="font-serif font-extralight italic" style={{ fontSize: "2rem", color: "var(--text-loud)" }}>
-                    Thank you. We&rsquo;ll be in touch shortly.
-                  </h3>
-                </div>
-              ) : (
-                <form onSubmit={e => { e.preventDefault(); setContactSubmitted(true); }} className="space-y-8">
+
+          {/* Right: form */}
+          <div style={{
+            padding: "clamp(5rem, 9vw, 11rem) clamp(2rem, 7vw, 8rem)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}>
+            {submitted ? (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: EASE }}
+              >
+                <div style={{ width: "36px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6, marginBottom: "2rem" }} />
+                <h3 style={{
+                  fontFamily: "var(--font-cormorant), serif",
+                  fontWeight: 200, fontStyle: "italic",
+                  fontSize: "clamp(1.8rem, 3vw, 2.8rem)",
+                  color: "var(--text-loud)",
+                  lineHeight: 1.2,
+                }}>
+                  Thank you. We will be<br />in touch shortly.
+                </h3>
+              </motion.div>
+            ) : (
+              <Reveal delay={0.08}>
+                <form
+                  onSubmit={e => { e.preventDefault(); setSubmitted(true); }}
+                  style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}
+                >
                   {(["name", "email"] as const).map(field => (
-                    <input
-                      key={field}
-                      type={field === "email" ? "email" : "text"}
+                    <div key={field} style={{ position: "relative" }}>
+                      <label style={{
+                        display: "block",
+                        fontFamily: "var(--font-dm), sans-serif",
+                        fontSize: "0.52rem", letterSpacing: "0.25em",
+                        textTransform: "uppercase", color: "var(--text-muted)",
+                        fontWeight: 300, marginBottom: "0.75rem",
+                      }}>
+                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                      </label>
+                      <input
+                        type={field === "email" ? "email" : "text"}
+                        required
+                        value={form[field]}
+                        onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
+                        style={{
+                          width: "100%", background: "transparent",
+                          border: "none", borderBottom: "1px solid var(--border)",
+                          padding: "0.6rem 0",
+                          fontSize: "0.95rem", color: "var(--text-loud)",
+                          outline: "none",
+                          fontFamily: "var(--font-dm), sans-serif",
+                          fontWeight: 300,
+                          transition: "border-color 0.3s",
+                        }}
+                        onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "#A8885A"; }}
+                        onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }}
+                      />
+                    </div>
+                  ))}
+                  <div>
+                    <label style={{
+                      display: "block",
+                      fontFamily: "var(--font-dm), sans-serif",
+                      fontSize: "0.52rem", letterSpacing: "0.25em",
+                      textTransform: "uppercase", color: "var(--text-muted)",
+                      fontWeight: 300, marginBottom: "0.75rem",
+                    }}>
+                      Project Brief
+                    </label>
+                    <textarea
+                      rows={4}
                       required
-                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                      value={form[field]}
-                      onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
+                      placeholder=""
+                      value={form.message}
+                      onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                       style={{
                         width: "100%", background: "transparent",
-                        borderBottom: "1px solid var(--border)", padding: "0.75rem 0",
-                        fontSize: "0.9rem", color: "var(--text-loud)", outline: "none",
-                        fontFamily: "var(--font-dm), sans-serif", fontWeight: 300,
+                        border: "none", borderBottom: "1px solid var(--border)",
+                        padding: "0.6rem 0",
+                        fontSize: "0.95rem", color: "var(--text-loud)",
+                        outline: "none", resize: "none",
+                        fontFamily: "var(--font-dm), sans-serif",
+                        fontWeight: 300,
+                        transition: "border-color 0.3s",
                       }}
-                      onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border-mid)"; }}
-                      onBlur={e  => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }}
+                      onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "#A8885A"; }}
+                      onBlur={e  => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }}
                     />
-                  ))}
-                  <textarea
-                    rows={5}
-                    required
-                    placeholder="Tell us about your project"
-                    value={form.message}
-                    onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
-                    style={{
-                      width: "100%", background: "transparent",
-                      borderBottom: "1px solid var(--border)", padding: "0.75rem 0",
-                      fontSize: "0.9rem", color: "var(--text-loud)", outline: "none", resize: "none",
-                      fontFamily: "var(--font-dm), sans-serif", fontWeight: 300,
-                    }}
-                    onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border-mid)"; }}
-                    onBlur={e  => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }}
-                  />
-                  <ContactSubmitButton />
+                  </div>
+                  <SubmitButton />
                 </form>
-              )}
-            </div>
-          </Reveal>
+              </Reveal>
+            )}
+          </div>
         </div>
-      </section>
+      </div>
+      <style>{`.contact-grid { grid-template-columns: 1fr 1fr !important; } @media(max-width:768px){ .contact-grid { grid-template-columns: 1fr !important; } }`}</style>
+    </section>
+  );
+}
 
-      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer className="px-8 md:px-16 lg:px-24 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ borderTop: "1px solid var(--border)" }}>
-        <div className="flex items-center gap-6">
+function SubmitButton() {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="submit"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        alignSelf: "flex-start",
+        display: "inline-flex", alignItems: "center", gap: "1rem",
+        padding: "0.9rem 2.5rem",
+        backgroundColor: hovered ? "#A8885A" : "transparent",
+        border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`,
+        color: hovered ? "var(--bg)" : "var(--text-loud)",
+        fontFamily: "var(--font-dm), sans-serif",
+        fontSize: "0.58rem", letterSpacing: "0.32em",
+        textTransform: "uppercase", fontWeight: 300,
+        cursor: "pointer",
+        transition: "all 0.4s ease",
+      }}
+    >
+      Send Enquiry
+      <span style={{
+        display: "inline-block", width: "18px", height: "1px",
+        backgroundColor: "currentColor",
+        transition: "transform 0.35s ease",
+        transform: hovered ? "translateX(4px)" : "translateX(0)",
+      }} />
+    </button>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// FOOTER
+// ══════════════════════════════════════════════════════════════════════════
+
+function Footer() {
+  return (
+    <footer style={{
+      backgroundColor: "var(--bg)",
+      borderTop: "1px solid var(--border)",
+      padding: "clamp(2.5rem, 4vw, 4rem) clamp(2rem, 7vw, 8rem)",
+    }}>
+      <div style={{
+        maxWidth: "1440px", margin: "0 auto",
+        display: "flex", justifyContent: "space-between",
+        alignItems: "center", gap: "2rem", flexWrap: "wrap",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "2.5rem", flexWrap: "wrap" }}>
           {[
             { label: "View Portfolio", href: "/work" },
             { label: "The Studio",     href: "/studio" },
             { label: "Contact",        href: "/#contact" },
           ].map((link, i) => (
-            <span key={link.label} className="flex items-center gap-6">
-              {i > 0 && <span style={{ color: "var(--border)", fontSize: "8px" }}>·</span>}
+            <span key={link.label} style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
+              {i > 0 && <span style={{ color: "var(--border)", fontSize: "7px" }}>·</span>}
               <a
                 href={link.href}
-                className="font-sans font-light uppercase transition-colors duration-300"
-                style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.28em", textDecoration: "none" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold)"; }}
+                style={{
+                  fontFamily: "var(--font-dm), sans-serif",
+                  fontSize: "0.55rem", letterSpacing: "0.28em",
+                  textTransform: "uppercase", color: "var(--text-muted)",
+                  textDecoration: "none", fontWeight: 300,
+                  transition: "color 0.3s",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)"; }}
               >
                 {link.label}
@@ -857,40 +1479,130 @@ export default function HomePage() {
             </span>
           ))}
         </div>
-        <p className="font-sans font-light" style={{ fontSize: "0.55rem", color: "var(--border)", letterSpacing: "0.14em" }}>
+        <p style={{
+          fontFamily: "var(--font-dm), sans-serif",
+          fontSize: "0.52rem", letterSpacing: "0.14em",
+          color: "var(--border)", fontWeight: 300,
+        }}>
           © {new Date().getFullYear()} Archviz Craft · Dubai
         </p>
-      </footer>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .metrics-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
-    </div>
+      </div>
+    </footer>
   );
 }
 
-function ContactSubmitButton() {
-  const [hovered, setHovered] = useState(false);
+// ══════════════════════════════════════════════════════════════════════════
+// MAIN PAGE
+// ══════════════════════════════════════════════════════════════════════════
+
+export default function HomePage() {
+  const [activeBedroomSlide, setActiveBedroomSlide] = useState(0);
+  const [activeKitchenSlide, setActiveKitchenSlide] = useState(0);
+  const [activeLivingSlide,  setActiveLivingSlide]  = useState(0);
+
+  // Auto-advance bedroom slider
+  useEffect(() => {
+    const t = setInterval(() => setActiveBedroomSlide(p => (p + 1) % BEDROOM_SLIDES.length), 6000);
+    return () => clearInterval(t);
+  }, []);
+
   return (
-    <button
-      type="submit"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="font-sans font-light uppercase tracking-widest"
-      style={{
-        fontSize: "0.6rem",
-        color: hovered ? "var(--text-loud)" : "var(--text-mid)",
-        border: `1px solid ${hovered ? "var(--border-mid)" : "var(--border)"}`,
-        padding: "1rem 2.5rem",
-        background: "transparent",
-        cursor: "pointer",
-        letterSpacing: "0.3em",
-        transition: "color 0.4s ease, border-color 0.4s ease",
-      }}
-    >
-      Send Enquiry
-    </button>
+    <div style={{ backgroundColor: "var(--bg)", color: "var(--text-loud)" }}>
+
+      {/* Grain overlay */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[100] opacity-[0.028]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: "200px",
+        }}
+      />
+
+      {/* ── HERO (untouched) ── */}
+      <Nav scrolled={false} />
+      <ThemeToggle />
+      <Hero />
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 1 · STATS + MANIFESTO
+      ══════════════════════════════════════════════════════════════════ */}
+      <StatsManifesto />
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 2 · BEDROOMS — Private Sanctuaries
+      ══════════════════════════════════════════════════════════════════ */}
+      <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
+        <SectionHeader
+          index="01"
+          label="Selected Work · Private Sanctuaries"
+          headline="The private suite,"
+          subheadline="before the walls exist."
+        />
+        <PortfolioViewer
+          slides={BEDROOM_SLIDES}
+          activeSlide={activeBedroomSlide}
+          setActiveSlide={setActiveBedroomSlide}
+        />
+        <Testimonials testimonials={TESTIMONIALS_BEDROOMS} />
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 3 · KITCHENS — Culinary Theaters
+      ══════════════════════════════════════════════════════════════════ */}
+      <section id="kitchens" style={{ borderBottom: "1px solid var(--border)" }}>
+        <SectionHeader
+          index="02"
+          label="Culinary Theaters"
+          headline="Where service intelligence"
+          subheadline="becomes spatial architecture."
+          body="A kitchen is not a room — it is an operational system. We render culinary spaces from a position of genuine hospitality knowledge: service flow, brigade movement, mise en place logic, and the psychology of the guest threshold."
+        />
+        <PortfolioViewer
+          slides={KITCHEN_SLIDES}
+          activeSlide={activeKitchenSlide}
+          setActiveSlide={setActiveKitchenSlide}
+        />
+        <Testimonials testimonials={TESTIMONIALS_KITCHENS} />
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 4 · LIVING SPACES — Social Landscapes
+      ══════════════════════════════════════════════════════════════════ */}
+      <section id="living-spaces" style={{ borderBottom: "1px solid var(--border)" }}>
+        <SectionHeader
+          index="03"
+          label="Social Landscapes"
+          headline="The living room as statement"
+          subheadline="of how you receive the world."
+          body="Every living space communicates a social register before a guest sits down. We render arrival sequences, conversation geometries, sightline hierarchies, and the emotional temperature of a room at its intended hour of use."
+        />
+        <PortfolioViewer
+          slides={LIVING_SPACE_SLIDES}
+          activeSlide={activeLivingSlide}
+          setActiveSlide={setActiveLivingSlide}
+        />
+        <Testimonials testimonials={TESTIMONIALS_LIVING} />
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 5 · SERVICES
+      ══════════════════════════════════════════════════════════════════ */}
+      <ServicesSection />
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 6 · ABOUT
+      ══════════════════════════════════════════════════════════════════ */}
+      <AboutSection />
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SECTION 7 · CONTACT
+      ══════════════════════════════════════════════════════════════════ */}
+      <ContactSection />
+
+      {/* ══════════════════════════════════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════════════════════════════════ */}
+      <Footer />
+    </div>
   );
 }
