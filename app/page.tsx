@@ -239,17 +239,17 @@ function ThemeToggle() {
 // ══════════════════════════════════════════════════════════════════════════
 function StatsManifesto() {
   return (
-    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(5rem,8vw,8.5rem)", paddingBottom: "clamp(5rem,8vw,8.5rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
+    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(3.5rem,5.5vw,6rem)", paddingBottom: "clamp(3.5rem,5.5vw,6rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <Reveal delay={0}>
-          <div style={{ marginBottom: "clamp(3rem,5vw,5rem)" }}>
+          <div style={{ marginBottom: "clamp(2rem,3vw,2.8rem)" }}>
             <Eyebrow>The Practice</Eyebrow>
           </div>
         </Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: "1px solid var(--border)", borderLeft: "1px solid var(--border)", marginBottom: "clamp(4rem,6vw,7rem)" }} className="stats-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: "1px solid var(--border)", borderLeft: "1px solid var(--border)", marginBottom: "clamp(2.5rem,4vw,4.5rem)" }} className="stats-grid">
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.1}>
-              <div style={{ padding: "clamp(2.2rem,3.5vw,3.8rem) clamp(1.8rem,2.6vw,3rem)", borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "relative" }}>
+              <div style={{ padding: "clamp(1.6rem,2.4vw,2.4rem) clamp(1.6rem,2.2vw,2.6rem)", borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "relative" }}>
                 <div style={{ position: "absolute", top: 0, right: 0, width: "6px", height: "6px", borderTop: "1px solid rgba(168,136,90,0.3)", borderRight: "1px solid rgba(168,136,90,0.3)" }} />
                 <p style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(3rem,5.5vw,5.5rem)", color: "var(--text-loud)", lineHeight: 1, marginBottom: "1rem", letterSpacing: "-0.02em" }}><CountUp target={s.value} suffix={s.suffix} /></p>
                 <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.5, marginBottom: "0.9rem" }} />
@@ -288,7 +288,7 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
   index: string; label: string; headline: string; subheadline?: string; body?: string;
 }) {
   return (
-    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(4rem,6.5vw,7rem) clamp(2rem,7vw,8rem) clamp(2.5rem,3.5vw,4rem)" }}>
+    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(3rem,5vw,5.5rem) clamp(2rem,7vw,8rem) clamp(2rem,3vw,3rem)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(3rem,6vw,8rem)" }} className="section-header-grid">
         <Reveal delay={0}>
           <div style={{ paddingTop: "0.4rem", flexShrink: 0 }}>
@@ -338,42 +338,24 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
     <div style={{ borderTop: "1px solid var(--border)" }}>
       <div style={{
         display: "grid",
-        gridTemplateColumns: "1.15fr 1fr",
-        minHeight: "clamp(420px,52vw,720px)",
+        gridTemplateColumns: "1.25fr 1fr",
+        minHeight: "clamp(380px,42vw,560px)",
         direction: flip ? "rtl" : "ltr",
       }} className="editorial-grid">
 
-        {/* ── Image panel: blurred backdrop + sharp full render ── */}
-        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", direction: "ltr" }}>
+        {/* ── Image panel: clean edge-to-edge cover, no backdrop, no bars ── */}
+        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "#070503" }}>
           <AnimatePresence mode="wait">
-            <motion.div key={activeSlide}
-              style={{ position: "absolute", inset: 0 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+            <motion.img key={activeSlide} src={current.src} alt={current.title}
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.7, ease: EASE_SOFT }}>
-
-              {/* Blurred backdrop — same image, scaled & blurred to fill empty space */}
-              <div style={{
-                position: "absolute", inset: 0,
-                backgroundImage: `url("${current.src}")`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "blur(34px) brightness(0.42) saturate(1.05)",
-                transform: "scale(1.18)",
-              }} />
-              {/* Darkening wash so the sharp image and caption read cleanly over it */}
-              <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(7,5,3,0.34)" }} />
-
-              {/* Sharp, fully-contained render — never cropped */}
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "clamp(1rem,2.5vw,2.5rem)" }}>
-                <motion.img src={current.src} alt={current.title}
-                  initial={{ scale: 1.02 }} animate={{ scale: 1 }}
-                  transition={{ duration: 1.2, ease: EASE_SOFT }}
-                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block", boxShadow: "0 30px 80px -30px rgba(0,0,0,0.7)" }} />
-              </div>
-            </motion.div>
+              transition={{ duration: 0.8, ease: EASE_SOFT }}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
           </AnimatePresence>
+
+          {/* Subtle bottom gradient so the counter stays legible */}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(7,5,3,0.45) 0%, transparent 30%)", pointerEvents: "none" }} />
 
           {/* Counter */}
           <div style={{ position: "absolute", bottom: "1.6rem", left: "1.6rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4 }}>
@@ -446,7 +428,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
         ))}
       </div>
 
-      <style>{`.editorial-grid{grid-template-columns:1.15fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important}}`}</style>
+      <style>{`.editorial-grid{grid-template-columns:1.25fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important;min-height:0!important}.editorial-grid>div:first-child{min-height:clamp(300px,70vw,440px)}}`}</style>
     </div>
   );
 }
@@ -459,20 +441,6 @@ function ArrowButton({ onClick, direction }: { onClick: () => void; direction: "
       style={{ width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`, borderRadius: "50%", backgroundColor: hovered ? "#A8885A" : "transparent", color: hovered ? "var(--bg)" : "var(--text-mid)", cursor: "pointer", fontSize: "0.85rem", transition: "all 0.3s ease", flexShrink: 0 }}>
       {direction === "prev" ? "←" : "→"}
     </button>
-  );
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// SECTION TESTIMONIALS — luxury marquee, per category.
-// ══════════════════════════════════════════════════════════════════════════
-function SectionTestimonials({ testimonials }: { testimonials: MarqueeTestimonial[] }) {
-  return (
-    <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "clamp(3.5rem,5.5vw,6rem) 0" }}>
-      <div style={{ maxWidth: "1440px", margin: "0 auto 2.5rem", padding: "0 clamp(2rem,7vw,8rem)" }}>
-        <Eyebrow>Client Record</Eyebrow>
-      </div>
-      <TestimonialsMarquee row1={testimonials} row2={[...testimonials].reverse()} />
-    </div>
   );
 }
 
@@ -732,35 +700,30 @@ export default function HomePage() {
       <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="01" label="Selected Work · Private Sanctuaries" headline="The private suite," subheadline="before the walls exist." />
         <EditorialGallery slides={BEDROOM_SLIDES} activeSlide={activeBedroomSlide} setActiveSlide={setActiveBedroomSlide} flip={false} />
-        <SectionTestimonials testimonials={TESTIMONIALS_BEDROOMS} />
       </section>
 
       {/* 02 · KITCHENS — image RIGHT, caption LEFT */}
       <section id="kitchens" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="02" label="Culinary Theaters" headline="Where service intelligence" subheadline="becomes spatial architecture." body="A kitchen is not a room — it is an operational system. We render culinary spaces from a position of genuine hospitality knowledge: service flow, brigade movement, mise en place logic, and the psychology of the guest threshold." />
         <EditorialGallery slides={KITCHEN_SLIDES} activeSlide={activeKitchenSlide} setActiveSlide={setActiveKitchenSlide} flip={true} />
-        <SectionTestimonials testimonials={TESTIMONIALS_KITCHENS} />
       </section>
 
       {/* 03 · LIVING SPACES — image LEFT, caption RIGHT */}
       <section id="living-spaces" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="03" label="Social Landscapes" headline="The living room as statement" subheadline="of how you receive the world." body="Every living space communicates a social register before a guest sits down. We render arrival sequences, conversation geometries, sightline hierarchies, and the emotional temperature of a room at its intended hour of use." />
         <EditorialGallery slides={LIVING_SPACE_SLIDES} activeSlide={activeLivingSlide} setActiveSlide={setActiveLivingSlide} flip={false} />
-        <SectionTestimonials testimonials={TESTIMONIALS_LIVING} />
       </section>
 
       {/* 04 · VILLAS & EXTERIORS — image RIGHT, caption LEFT */}
       <section id="villas-exteriors" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="04" label="Villas & Exteriors" headline="Architecture in landscape," subheadline="before the first stone is laid." body="The exterior render is the most complex visualisation we produce — site topography, seasonal light, material ageing, landscape maturity, and the psychology of arrival all rendered in a single frame." />
         <EditorialGallery slides={VILLA_EXTERIOR_SLIDES} activeSlide={activeVillaSlide} setActiveSlide={setActiveVillaSlide} flip={true} />
-        <SectionTestimonials testimonials={TESTIMONIALS_VILLAS} />
       </section>
 
       {/* 05 · WASHROOMS — image LEFT, caption RIGHT */}
       <section id="washrooms" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="05" label="Spa & Washrooms" headline="Where material craft" subheadline="becomes a private ceremony." body="The finest washrooms are not cleaned — they are entered. We render spa suites, hammams, and master bathrooms with the same hospitality intelligence applied to a five-star arrival sequence." />
         <EditorialGallery slides={WASHROOM_SLIDES} activeSlide={activeWashroomSlide} setActiveSlide={setActiveWashroomSlide} flip={false} />
-        <SectionTestimonials testimonials={TESTIMONIALS_WASHROOMS} />
       </section>
 
       <ServicesSection />
