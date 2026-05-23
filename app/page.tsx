@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
-import CircularTestimonials, { CircularTestimonial } from "./components/CircularTestimonials";
+import TestimonialsMarquee, { MarqueeTestimonial } from "./components/TestimonialsMarquee";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const EASE_SOFT: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -27,30 +27,34 @@ const SERVICES = [
 ];
 
 // ── Testimonials (designation = "Role · Company") ────────────────────────────
-const TESTIMONIALS_BEDROOMS: CircularTestimonial[] = [
-  { quote: "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.", name: "Priya Mehta", designation: "Design Principal · Foster + Partners, London", src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop&crop=face" },
-  { quote: "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.", name: "Khalid Al Mansoori", designation: "Managing Director · Mansoori Capital, Dubai", src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=750&fit=crop&crop=face" },
-  { quote: "They understand how a room feels, not just how it looks. The light quality in our master suite visualisation was indistinguishable from a completed space. The hospitality intelligence here is genuinely rare.", name: "Isabelle Fournier", designation: "Founder · Atelier Fournier, Paris", src: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=600&h=750&fit=crop&crop=face" },
+const TESTIMONIALS_BEDROOMS: MarqueeTestimonial[] = [
+  { quote: "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.", name: "Priya Mehta", designation: "Design Principal · Foster + Partners", src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face" },
+  { quote: "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.", name: "Khalid Al Mansoori", designation: "Managing Director · Mansoori Capital", src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face" },
+  { quote: "They understand how a room feels, not just how it looks. The light quality in our master suite visualisation was indistinguishable from a completed space. The hospitality intelligence here is genuinely rare.", name: "Isabelle Fournier", designation: "Founder · Atelier Fournier, Paris", src: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=200&h=200&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_KITCHENS: CircularTestimonial[] = [
-  { quote: "The operational intelligence embedded in their kitchen renders is unlike anything I've encountered. They understood service flow, mise en place zones, the way brigade movement shapes a space. This wasn't a render — it was a functioning concept.", name: "Marco Benedetti", designation: "Executive Chef & Partner · Benedetti Group, Milan", src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=750&fit=crop&crop=face" },
-  { quote: "When we brought this to our client board, three members asked when the photography was taken. That's not a compliment — it's an architectural argument won before a single tile was laid.", name: "Hana Yoshida", designation: "Senior Interior Architect · Yabu Pushelberg, Toronto", src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=750&fit=crop&crop=face" },
-  { quote: "Our client wanted to feel the kitchen before committing to the investment. The light at 07:30, the warmth of the stone against morning sun — they approved the full specification within 48 hours of receiving the renders.", name: "Rania Al-Farsi", designation: "Project Director · Aldar Properties, Abu Dhabi", src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=750&fit=crop&crop=face" },
+const TESTIMONIALS_KITCHENS: MarqueeTestimonial[] = [
+  { quote: "The operational intelligence embedded in their kitchen renders is unlike anything I've encountered. They understood service flow, mise en place zones, the way brigade movement shapes a space. This wasn't a render — it was a functioning concept.", name: "Marco Benedetti", designation: "Executive Chef & Partner · Benedetti Group", src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" },
+  { quote: "When we brought this to our client board, three members asked when the photography was taken. That's not a compliment — it's an architectural argument won before a single tile was laid.", name: "Hana Yoshida", designation: "Senior Interior Architect · Yabu Pushelberg", src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face" },
+  { quote: "Our client wanted to feel the kitchen before committing to the investment. The light at 07:30, the warmth of the stone against morning sun — they approved the full specification within 48 hours of receiving the renders.", name: "Rania Al-Farsi", designation: "Project Director · Aldar Properties", src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_LIVING: CircularTestimonial[] = [
-  { quote: "The salon render captured precisely the quality of light we experience at that latitude — the way afternoon sun diffuses across limestone, the shadow weight of a deep cornice. It reads as a place, not a projection.", name: "Thomas Brecker", designation: "Principal Architect · Snøhetta, Oslo", src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=750&fit=crop&crop=face" },
-  { quote: "Our buyers don't purchase square footage — they purchase a way of living. These visualisations communicated the social register of the space with a confidence we hadn't seen outside the finest architectural photography.", name: "Celeste Moreau", designation: "Head of Luxury Residential · Savills, Paris", src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=750&fit=crop&crop=face" },
-  { quote: "The circulation logic, the conversation zones, the way the furniture composition guides movement through the space — whoever briefed this team understood hospitality design at its most sophisticated level.", name: "Omar Kassem", designation: "Chief Design Officer · FIVE Hotels & Resorts, Dubai", src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=750&fit=crop&crop=face" },
+const TESTIMONIALS_LIVING: MarqueeTestimonial[] = [
+  { quote: "The salon render captured precisely the quality of light we experience at that latitude — the way afternoon sun diffuses across limestone, the shadow weight of a deep cornice. It reads as a place, not a projection.", name: "Thomas Brecker", designation: "Principal Architect · Snøhetta, Oslo", src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face" },
+  { quote: "Our buyers don't purchase square footage — they purchase a way of living. These visualisations communicated the social register of the space with a confidence we hadn't seen outside the finest architectural photography.", name: "Celeste Moreau", designation: "Head of Luxury Residential · Savills, Paris", src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face" },
+  { quote: "The circulation logic, the conversation zones, the way the furniture composition guides movement through the space — whoever briefed this team understood hospitality design at its most sophisticated level.", name: "Omar Kassem", designation: "Chief Design Officer · FIVE Hotels & Resorts", src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_VILLAS: CircularTestimonial[] = [
-  { quote: "The exterior render communicated the full weight of the site — the topography, the light at that latitude, the relationship between structure and landscape. Our planning committee approved the scheme on the first submission.", name: "David Hartmann", designation: "Principal · Hartmann Architects, London", src: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=600&h=750&fit=crop&crop=face" },
-  { quote: "They rendered the villa as it will actually be experienced — from the arrival court, from the pool terrace, from the guest wing looking across the estate. Not architecture as object, but architecture as sequence of spaces.", name: "Fatima Al Rashid", designation: "Development Director · DAMAC Properties, Dubai", src: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=750&fit=crop&crop=face" },
-  { quote: "The renders sold the land before we had completed the design. Three clients purchased plots based solely on the visualisations. The quality of light, the material language, the sense of enclosure — all precisely communicated.", name: "Alessandro Ferretti", designation: "Creative Director · Studio Ferretti, Milan", src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=750&fit=crop&crop=face" },
+const TESTIMONIALS_VILLAS: MarqueeTestimonial[] = [
+  { quote: "The exterior render communicated the full weight of the site — the topography, the light at that latitude, the relationship between structure and landscape. Our planning committee approved the scheme on the first submission.", name: "David Hartmann", designation: "Principal · Hartmann Architects, London", src: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=200&h=200&fit=crop&crop=face" },
+  { quote: "They rendered the villa as it will actually be experienced — from the arrival court, from the pool terrace, from the guest wing looking across the estate. Not architecture as object, but architecture as sequence of spaces.", name: "Fatima Al Rashid", designation: "Development Director · DAMAC Properties", src: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=200&h=200&fit=crop&crop=face" },
+  { quote: "The renders sold the land before we had completed the design. Three clients purchased plots based solely on the visualisations. The quality of light, the material language, the sense of enclosure — all precisely communicated.", name: "Alessandro Ferretti", designation: "Creative Director · Studio Ferretti, Milan", src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_WASHROOMS: CircularTestimonial[] = [
-  { quote: "The spa suite render stopped our board meeting. Nobody spoke for thirty seconds. The light quality, the steam atmosphere, the way materials read wet against dry — this is a level of craft I had not encountered in visualisation before.", name: "Nour El Hassan", designation: "VP of Design · Six Senses Hotels & Resorts", src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=750&fit=crop&crop=face" },
-  { quote: "Washroom renders are typically the weakest element of any presentation. Ours became the hero image of the entire project. The stone selection, the fixture scale, the quality of diffused light — clients asked for prints.", name: "Yuki Tanaka", designation: "Senior Designer · Super Potato, Tokyo", src: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=600&h=750&fit=crop&crop=face" },
-  { quote: "We commissioned renders for a master bathroom where the brief was silence. The render they delivered communicated acoustic as a spatial quality — the depth of the stone, the absorption of the textiles, the stillness of standing water.", name: "Lucia Marchetti", designation: "Interior Director · Marchetti Studio, Florence", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=750&fit=crop&crop=face" },
+const TESTIMONIALS_WASHROOMS: MarqueeTestimonial[] = [
+  { quote: "The spa suite render stopped our board meeting. Nobody spoke for thirty seconds. The light quality, the steam atmosphere, the way materials read wet against dry — this is a level of craft I had not encountered in visualisation before.", name: "Nour El Hassan", designation: "VP of Design · Six Senses Resorts", src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face" },
+  { quote: "Washroom renders are typically the weakest element of any presentation. Ours became the hero image of the entire project. The stone selection, the fixture scale, the quality of diffused light — clients asked for prints.", name: "Yuki Tanaka", designation: "Senior Designer · Super Potato, Tokyo", src: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=200&h=200&fit=crop&crop=face" },
+  { quote: "We commissioned renders for a master bathroom where the brief was silence. The render they delivered communicated acoustic as a spatial quality — the depth of the stone, the absorption of the textiles, the stillness of standing water.", name: "Lucia Marchetti", designation: "Interior Director · Marchetti Studio, Florence", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop&crop=face" },
+];
+
+const ALL_TESTIMONIALS: MarqueeTestimonial[] = [
+  ...TESTIMONIALS_BEDROOMS, ...TESTIMONIALS_KITCHENS, ...TESTIMONIALS_LIVING, ...TESTIMONIALS_VILLAS, ...TESTIMONIALS_WASHROOMS,
 ];
 
 // ── Portfolio slides ───────────────────────────────────────────────────────
@@ -132,7 +136,7 @@ function useRevealInView() {
   return { ref, isInView };
 }
 
-function Reveal({ children, delay = 0, y = 40, className = "", style }: {
+function Reveal({ children, delay = 0, y = 36, className = "", style }: {
   children: React.ReactNode; delay?: number; y?: number;
   className?: string; style?: React.CSSProperties;
 }) {
@@ -140,7 +144,7 @@ function Reveal({ children, delay = 0, y = 40, className = "", style }: {
   return (
     <motion.div ref={ref} className={className} style={style}
       initial={{ opacity: 0, y }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 1.4, ease: EASE, delay }}>
+      transition={{ duration: 1.2, ease: EASE, delay }}>
       {children}
     </motion.div>
   );
@@ -231,21 +235,21 @@ function ThemeToggle() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// STATS + MANIFESTO
+// STATS + MANIFESTO  — tightened vertical rhythm
 // ══════════════════════════════════════════════════════════════════════════
 function StatsManifesto() {
   return (
-    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(7rem,12vw,13rem)", paddingBottom: "clamp(7rem,12vw,13rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
+    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(5rem,8vw,8.5rem)", paddingBottom: "clamp(5rem,8vw,8.5rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <Reveal delay={0}>
-          <div style={{ marginBottom: "clamp(5rem,8vw,9rem)" }}>
+          <div style={{ marginBottom: "clamp(3rem,5vw,5rem)" }}>
             <Eyebrow>The Practice</Eyebrow>
           </div>
         </Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: "1px solid var(--border)", borderLeft: "1px solid var(--border)", marginBottom: "clamp(7rem,11vw,13rem)" }} className="stats-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: "1px solid var(--border)", borderLeft: "1px solid var(--border)", marginBottom: "clamp(4rem,6vw,7rem)" }} className="stats-grid">
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.1}>
-              <div style={{ padding: "clamp(2.5rem,4vw,4.5rem) clamp(2rem,3vw,3.5rem)", borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "relative" }}>
+              <div style={{ padding: "clamp(2.2rem,3.5vw,3.8rem) clamp(1.8rem,2.6vw,3rem)", borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)", position: "relative" }}>
                 <div style={{ position: "absolute", top: 0, right: 0, width: "6px", height: "6px", borderTop: "1px solid rgba(168,136,90,0.3)", borderRight: "1px solid rgba(168,136,90,0.3)" }} />
                 <p style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(3rem,5.5vw,5.5rem)", color: "var(--text-loud)", lineHeight: 1, marginBottom: "1rem", letterSpacing: "-0.02em" }}><CountUp target={s.value} suffix={s.suffix} /></p>
                 <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.5, marginBottom: "0.9rem" }} />
@@ -254,37 +258,37 @@ function StatsManifesto() {
             </Reveal>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(4rem,7vw,10rem)", alignItems: "start" }} className="manifesto-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "start" }} className="manifesto-grid">
           <Reveal delay={0.05}>
-            <div style={{ marginBottom: "2.5rem" }}><Eyebrow>Studio Manifesto</Eyebrow></div>
+            <div style={{ marginBottom: "2rem" }}><Eyebrow>Studio Manifesto</Eyebrow></div>
             <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.2rem,4vw,4rem)", color: "var(--text-loud)", lineHeight: 1.08, letterSpacing: "-0.01em" }}>
               We render architecture<br />through the lens of<br /><span style={{ color: "var(--text-mid)" }}>hospitality.</span>
             </h2>
           </Reveal>
           <Reveal delay={0.18}>
-            <div style={{ paddingTop: "clamp(3rem,5vw,5.5rem)" }}>
+            <div style={{ paddingTop: "clamp(1rem,2vw,2rem)" }}>
               <GoldRule delay={0.25} width="40px" />
-              <div style={{ marginTop: "2.5rem" }}>
-                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "1.8rem" }}>Architecture speaks before it is inhabited. Our work exists in that threshold — the moment between conception and construction — where light, material, and proportion must tell the full story of a space not yet built.</p>
+              <div style={{ marginTop: "2rem" }}>
+                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "1.6rem" }}>Architecture speaks before it is inhabited. Our work exists in that threshold — the moment between conception and construction — where light, material, and proportion must tell the full story of a space not yet built.</p>
                 <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-muted)", lineHeight: 1.9 }}>Nine years of practice. One hundred and twenty projects. Every image a deliberate act of persuasion — crafted with cinematic precision, informed by genuine hospitality intelligence.</p>
               </div>
             </div>
           </Reveal>
         </div>
       </div>
-      <style>{`@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)!important}.manifesto-grid{grid-template-columns:1fr!important;gap:3rem!important}}@media(max-width:540px){.stats-grid{grid-template-columns:1fr 1fr!important}}`}</style>
+      <style>{`@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)!important}.manifesto-grid{grid-template-columns:1fr!important;gap:2.5rem!important}}@media(max-width:540px){.stats-grid{grid-template-columns:1fr 1fr!important}}`}</style>
     </section>
   );
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// SECTION HEADER
+// SECTION HEADER — tightened top/bottom padding for better section rhythm
 // ══════════════════════════════════════════════════════════════════════════
 function SectionHeader({ index, label, headline, subheadline, body }: {
   index: string; label: string; headline: string; subheadline?: string; body?: string;
 }) {
   return (
-    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(5.5rem,10vw,11rem) clamp(2rem,7vw,8rem) clamp(3.5rem,5vw,5.5rem)" }}>
+    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(4rem,6.5vw,7rem) clamp(2rem,7vw,8rem) clamp(2.5rem,3.5vw,4rem)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(3rem,6vw,8rem)" }} className="section-header-grid">
         <Reveal delay={0}>
           <div style={{ paddingTop: "0.4rem", flexShrink: 0 }}>
@@ -293,7 +297,7 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
         </Reveal>
         <div style={{ flex: 1 }}>
           <Reveal delay={0.05}>
-            <div style={{ marginBottom: "2rem" }}><Eyebrow>{label}</Eyebrow></div>
+            <div style={{ marginBottom: "1.6rem" }}><Eyebrow>{label}</Eyebrow></div>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.1rem,4.5vw,4.8rem)", color: "var(--text-loud)", lineHeight: 1.06, letterSpacing: "-0.01em", maxWidth: "820px" }}>
@@ -303,10 +307,10 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
           </Reveal>
           {body && (
             <Reveal delay={0.18}>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.9rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.9, maxWidth: "540px", marginTop: "2rem" }}>{body}</p>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.9rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.9, maxWidth: "540px", marginTop: "1.8rem" }}>{body}</p>
             </Reveal>
           )}
-          <div style={{ marginTop: "2.5rem" }}><GoldRule delay={0.28} width="clamp(60px,10vw,120px)" /></div>
+          <div style={{ marginTop: "2rem" }}><GoldRule delay={0.28} width="clamp(60px,10vw,120px)" /></div>
         </div>
       </div>
       <style>{`.section-header-grid{flex-direction:row}@media(max-width:640px){.section-header-grid{flex-direction:column!important;gap:1.5rem!important}}`}</style>
@@ -315,8 +319,9 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// EDITORIAL GALLERY — Alternating layout. flip=true reverses image/caption.
-// objectFit: contain — NEVER crops the architectural composition.
+// EDITORIAL GALLERY — full uncropped render on a blurred backdrop of itself.
+// ZERO cropping: the sharp image uses object-fit:contain; the blur layer fills
+// any leftover space so there are no hard black bars. flip alternates the side.
 // ══════════════════════════════════════════════════════════════════════════
 function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }: {
   slides: PortfolioSlide[];
@@ -331,35 +336,50 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
 
   return (
     <div style={{ borderTop: "1px solid var(--border)" }}>
-      {/* Main frame */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        minHeight: "clamp(440px,56vw,760px)",
+        gridTemplateColumns: "1.15fr 1fr",
+        minHeight: "clamp(420px,52vw,720px)",
         direction: flip ? "rtl" : "ltr",
       }} className="editorial-grid">
 
-        {/* ── Image panel ── */}
-        <div style={{ position: "relative", backgroundColor: "#070503", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", direction: "ltr" }}>
+        {/* ── Image panel: blurred backdrop + sharp full render ── */}
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", direction: "ltr" }}>
           <AnimatePresence mode="wait">
             <motion.div key={activeSlide}
-              style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
-              initial={{ opacity: 0, scale: 1.03 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.975 }}
-              transition={{ duration: 0.82, ease: EASE_SOFT }}>
-              {/* contain = full composition always visible, zero cropping */}
-              <img src={current.src} alt={current.title}
-                style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block" }} />
-              {/* Cinematic vignette — purely decorative, does NOT crop */}
-              <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.2) 100%)", pointerEvents: "none" }} />
+              style={{ position: "absolute", inset: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: EASE_SOFT }}>
+
+              {/* Blurred backdrop — same image, scaled & blurred to fill empty space */}
+              <div style={{
+                position: "absolute", inset: 0,
+                backgroundImage: `url("${current.src}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                filter: "blur(34px) brightness(0.42) saturate(1.05)",
+                transform: "scale(1.18)",
+              }} />
+              {/* Darkening wash so the sharp image and caption read cleanly over it */}
+              <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(7,5,3,0.34)" }} />
+
+              {/* Sharp, fully-contained render — never cropped */}
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "clamp(1rem,2.5vw,2.5rem)" }}>
+                <motion.img src={current.src} alt={current.title}
+                  initial={{ scale: 1.02 }} animate={{ scale: 1 }}
+                  transition={{ duration: 1.2, ease: EASE_SOFT }}
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block", boxShadow: "0 30px 80px -30px rgba(0,0,0,0.7)" }} />
+              </div>
             </motion.div>
           </AnimatePresence>
+
           {/* Counter */}
-          <div style={{ position: "absolute", bottom: "1.8rem", left: "1.8rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4 }}>
-            <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.65rem", fontWeight: 200, color: "rgba(255,255,255,0.85)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
-            <div style={{ width: "1px", height: "20px", backgroundColor: "rgba(255,255,255,0.2)" }} />
-            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
+          <div style={{ position: "absolute", bottom: "1.6rem", left: "1.6rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4 }}>
+            <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.65rem", fontWeight: 200, color: "rgba(255,255,255,0.92)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
+            <div style={{ width: "1px", height: "20px", backgroundColor: "rgba(255,255,255,0.28)" }} />
+            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.55)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
           </div>
         </div>
 
@@ -369,14 +389,14 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
           borderLeft: flip ? "none" : "1px solid var(--border)",
           borderRight: flip ? "1px solid var(--border)" : "none",
           display: "flex", flexDirection: "column", justifyContent: "space-between",
-          padding: "clamp(2.5rem,5vw,5rem) clamp(2rem,4vw,4.5rem)",
+          padding: "clamp(2.5rem,4.5vw,4.5rem) clamp(2rem,4vw,4.5rem)",
           direction: "ltr",
         }}>
           <AnimatePresence mode="wait">
             <motion.div key={activeSlide}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
+              exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.52, ease: EASE }}
               style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.3rem" }}>
               <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
@@ -395,8 +415,6 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
           </AnimatePresence>
 
           <div>
-            <div style={{ height: "1px", backgroundColor: "var(--border)", marginBottom: "1.5rem" }} />
-            {/* Progress */}
             <div style={{ height: "1px", backgroundColor: "var(--border)", marginBottom: "1.4rem", position: "relative" }}>
               <motion.div style={{ position: "absolute", top: 0, left: 0, height: "100%", backgroundColor: "#A8885A", transformOrigin: "left" }}
                 animate={{ scaleX: (activeSlide + 1) / n }}
@@ -428,7 +446,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
         ))}
       </div>
 
-      <style>{`.editorial-grid{grid-template-columns:1fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important}}`}</style>
+      <style>{`.editorial-grid{grid-template-columns:1.15fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important}}`}</style>
     </div>
   );
 }
@@ -445,26 +463,29 @@ function ArrowButton({ onClick, direction }: { onClick: () => void; direction: "
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// SECTION TESTIMONIALS — circular stacked component, per category.
+// SECTION TESTIMONIALS — luxury marquee, per category.
 // ══════════════════════════════════════════════════════════════════════════
-function SectionTestimonials({ testimonials }: { testimonials: CircularTestimonial[] }) {
+function SectionTestimonials({ testimonials }: { testimonials: MarqueeTestimonial[] }) {
   return (
-    <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "clamp(4.5rem,8vw,8rem) clamp(2rem,7vw,8rem)" }}>
-      <CircularTestimonials testimonials={testimonials} eyebrow="Client Record" />
+    <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "clamp(3.5rem,5.5vw,6rem) 0" }}>
+      <div style={{ maxWidth: "1440px", margin: "0 auto 2.5rem", padding: "0 clamp(2rem,7vw,8rem)" }}>
+        <Eyebrow>Client Record</Eyebrow>
+      </div>
+      <TestimonialsMarquee row1={testimonials} row2={[...testimonials].reverse()} />
     </div>
   );
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// SERVICES
+// SERVICES — tightened header padding
 // ══════════════════════════════════════════════════════════════════════════
 function ServicesSection() {
   return (
     <section style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end", padding: "clamp(6rem,10vw,11rem) 0 clamp(4rem,6vw,7rem)", borderBottom: "1px solid var(--border)" }} className="services-header">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end", padding: "clamp(5rem,8vw,8.5rem) 0 clamp(3rem,4.5vw,5rem)", borderBottom: "1px solid var(--border)" }} className="services-header">
           <Reveal>
-            <div style={{ marginBottom: "2rem" }}><Eyebrow>What We Deliver</Eyebrow></div>
+            <div style={{ marginBottom: "1.6rem" }}><Eyebrow>What We Deliver</Eyebrow></div>
             <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.5rem,5vw,5rem)", color: "var(--text-loud)", lineHeight: 1.0, letterSpacing: "-0.01em" }}>Services</h2>
           </Reveal>
           <Reveal delay={0.12}>
@@ -483,7 +504,7 @@ function ServiceRow({ svc, delay }: { svc: typeof SERVICES[0]; delay: number }) 
   return (
     <Reveal delay={delay}>
       <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-        style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 40px", gap: "clamp(1rem,3vw,4rem)", alignItems: "center", padding: "clamp(2rem,3.5vw,3.2rem) 0", borderBottom: "1px solid var(--border)", cursor: "default", transition: "background-color 0.4s ease", backgroundColor: hovered ? "rgba(168,136,90,0.025)" : "transparent" }} className="service-row">
+        style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 40px", gap: "clamp(1rem,3vw,4rem)", alignItems: "center", padding: "clamp(1.8rem,3vw,2.8rem) 0", borderBottom: "1px solid var(--border)", cursor: "default", transition: "background-color 0.4s ease", backgroundColor: hovered ? "rgba(168,136,90,0.025)" : "transparent" }} className="service-row">
         <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.16em", color: hovered ? "#A8885A" : "var(--text-muted)", fontWeight: 400, transition: "color 0.4s" }}>{svc.n}</span>
         <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.25rem,2vw,1.85rem)", color: hovered ? "var(--text-loud)" : "var(--text-mid)", transition: "color 0.4s", letterSpacing: "-0.01em" }}>{svc.title}</h3>
         <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.85rem,1.1vw,0.92rem)", color: hovered ? "var(--text-soft)" : "var(--text-muted)", lineHeight: 1.8, transition: "color 0.4s" }}>{svc.desc}</p>
@@ -503,19 +524,19 @@ function AboutSection() {
   return (
     <section style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(480px,65vw,760px)" }} className="about-grid">
-          <div style={{ padding: "clamp(5rem,9vw,10rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(440px,58vw,680px)" }} className="about-grid">
+          <div style={{ padding: "clamp(4.5rem,7.5vw,8.5rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", bottom: "-2rem", right: "-1rem", fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(12rem,18vw,22rem)", fontWeight: 200, fontStyle: "italic", color: "rgba(168,136,90,0.045)", lineHeight: 1, userSelect: "none", pointerEvents: "none", letterSpacing: "-0.04em" }}>A</div>
             <Reveal>
-              <div style={{ marginBottom: "2.5rem" }}><Eyebrow>The Studio</Eyebrow></div>
-              <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", lineHeight: 1.08, letterSpacing: "-0.01em", marginBottom: "2.5rem" }}>Architecture Rendered<br />with <em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>Hospitality Intelligence.</em></h2>
+              <div style={{ marginBottom: "2rem" }}><Eyebrow>The Studio</Eyebrow></div>
+              <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", lineHeight: 1.08, letterSpacing: "-0.01em", marginBottom: "2rem" }}>Architecture Rendered<br />with <em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>Hospitality Intelligence.</em></h2>
               <GoldRule delay={0.2} width="40px" />
             </Reveal>
           </div>
-          <div style={{ padding: "clamp(5rem,9vw,10rem) clamp(2rem,7vw,8rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ padding: "clamp(4.5rem,7.5vw,8.5rem) clamp(2rem,7vw,8rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <Reveal delay={0.1}>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "2rem" }}>ArchViz Craft is a luxury architectural visualisation studio serving architects, developers, and interior designers across the Gulf and beyond. We bring nine years of regional expertise and a hospitality-trained eye to every project.</p>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-muted)", lineHeight: 1.9, marginBottom: "3.5rem" }}>Every image is a deliberate composition. We do not document architecture — we argue for it. Fourteen countries. A hundred and twenty projects. One consistent standard.</p>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "1.8rem" }}>ArchViz Craft is a luxury architectural visualisation studio serving architects, developers, and interior designers across the Gulf and beyond. We bring nine years of regional expertise and a hospitality-trained eye to every project.</p>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-muted)", lineHeight: 1.9, marginBottom: "3rem" }}>Every image is a deliberate composition. We do not document architecture — we argue for it. Fourteen countries. A hundred and twenty projects. One consistent standard.</p>
               <a href="/studio"
                 style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.66rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-loud)", textDecoration: "none", borderBottom: "1px solid var(--border-mid)", paddingBottom: "3px", transition: "color 0.35s, border-color 0.35s", fontWeight: 400 }}
                 onMouseEnter={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = "#A8885A"; el.style.borderBottomColor = "#A8885A"; }}
@@ -540,14 +561,14 @@ function ContactSection() {
   return (
     <section id="contact" style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(540px,70vw,820px)" }} className="contact-grid">
-          <div style={{ padding: "clamp(5rem,9vw,11rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(500px,62vw,740px)" }} className="contact-grid">
+          <div style={{ padding: "clamp(4.5rem,7.5vw,9rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <Reveal>
-              <div style={{ marginBottom: "2.5rem" }}><Eyebrow>Begin a Project</Eyebrow></div>
+              <div style={{ marginBottom: "2rem" }}><Eyebrow>Begin a Project</Eyebrow></div>
               <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(2.5rem,5vw,5.5rem)", color: "var(--text-loud)", lineHeight: 1.0, letterSpacing: "-0.02em" }}>Let us render<br /><em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>your vision.</em></h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginTop: "3rem" }}>
                 {[
                   { label: "WhatsApp", value: "+971 50 000 0000", href: "https://wa.me/971500000000" },
                   { label: "Email", value: "studio@archvizcraft.com", href: "mailto:studio@archvizcraft.com" },
@@ -563,7 +584,7 @@ function ContactSection() {
               </div>
             </Reveal>
           </div>
-          <div style={{ padding: "clamp(5rem,9vw,11rem) clamp(2rem,7vw,8rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ padding: "clamp(4.5rem,7.5vw,9rem) clamp(2rem,7vw,8rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             {submitted ? (
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}>
                 <div style={{ width: "36px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6, marginBottom: "2rem" }} />
@@ -571,7 +592,7 @@ function ContactSection() {
               </motion.div>
             ) : (
               <Reveal delay={0.08}>
-                <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+                <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} style={{ display: "flex", flexDirection: "column", gap: "2.2rem" }}>
                   {(["name", "email"] as const).map(field => (
                     <div key={field}>
                       <label style={{ display: "block", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 400, marginBottom: "0.75rem" }}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
@@ -612,42 +633,30 @@ function SubmitButton() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// CLOSING TESTIMONIAL — single elevated circular carousel across ALL clients.
-// Replaces the marquee with a calmer, more intentional finale.
+// CLOSING TESTIMONIALS — full marquee across ALL clients, split into two rows.
 // ══════════════════════════════════════════════════════════════════════════
-const ALL_TESTIMONIALS: CircularTestimonial[] = [
-  ...TESTIMONIALS_BEDROOMS,
-  ...TESTIMONIALS_KITCHENS,
-  ...TESTIMONIALS_LIVING,
-  ...TESTIMONIALS_VILLAS,
-  ...TESTIMONIALS_WASHROOMS,
-];
-
 function ClosingTestimonials() {
+  const half = Math.ceil(ALL_TESTIMONIALS.length / 2);
   return (
-    <section style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", paddingTop: "clamp(6rem,10vw,12rem)", paddingBottom: "clamp(6rem,10vw,12rem)", overflow: "hidden", position: "relative" }}>
+    <section style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", paddingTop: "clamp(5rem,8vw,9rem)", paddingBottom: "clamp(5rem,8vw,9rem)", overflow: "hidden", position: "relative" }}>
       <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "560px", height: "560px", background: "radial-gradient(ellipse at center, rgba(168,136,90,0.03) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       {/* Header */}
-      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)", marginBottom: "clamp(4rem,7vw,7rem)", textAlign: "center" }}>
+      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)", marginBottom: "clamp(3rem,5vw,5rem)", textAlign: "center" }}>
         <Reveal delay={0}>
-          <div style={{ marginBottom: "1.8rem", display: "flex", justifyContent: "center" }}><Eyebrow center>Client Voices</Eyebrow></div>
+          <div style={{ marginBottom: "1.6rem", display: "flex", justifyContent: "center" }}><Eyebrow center>Client Voices</Eyebrow></div>
           <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.2rem,4.5vw,5rem)", color: "var(--text-loud)", lineHeight: 1.06, letterSpacing: "-0.01em" }}>
             What architects <span style={{ color: "var(--text-mid)", fontStyle: "normal" }}>& developers say.</span>
           </h2>
-          <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.92rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.85, maxWidth: "560px", margin: "2rem auto 0" }}>Across five continents, the studios and developers who choose ArchViz Craft return for the same reason: our work is indistinguishable from the finest architectural photography of finished spaces — made before construction begins.</p>
+          <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.92rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.85, maxWidth: "560px", margin: "1.8rem auto 0" }}>Across five continents, the studios and developers who choose ArchViz Craft return for the same reason: our work is indistinguishable from the finest architectural photography of finished spaces — made before construction begins.</p>
         </Reveal>
       </div>
 
-      {/* Circular carousel — all clients */}
-      <div style={{ padding: "0 clamp(2rem,7vw,8rem)" }}>
-        <Reveal delay={0.1}>
-          <CircularTestimonials testimonials={ALL_TESTIMONIALS} eyebrow="" />
-        </Reveal>
-      </div>
+      {/* Full marquee */}
+      <TestimonialsMarquee row1={ALL_TESTIMONIALS.slice(0, half)} row2={ALL_TESTIMONIALS.slice(half)} />
 
       {/* CTA */}
-      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "clamp(4rem,6vw,6rem) clamp(2rem,7vw,8rem) 0", display: "flex", justifyContent: "center" }}>
+      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "clamp(3.5rem,5.5vw,5.5rem) clamp(2rem,7vw,8rem) 0", display: "flex", justifyContent: "center" }}>
         <Reveal delay={0.1}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", justifyContent: "center", marginBottom: "1.8rem" }}>
