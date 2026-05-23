@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
+import CircularTestimonials, { CircularTestimonial } from "./components/CircularTestimonials";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const EASE_SOFT: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -25,45 +26,36 @@ const SERVICES = [
   { n: "06", title: "Brand Imagery",                desc: "Hero images for marketing suites, brochures, hoardings, and luxury real estate campaigns." },
 ];
 
-// ── Testimonials ───────────────────────────────────────────────────────────
-const TESTIMONIALS_BEDROOMS = [
-  { quote: "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.", name: "Priya Mehta", role: "Design Principal", company: "Foster + Partners, London", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&h=120&fit=crop&crop=face" },
-  { quote: "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.", name: "Khalid Al Mansoori", role: "Managing Director", company: "Mansoori Capital Developments, Dubai", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&h=120&fit=crop&crop=face" },
-  { quote: "They understand how a room feels, not just how it looks. The light quality in our master suite visualisation was indistinguishable from a completed space. The hospitality intelligence here is genuinely rare.", name: "Isabelle Fournier", role: "Founder", company: "Atelier Fournier, Paris", img: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=120&h=120&fit=crop&crop=face" },
+// ── Testimonials (designation = "Role · Company") ────────────────────────────
+const TESTIMONIALS_BEDROOMS: CircularTestimonial[] = [
+  { quote: "The lighting studies they produced were more considered than anything we had seen from a visualisation studio. Material gradients, shadow depth, the quality of reflected light off stone — technically, the work is exceptional.", name: "Priya Mehta", designation: "Design Principal · Foster + Partners, London", src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop&crop=face" },
+  { quote: "We pre-sold 14 units from renders alone. The spatial atmosphere they created communicated something photography of completed projects rarely achieves. Investors weren't looking at images — they were already inside the building.", name: "Khalid Al Mansoori", designation: "Managing Director · Mansoori Capital, Dubai", src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=750&fit=crop&crop=face" },
+  { quote: "They understand how a room feels, not just how it looks. The light quality in our master suite visualisation was indistinguishable from a completed space. The hospitality intelligence here is genuinely rare.", name: "Isabelle Fournier", designation: "Founder · Atelier Fournier, Paris", src: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=600&h=750&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_KITCHENS = [
-  { quote: "The operational intelligence embedded in their kitchen renders is unlike anything I've encountered. They understood service flow, mise en place zones, the way brigade movement shapes a space. This wasn't a render — it was a functioning concept.", name: "Marco Benedetti", role: "Executive Chef & Partner", company: "Benedetti Hospitality Group, Milan", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face" },
-  { quote: "When we brought this to our client board, three members asked when the photography was taken. That's not a compliment — it's an architectural argument won before a single tile was laid.", name: "Hana Yoshida", role: "Senior Interior Architect", company: "Yabu Pushelberg, Toronto", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&h=120&fit=crop&crop=face" },
-  { quote: "Our client wanted to feel the kitchen before committing to the investment. The light at 07:30, the warmth of the stone against morning sun — they approved the full specification within 48 hours of receiving the renders.", name: "Rania Al-Farsi", role: "Project Director", company: "Aldar Properties, Abu Dhabi", img: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=120&h=120&fit=crop&crop=face" },
+const TESTIMONIALS_KITCHENS: CircularTestimonial[] = [
+  { quote: "The operational intelligence embedded in their kitchen renders is unlike anything I've encountered. They understood service flow, mise en place zones, the way brigade movement shapes a space. This wasn't a render — it was a functioning concept.", name: "Marco Benedetti", designation: "Executive Chef & Partner · Benedetti Group, Milan", src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=750&fit=crop&crop=face" },
+  { quote: "When we brought this to our client board, three members asked when the photography was taken. That's not a compliment — it's an architectural argument won before a single tile was laid.", name: "Hana Yoshida", designation: "Senior Interior Architect · Yabu Pushelberg, Toronto", src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=750&fit=crop&crop=face" },
+  { quote: "Our client wanted to feel the kitchen before committing to the investment. The light at 07:30, the warmth of the stone against morning sun — they approved the full specification within 48 hours of receiving the renders.", name: "Rania Al-Farsi", designation: "Project Director · Aldar Properties, Abu Dhabi", src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=750&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_LIVING = [
-  { quote: "The salon render captured precisely the quality of light we experience at that latitude — the way afternoon sun diffuses across limestone, the shadow weight of a deep cornice. It reads as a place, not a projection.", name: "Thomas Brecker", role: "Principal Architect", company: "Snøhetta, Oslo", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" },
-  { quote: "Our buyers don't purchase square footage — they purchase a way of living. These visualisations communicated the social register of the space with a confidence we hadn't seen outside the finest architectural photography.", name: "Celeste Moreau", role: "Head of Luxury Residential", company: "Savills, Paris", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&crop=face" },
-  { quote: "The circulation logic, the conversation zones, the way the furniture composition guides movement through the space — whoever briefed this team understood hospitality design at its most sophisticated level.", name: "Omar Kassem", role: "Chief Design Officer", company: "FIVE Hotels & Resorts, Dubai", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face" },
+const TESTIMONIALS_LIVING: CircularTestimonial[] = [
+  { quote: "The salon render captured precisely the quality of light we experience at that latitude — the way afternoon sun diffuses across limestone, the shadow weight of a deep cornice. It reads as a place, not a projection.", name: "Thomas Brecker", designation: "Principal Architect · Snøhetta, Oslo", src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=750&fit=crop&crop=face" },
+  { quote: "Our buyers don't purchase square footage — they purchase a way of living. These visualisations communicated the social register of the space with a confidence we hadn't seen outside the finest architectural photography.", name: "Celeste Moreau", designation: "Head of Luxury Residential · Savills, Paris", src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=750&fit=crop&crop=face" },
+  { quote: "The circulation logic, the conversation zones, the way the furniture composition guides movement through the space — whoever briefed this team understood hospitality design at its most sophisticated level.", name: "Omar Kassem", designation: "Chief Design Officer · FIVE Hotels & Resorts, Dubai", src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=750&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_VILLAS = [
-  { quote: "The exterior render communicated the full weight of the site — the topography, the light at that latitude, the relationship between structure and landscape. Our planning committee approved the scheme on the first submission.", name: "David Hartmann", role: "Principal", company: "Hartmann Architects, London", img: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=120&h=120&fit=crop&crop=face" },
-  { quote: "They rendered the villa as it will actually be experienced — from the arrival court, from the pool terrace, from the guest wing looking across the estate. Not architecture as object, but architecture as sequence of spaces.", name: "Fatima Al Rashid", role: "Development Director", company: "DAMAC Properties, Dubai", img: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=120&h=120&fit=crop&crop=face" },
-  { quote: "The renders sold the land before we had completed the design. Three clients purchased plots based solely on the visualisations. The quality of light, the material language, the sense of enclosure — all precisely communicated.", name: "Alessandro Ferretti", role: "Creative Director", company: "Studio Ferretti, Milan", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&h=120&fit=crop&crop=face" },
+const TESTIMONIALS_VILLAS: CircularTestimonial[] = [
+  { quote: "The exterior render communicated the full weight of the site — the topography, the light at that latitude, the relationship between structure and landscape. Our planning committee approved the scheme on the first submission.", name: "David Hartmann", designation: "Principal · Hartmann Architects, London", src: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=600&h=750&fit=crop&crop=face" },
+  { quote: "They rendered the villa as it will actually be experienced — from the arrival court, from the pool terrace, from the guest wing looking across the estate. Not architecture as object, but architecture as sequence of spaces.", name: "Fatima Al Rashid", designation: "Development Director · DAMAC Properties, Dubai", src: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=750&fit=crop&crop=face" },
+  { quote: "The renders sold the land before we had completed the design. Three clients purchased plots based solely on the visualisations. The quality of light, the material language, the sense of enclosure — all precisely communicated.", name: "Alessandro Ferretti", designation: "Creative Director · Studio Ferretti, Milan", src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=750&fit=crop&crop=face" },
 ];
-const TESTIMONIALS_WASHROOMS = [
-  { quote: "The spa suite render stopped our board meeting. Nobody spoke for thirty seconds. The light quality, the steam atmosphere, the way materials read wet against dry — this is a level of craft I had not encountered in visualisation before.", name: "Nour El Hassan", role: "VP of Design", company: "Six Senses Hotels & Resorts", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&crop=face" },
-  { quote: "Washroom renders are typically the weakest element of any presentation. Ours became the hero image of the entire project. The stone selection, the fixture scale, the quality of diffused light — clients asked for prints.", name: "Yuki Tanaka", role: "Senior Designer", company: "Super Potato, Tokyo", img: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=120&h=120&fit=crop&crop=face" },
-  { quote: "We commissioned renders for a master bathroom where the brief was silence. The render they delivered communicated acoustic as a spatial quality — the depth of the stone, the absorption of the textiles, the stillness of standing water.", name: "Lucia Marchetti", role: "Interior Director", company: "Marchetti Studio, Florence", img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=120&h=120&fit=crop&crop=face" },
-];
-
-const ALL_TESTIMONIALS = [
-  ...TESTIMONIALS_BEDROOMS,
-  ...TESTIMONIALS_KITCHENS,
-  ...TESTIMONIALS_LIVING,
-  ...TESTIMONIALS_VILLAS,
-  ...TESTIMONIALS_WASHROOMS,
+const TESTIMONIALS_WASHROOMS: CircularTestimonial[] = [
+  { quote: "The spa suite render stopped our board meeting. Nobody spoke for thirty seconds. The light quality, the steam atmosphere, the way materials read wet against dry — this is a level of craft I had not encountered in visualisation before.", name: "Nour El Hassan", designation: "VP of Design · Six Senses Hotels & Resorts", src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=750&fit=crop&crop=face" },
+  { quote: "Washroom renders are typically the weakest element of any presentation. Ours became the hero image of the entire project. The stone selection, the fixture scale, the quality of diffused light — clients asked for prints.", name: "Yuki Tanaka", designation: "Senior Designer · Super Potato, Tokyo", src: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=600&h=750&fit=crop&crop=face" },
+  { quote: "We commissioned renders for a master bathroom where the brief was silence. The render they delivered communicated acoustic as a spatial quality — the depth of the stone, the absorption of the textiles, the stillness of standing water.", name: "Lucia Marchetti", designation: "Interior Director · Marchetti Studio, Florence", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=750&fit=crop&crop=face" },
 ];
 
 // ── Portfolio slides ───────────────────────────────────────────────────────
 interface PortfolioSlide { src: string; title: string; desc: string; }
 
-// BEDROOMS — 8 slides (elegant-master-bedroom8 removed)
 const BEDROOM_SLIDES: PortfolioSlide[] = [
   { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg", title: "Master Suite · Neutral Palette", desc: "Warm oak tones, cove lighting, and floor-to-ceiling curtains. Rendered at golden hour — the moment a suite transitions from functional to emotional." },
   { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg", title: "Guest Suite · Mineral Restraint", desc: "Clean lines, pendant lighting, and layered textiles. The restraint here is deliberate — every absence is considered." },
@@ -165,6 +157,17 @@ function GoldRule({ delay = 0, width = "48px" }: { delay?: number; width?: strin
   );
 }
 
+// Reusable eyebrow label — single source of truth for the gold section labels.
+function Eyebrow({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: center ? "center" : "flex-start" }}>
+      <div style={{ width: "30px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
+      <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.66rem", letterSpacing: "0.34em", textTransform: "uppercase", color: "#A8885A", fontWeight: 400 }}>{children}</p>
+      {center && <div style={{ width: "30px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />}
+    </div>
+  );
+}
+
 function CountUp({ target, suffix }: { target: string; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState("0");
@@ -235,9 +238,8 @@ function StatsManifesto() {
     <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(7rem,12vw,13rem)", paddingBottom: "clamp(7rem,12vw,13rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <Reveal delay={0}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", marginBottom: "clamp(5rem,8vw,9rem)" }}>
-            <div style={{ width: "32px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
-            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300 }}>The Practice</p>
+          <div style={{ marginBottom: "clamp(5rem,8vw,9rem)" }}>
+            <Eyebrow>The Practice</Eyebrow>
           </div>
         </Reveal>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: "1px solid var(--border)", borderLeft: "1px solid var(--border)", marginBottom: "clamp(7rem,11vw,13rem)" }} className="stats-grid">
@@ -247,14 +249,14 @@ function StatsManifesto() {
                 <div style={{ position: "absolute", top: 0, right: 0, width: "6px", height: "6px", borderTop: "1px solid rgba(168,136,90,0.3)", borderRight: "1px solid rgba(168,136,90,0.3)" }} />
                 <p style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(3rem,5.5vw,5.5rem)", color: "var(--text-loud)", lineHeight: 1, marginBottom: "1rem", letterSpacing: "-0.02em" }}><CountUp target={s.value} suffix={s.suffix} /></p>
                 <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.5, marginBottom: "0.9rem" }} />
-                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 300 }}>{s.label}</p>
+                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.68rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-soft)", fontWeight: 400 }}>{s.label}</p>
               </div>
             </Reveal>
           ))}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(4rem,7vw,10rem)", alignItems: "start" }} className="manifesto-grid">
           <Reveal delay={0.05}>
-            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300, marginBottom: "2.5rem" }}>Studio Manifesto</p>
+            <div style={{ marginBottom: "2.5rem" }}><Eyebrow>Studio Manifesto</Eyebrow></div>
             <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.2rem,4vw,4rem)", color: "var(--text-loud)", lineHeight: 1.08, letterSpacing: "-0.01em" }}>
               We render architecture<br />through the lens of<br /><span style={{ color: "var(--text-mid)" }}>hospitality.</span>
             </h2>
@@ -263,8 +265,8 @@ function StatsManifesto() {
             <div style={{ paddingTop: "clamp(3rem,5vw,5.5rem)" }}>
               <GoldRule delay={0.25} width="40px" />
               <div style={{ marginTop: "2.5rem" }}>
-                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.3vw,1rem)", color: "var(--text-soft)", lineHeight: 1.95, marginBottom: "1.8rem" }}>Architecture speaks before it is inhabited. Our work exists in that threshold — the moment between conception and construction — where light, material, and proportion must tell the full story of a space not yet built.</p>
-                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.3vw,1rem)", color: "var(--text-muted)", lineHeight: 1.95 }}>Nine years of practice. One hundred and twenty projects. Every image a deliberate act of persuasion — crafted with cinematic precision, informed by genuine hospitality intelligence.</p>
+                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "1.8rem" }}>Architecture speaks before it is inhabited. Our work exists in that threshold — the moment between conception and construction — where light, material, and proportion must tell the full story of a space not yet built.</p>
+                <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-muted)", lineHeight: 1.9 }}>Nine years of practice. One hundred and twenty projects. Every image a deliberate act of persuasion — crafted with cinematic precision, informed by genuine hospitality intelligence.</p>
               </div>
             </div>
           </Reveal>
@@ -282,29 +284,26 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
   index: string; label: string; headline: string; subheadline?: string; body?: string;
 }) {
   return (
-    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(5rem,9vw,10rem) clamp(2rem,7vw,8rem) clamp(3rem,5vw,5rem)" }}>
+    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(5.5rem,10vw,11rem) clamp(2rem,7vw,8rem) clamp(3.5rem,5vw,5.5rem)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(3rem,6vw,8rem)" }} className="section-header-grid">
         <Reveal delay={0}>
           <div style={{ paddingTop: "0.4rem", flexShrink: 0 }}>
-            <p style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(3rem,6vw,6rem)", color: "rgba(168,136,90,0.12)", lineHeight: 1, letterSpacing: "-0.02em", userSelect: "none" }}>{index}</p>
+            <p style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(3rem,6vw,6rem)", color: "rgba(168,136,90,0.16)", lineHeight: 1, letterSpacing: "-0.02em", userSelect: "none" }}>{index}</p>
           </div>
         </Reveal>
         <div style={{ flex: 1 }}>
           <Reveal delay={0.05}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-              <div style={{ width: "28px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.56rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300 }}>{label}</p>
-            </div>
+            <div style={{ marginBottom: "2rem" }}><Eyebrow>{label}</Eyebrow></div>
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2rem,4.5vw,4.8rem)", color: "var(--text-loud)", lineHeight: 1.04, letterSpacing: "-0.01em", maxWidth: "800px" }}>
+            <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.1rem,4.5vw,4.8rem)", color: "var(--text-loud)", lineHeight: 1.06, letterSpacing: "-0.01em", maxWidth: "820px" }}>
               {headline}
               {subheadline && <span style={{ display: "block", color: "var(--text-mid)", fontStyle: "normal" }}>{subheadline}</span>}
             </h2>
           </Reveal>
           {body && (
             <Reveal delay={0.18}>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.82rem,1.2vw,0.95rem)", color: "var(--text-muted)", lineHeight: 1.95, maxWidth: "520px", marginTop: "2rem" }}>{body}</p>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.9rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.9, maxWidth: "540px", marginTop: "2rem" }}>{body}</p>
             </Reveal>
           )}
           <div style={{ marginTop: "2.5rem" }}><GoldRule delay={0.28} width="clamp(60px,10vw,120px)" /></div>
@@ -360,7 +359,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
           <div style={{ position: "absolute", bottom: "1.8rem", left: "1.8rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4 }}>
             <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.65rem", fontWeight: 200, color: "rgba(255,255,255,0.85)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
             <div style={{ width: "1px", height: "20px", backgroundColor: "rgba(255,255,255,0.2)" }} />
-            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.28)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
+            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
           </div>
         </div>
 
@@ -381,8 +380,8 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
               transition={{ duration: 0.52, ease: EASE }}
               style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.3rem" }}>
               <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
-              <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(1.25rem,2vw,1.9rem)", color: "var(--text-loud)", lineHeight: 1.14, letterSpacing: "-0.01em" }}>{current.title}</h3>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.78rem,1vw,0.86rem)", color: "var(--text-muted)", lineHeight: 1.88 }}>
+              <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.4rem,2.2vw,2.1rem)", color: "var(--text-loud)", lineHeight: 1.16, letterSpacing: "-0.01em" }}>{current.title}</h3>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.05vw,0.96rem)", color: "var(--text-soft)", lineHeight: 1.85 }}>
                 {current.desc.split(" ").map((word, wi) => (
                   <motion.span key={`${activeSlide}-${wi}`}
                     initial={{ filter: "blur(5px)", opacity: 0 }}
@@ -409,7 +408,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
                 <ArrowButton onClick={next} direction="next" />
               </div>
               <a href="/work"
-                style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.5rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#A8885A", textDecoration: "none", borderBottom: "1px solid rgba(168,136,90,0.3)", paddingBottom: "2px", transition: "opacity 0.3s" }}
+                style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#A8885A", textDecoration: "none", borderBottom: "1px solid rgba(168,136,90,0.3)", paddingBottom: "2px", transition: "opacity 0.3s", fontWeight: 400 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.5"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}>View All →</a>
             </div>
@@ -418,12 +417,12 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
       </div>
 
       {/* Thumbnail strip */}
-      <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "0.9rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.32rem", overflowX: "auto", scrollbarWidth: "none" }}>
+      <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none" }}>
         {slides.map((s, i) => (
           <button key={i} onClick={() => setActiveSlide(i)} title={s.title}
-            style={{ flexShrink: 0, width: "clamp(44px,5.5vw,64px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.2, cursor: "pointer", background: "#070503", overflow: "hidden", transition: "all 0.3s ease" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.62"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.2"; }}>
+            style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "#070503", overflow: "hidden", transition: "all 0.3s ease" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}>
             <img src={s.src} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           </button>
         ))}
@@ -439,91 +438,19 @@ function ArrowButton({ onClick, direction }: { onClick: () => void; direction: "
   return (
     <button onClick={onClick} aria-label={direction}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`, borderRadius: "50%", backgroundColor: hovered ? "#A8885A" : "transparent", color: hovered ? "var(--bg)" : "var(--text-mid)", cursor: "pointer", fontSize: "0.82rem", transition: "all 0.3s ease", flexShrink: 0 }}>
+      style={{ width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`, borderRadius: "50%", backgroundColor: hovered ? "#A8885A" : "transparent", color: hovered ? "var(--bg)" : "var(--text-mid)", cursor: "pointer", fontSize: "0.85rem", transition: "all 0.3s ease", flexShrink: 0 }}>
       {direction === "prev" ? "←" : "→"}
     </button>
   );
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// TESTIMONIALS — Compact, refined, readable in both light & dark modes.
-// Light mode: quote and author text forced to near-black via className hooks.
+// SECTION TESTIMONIALS — circular stacked component, per category.
 // ══════════════════════════════════════════════════════════════════════════
-function Testimonials({ testimonials }: { testimonials: typeof TESTIMONIALS_BEDROOMS }) {
-  const [active, setActive] = useState(0);
-
+function SectionTestimonials({ testimonials }: { testimonials: CircularTestimonial[] }) {
   return (
-    <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "clamp(3rem,5.5vw,5.5rem) clamp(2rem,7vw,8rem)" }}>
-      <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "150px 1fr", gap: "clamp(2rem,5vw,7rem)", alignItems: "start" }} className="testimonials-layout">
-
-          {/* Left nav */}
-          <div style={{ paddingTop: "0.15rem" }}>
-            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.48rem", letterSpacing: "0.48em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300, marginBottom: "1.8rem" }}>Client Record</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {testimonials.map((t, i) => (
-                <button key={i} onClick={() => setActive(i)}
-                  style={{ display: "flex", alignItems: "center", gap: "0.6rem", background: "none", border: "none", cursor: "pointer", padding: "0.18rem 0", textAlign: "left" }}>
-                  <motion.div style={{ height: "1px", backgroundColor: "#A8885A", transformOrigin: "left" }}
-                    animate={{ width: i === active ? "22px" : "9px", opacity: i === active ? 0.8 : 0.2 }}
-                    transition={{ duration: 0.32, ease: EASE_SOFT }} />
-                  <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.54rem", color: i === active ? "var(--text-loud)" : "var(--text-muted)", letterSpacing: "0.04em", fontWeight: 300, transition: "color 0.28s", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "105px" }}>{t.name.split(" ")[0]}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Testimonial content */}
-          <AnimatePresence mode="wait">
-            <motion.div key={active}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.55, ease: EASE }}>
-              {/* Stars */}
-              <div style={{ display: "flex", gap: "0.2rem", marginBottom: "1.2rem" }}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg key={i} width="7" height="7" viewBox="0 0 14 14" fill="#A8885A" opacity="0.5">
-                    <path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" />
-                  </svg>
-                ))}
-              </div>
-              {/* Quote — compact. className used for light-mode CSS override */}
-              <blockquote className="testi-quote" style={{
-                fontFamily: "var(--font-cormorant),serif",
-                fontStyle: "italic", fontWeight: 200,
-                fontSize: "clamp(0.98rem,1.65vw,1.35rem)",
-                color: "var(--text-loud)",
-                lineHeight: 1.62, letterSpacing: "-0.004em",
-                marginBottom: "1.5rem", maxWidth: "640px",
-              }}>
-                &ldquo;{testimonials[active].quote}&rdquo;
-              </blockquote>
-              <div style={{ width: "20px", height: "1px", backgroundColor: "#A8885A", opacity: 0.4, marginBottom: "1.1rem" }} />
-              {/* Author */}
-              <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-                <div style={{ width: "32px", height: "32px", borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: "1px solid rgba(168,136,90,0.16)" }}>
-                  <img src={testimonials[active].img} alt={testimonials[active].name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(55%)" }} />
-                </div>
-                <div>
-                  <p className="testi-name" style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.68rem", color: "var(--text-loud)", fontWeight: 300, letterSpacing: "0.04em" }}>{testimonials[active].name}</p>
-                  <p className="testi-sub" style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", color: "var(--text-muted)", fontWeight: 300, letterSpacing: "0.06em", marginTop: "0.15rem" }}>{testimonials[active].role} · {testimonials[active].company}</p>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Light-mode: force all testimonial text to near-black for readability */}
-      <style>{`
-        .testimonials-layout{grid-template-columns:150px 1fr!important}
-        @media(max-width:680px){.testimonials-layout{grid-template-columns:1fr!important;gap:2rem!important}}
-        :root.light-mode .testi-quote { color: #1a1410 !important; }
-        :root.light-mode .testi-name  { color: #1a1410 !important; }
-        :root.light-mode .testi-sub   { color: #5a4e42 !important; }
-      `}</style>
+    <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "clamp(4.5rem,8vw,8rem) clamp(2rem,7vw,8rem)" }}>
+      <CircularTestimonials testimonials={testimonials} eyebrow="Client Record" />
     </div>
   );
 }
@@ -537,11 +464,11 @@ function ServicesSection() {
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end", padding: "clamp(6rem,10vw,11rem) 0 clamp(4rem,6vw,7rem)", borderBottom: "1px solid var(--border)" }} className="services-header">
           <Reveal>
-            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.56rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300, marginBottom: "2rem" }}>What We Deliver</p>
+            <div style={{ marginBottom: "2rem" }}><Eyebrow>What We Deliver</Eyebrow></div>
             <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.5rem,5vw,5rem)", color: "var(--text-loud)", lineHeight: 1.0, letterSpacing: "-0.01em" }}>Services</h2>
           </Reveal>
           <Reveal delay={0.12}>
-            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.85rem,1.2vw,0.95rem)", color: "var(--text-muted)", lineHeight: 1.9, maxWidth: "420px" }}>Full-spectrum visualisation for architecture and real estate. Every deliverable a considered composition — technically precise, atmospherically intentional, commercially decisive.</p>
+            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.92rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.85, maxWidth: "440px" }}>Full-spectrum visualisation for architecture and real estate. Every deliverable a considered composition — technically precise, atmospherically intentional, commercially decisive.</p>
           </Reveal>
         </div>
         <div>{SERVICES.map((svc, i) => <ServiceRow key={svc.n} svc={svc} delay={i * 0.06} />)}</div>
@@ -557,11 +484,11 @@ function ServiceRow({ svc, delay }: { svc: typeof SERVICES[0]; delay: number }) 
     <Reveal delay={delay}>
       <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
         style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 40px", gap: "clamp(1rem,3vw,4rem)", alignItems: "center", padding: "clamp(2rem,3.5vw,3.2rem) 0", borderBottom: "1px solid var(--border)", cursor: "default", transition: "background-color 0.4s ease", backgroundColor: hovered ? "rgba(168,136,90,0.025)" : "transparent" }} className="service-row">
-        <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.2em", color: hovered ? "#A8885A" : "var(--border-mid)", fontWeight: 300, transition: "color 0.4s" }}>{svc.n}</span>
-        <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(1.1rem,2vw,1.75rem)", color: hovered ? "var(--text-loud)" : "var(--text-mid)", transition: "color 0.4s", letterSpacing: "-0.01em" }}>{svc.title}</h3>
-        <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.78rem,1.1vw,0.88rem)", color: hovered ? "var(--text-soft)" : "var(--text-muted)", lineHeight: 1.85, transition: "color 0.4s" }}>{svc.desc}</p>
+        <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.16em", color: hovered ? "#A8885A" : "var(--text-muted)", fontWeight: 400, transition: "color 0.4s" }}>{svc.n}</span>
+        <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.25rem,2vw,1.85rem)", color: hovered ? "var(--text-loud)" : "var(--text-mid)", transition: "color 0.4s", letterSpacing: "-0.01em" }}>{svc.title}</h3>
+        <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.85rem,1.1vw,0.92rem)", color: hovered ? "var(--text-soft)" : "var(--text-muted)", lineHeight: 1.8, transition: "color 0.4s" }}>{svc.desc}</p>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <motion.span animate={{ x: hovered ? 6 : 0, color: hovered ? "#A8885A" : "var(--text-muted)" }} transition={{ duration: 0.35, ease: EASE_SOFT }} style={{ fontSize: "0.9rem", display: "block" }}>→</motion.span>
+          <motion.span animate={{ x: hovered ? 6 : 0, color: hovered ? "#A8885A" : "var(--text-muted)" }} transition={{ duration: 0.35, ease: EASE_SOFT }} style={{ fontSize: "0.95rem", display: "block" }}>→</motion.span>
         </div>
       </div>
       <style>{`.service-row{grid-template-columns:80px 1fr 1fr 40px!important}@media(max-width:900px){.service-row{grid-template-columns:60px 1fr!important}.service-row p{display:none}}@media(max-width:540px){.service-row{grid-template-columns:1fr!important}.service-row span:first-child{display:none}}`}</style>
@@ -578,19 +505,19 @@ function AboutSection() {
       <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(480px,65vw,760px)" }} className="about-grid">
           <div style={{ padding: "clamp(5rem,9vw,10rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", bottom: "-2rem", right: "-1rem", fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(12rem,18vw,22rem)", fontWeight: 200, fontStyle: "italic", color: "rgba(168,136,90,0.04)", lineHeight: 1, userSelect: "none", pointerEvents: "none", letterSpacing: "-0.04em" }}>A</div>
+            <div style={{ position: "absolute", bottom: "-2rem", right: "-1rem", fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(12rem,18vw,22rem)", fontWeight: 200, fontStyle: "italic", color: "rgba(168,136,90,0.045)", lineHeight: 1, userSelect: "none", pointerEvents: "none", letterSpacing: "-0.04em" }}>A</div>
             <Reveal>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.56rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300, marginBottom: "2.5rem" }}>The Studio</p>
-              <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", lineHeight: 1.06, letterSpacing: "-0.01em", marginBottom: "2.5rem" }}>Architecture Rendered<br />with <em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>Hospitality Intelligence.</em></h2>
+              <div style={{ marginBottom: "2.5rem" }}><Eyebrow>The Studio</Eyebrow></div>
+              <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(2rem,4.5vw,4.5rem)", color: "var(--text-loud)", lineHeight: 1.08, letterSpacing: "-0.01em", marginBottom: "2.5rem" }}>Architecture Rendered<br />with <em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>Hospitality Intelligence.</em></h2>
               <GoldRule delay={0.2} width="40px" />
             </Reveal>
           </div>
           <div style={{ padding: "clamp(5rem,9vw,10rem) clamp(2rem,7vw,8rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <Reveal delay={0.1}>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.3vw,1rem)", color: "var(--text-soft)", lineHeight: 1.95, marginBottom: "2rem" }}>ArchViz Craft is a luxury architectural visualisation studio serving architects, developers, and interior designers across the Gulf and beyond. We bring nine years of regional expertise and a hospitality-trained eye to every project.</p>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.3vw,1rem)", color: "var(--text-muted)", lineHeight: 1.95, marginBottom: "3.5rem" }}>Every image is a deliberate composition. We do not document architecture — we argue for it. Fourteen countries. A hundred and twenty projects. One consistent standard.</p>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-soft)", lineHeight: 1.9, marginBottom: "2rem" }}>ArchViz Craft is a luxury architectural visualisation studio serving architects, developers, and interior designers across the Gulf and beyond. We bring nine years of regional expertise and a hospitality-trained eye to every project.</p>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.95rem,1.3vw,1.05rem)", color: "var(--text-muted)", lineHeight: 1.9, marginBottom: "3.5rem" }}>Every image is a deliberate composition. We do not document architecture — we argue for it. Fourteen countries. A hundred and twenty projects. One consistent standard.</p>
               <a href="/studio"
-                style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--text-loud)", textDecoration: "none", borderBottom: "1px solid var(--border-mid)", paddingBottom: "3px", transition: "color 0.35s, border-color 0.35s", fontWeight: 300 }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.66rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-loud)", textDecoration: "none", borderBottom: "1px solid var(--border-mid)", paddingBottom: "3px", transition: "color 0.35s, border-color 0.35s", fontWeight: 400 }}
                 onMouseEnter={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = "#A8885A"; el.style.borderBottomColor = "#A8885A"; }}
                 onMouseLeave={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = "var(--text-loud)"; el.style.borderBottomColor = "var(--border-mid)"; }}>
                 Meet the Studio <span style={{ display: "inline-block", width: "18px", height: "1px", backgroundColor: "currentColor" }} />
@@ -616,7 +543,7 @@ function ContactSection() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(540px,70vw,820px)" }} className="contact-grid">
           <div style={{ padding: "clamp(5rem,9vw,11rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <Reveal>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.56rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300, marginBottom: "2.5rem" }}>Begin a Project</p>
+              <div style={{ marginBottom: "2.5rem" }}><Eyebrow>Begin a Project</Eyebrow></div>
               <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontSize: "clamp(2.5rem,5vw,5.5rem)", color: "var(--text-loud)", lineHeight: 1.0, letterSpacing: "-0.02em" }}>Let us render<br /><em style={{ fontStyle: "italic", color: "var(--text-mid)" }}>your vision.</em></h2>
             </Reveal>
             <Reveal delay={0.1}>
@@ -627,10 +554,10 @@ function ContactSection() {
                   { label: "Location", value: "By Appointment · Dubai", href: undefined },
                 ].map(item => (
                   <div key={item.label}>
-                    <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 300, marginBottom: "0.6rem" }}>{item.label}</p>
+                    <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 400, marginBottom: "0.6rem" }}>{item.label}</p>
                     {item.href
-                      ? <a href={item.href} style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(1.1rem,1.8vw,1.5rem)", fontWeight: 200, color: "var(--text-mid)", textDecoration: "none", transition: "color 0.35s", display: "block" }} onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }} onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}>{item.value}</a>
-                      : <p style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(1.1rem,1.8vw,1.5rem)", fontWeight: 200, color: "var(--text-mid)" }}>{item.value}</p>}
+                      ? <a href={item.href} style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(1.2rem,1.8vw,1.6rem)", fontWeight: 300, color: "var(--text-mid)", textDecoration: "none", transition: "color 0.35s", display: "block" }} onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-loud)"; }} onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}>{item.value}</a>
+                      : <p style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "clamp(1.2rem,1.8vw,1.6rem)", fontWeight: 300, color: "var(--text-mid)" }}>{item.value}</p>}
                   </div>
                 ))}
               </div>
@@ -647,17 +574,17 @@ function ContactSection() {
                 <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
                   {(["name", "email"] as const).map(field => (
                     <div key={field}>
-                      <label style={{ display: "block", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 300, marginBottom: "0.75rem" }}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                      <label style={{ display: "block", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 400, marginBottom: "0.75rem" }}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
                       <input type={field === "email" ? "email" : "text"} required value={form[field]} onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))}
-                        style={{ width: "100%", background: "transparent", border: "none", borderBottom: "1px solid var(--border)", padding: "0.6rem 0", fontSize: "0.95rem", color: "var(--text-loud)", outline: "none", fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, transition: "border-color 0.3s" }}
+                        style={{ width: "100%", background: "transparent", border: "none", borderBottom: "1px solid var(--border)", padding: "0.6rem 0", fontSize: "1rem", color: "var(--text-loud)", outline: "none", fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, transition: "border-color 0.3s" }}
                         onFocus={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "#A8885A"; }}
                         onBlur={e => { (e.currentTarget as HTMLInputElement).style.borderBottomColor = "var(--border)"; }} />
                     </div>
                   ))}
                   <div>
-                    <label style={{ display: "block", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 300, marginBottom: "0.75rem" }}>Project Brief</label>
+                    <label style={{ display: "block", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 400, marginBottom: "0.75rem" }}>Project Brief</label>
                     <textarea rows={4} required value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
-                      style={{ width: "100%", background: "transparent", border: "none", borderBottom: "1px solid var(--border)", padding: "0.6rem 0", fontSize: "0.95rem", color: "var(--text-loud)", outline: "none", resize: "none", fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, transition: "border-color 0.3s" }}
+                      style={{ width: "100%", background: "transparent", border: "none", borderBottom: "1px solid var(--border)", padding: "0.6rem 0", fontSize: "1rem", color: "var(--text-loud)", outline: "none", resize: "none", fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, transition: "border-color 0.3s" }}
                       onFocus={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "#A8885A"; }}
                       onBlur={e => { (e.currentTarget as HTMLTextAreaElement).style.borderBottomColor = "var(--border)"; }} />
                   </div>
@@ -677,7 +604,7 @@ function SubmitButton() {
   const [hovered, setHovered] = useState(false);
   return (
     <button type="submit" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: "1rem", padding: "0.9rem 2.5rem", backgroundColor: hovered ? "#A8885A" : "transparent", border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`, color: hovered ? "var(--bg)" : "var(--text-loud)", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.32em", textTransform: "uppercase", fontWeight: 300, cursor: "pointer", transition: "all 0.4s ease" }}>
+      style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: "1rem", padding: "0.95rem 2.6rem", backgroundColor: hovered ? "#A8885A" : "transparent", border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`, color: hovered ? "var(--bg)" : "var(--text-loud)", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.66rem", letterSpacing: "0.26em", textTransform: "uppercase", fontWeight: 400, cursor: "pointer", transition: "all 0.4s ease" }}>
       Send Enquiry
       <span style={{ display: "inline-block", width: "18px", height: "1px", backgroundColor: "currentColor", transition: "transform 0.35s ease", transform: hovered ? "translateX(4px)" : "translateX(0)" }} />
     </button>
@@ -685,94 +612,51 @@ function SubmitButton() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// PREMIUM TESTIMONIALS MARQUEE — Final section
-// Smaller cards. Light-mode text forced dark via classNames.
+// CLOSING TESTIMONIAL — single elevated circular carousel across ALL clients.
+// Replaces the marquee with a calmer, more intentional finale.
 // ══════════════════════════════════════════════════════════════════════════
-type TCard = { quote: string; name: string; role: string; company: string; img: string; };
+const ALL_TESTIMONIALS: CircularTestimonial[] = [
+  ...TESTIMONIALS_BEDROOMS,
+  ...TESTIMONIALS_KITCHENS,
+  ...TESTIMONIALS_LIVING,
+  ...TESTIMONIALS_VILLAS,
+  ...TESTIMONIALS_WASHROOMS,
+];
 
-function MarqueeCard({ card }: { card: TCard }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ flexShrink: 0, width: "clamp(248px,24vw,340px)", marginRight: "clamp(0.9rem,1.4vw,1.5rem)", padding: "clamp(1.3rem,1.8vw,1.9rem)", backgroundColor: hovered ? "rgba(168,136,90,0.048)" : "rgba(255,255,255,0.014)", border: `1px solid ${hovered ? "rgba(168,136,90,0.2)" : "rgba(255,255,255,0.05)"}`, transition: "background-color 0.4s, border-color 0.4s", position: "relative" }}>
-      <div style={{ position: "absolute", top: 0, left: 0, width: "14px", height: "14px", borderTop: "1px solid rgba(168,136,90,0.25)", borderLeft: "1px solid rgba(168,136,90,0.25)", opacity: hovered ? 1 : 0, transition: "opacity 0.3s" }} />
-      <div style={{ display: "flex", gap: "0.18rem", marginBottom: "1rem" }}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <svg key={i} width="6" height="6" viewBox="0 0 14 14" fill="#A8885A" opacity="0.48"><path d="M7 1l1.5 4H13l-3.5 2.5 1.5 4L7 9l-4 2.5 1.5-4L1 5h4.5z" /></svg>
-        ))}
-      </div>
-      <blockquote className="mq-quote" style={{ fontFamily: "var(--font-cormorant),serif", fontStyle: "italic", fontWeight: 200, fontSize: "clamp(0.85rem,1.1vw,1rem)", color: "rgba(255,255,255,0.72)", lineHeight: 1.62, letterSpacing: "-0.003em", marginBottom: "1.25rem" }}>
-        &ldquo;{card.quote}&rdquo;
-      </blockquote>
-      <div style={{ width: "18px", height: "1px", backgroundColor: "#A8885A", opacity: 0.32, marginBottom: "1rem" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
-        <div style={{ width: "28px", height: "28px", borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: "1px solid rgba(168,136,90,0.14)" }}>
-          <img src={card.img} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(60%)" }} />
-        </div>
-        <div>
-          <p className="mq-name" style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", color: "rgba(255,255,255,0.68)", fontWeight: 300, letterSpacing: "0.03em" }}>{card.name}</p>
-          <p className="mq-sub" style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.5rem", color: "rgba(255,255,255,0.28)", fontWeight: 300, letterSpacing: "0.05em", marginTop: "0.12rem" }}>{card.role} · {card.company}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MarqueeRow({ cards, dir = "left", speed = 44 }: { cards: TCard[]; dir?: "left" | "right"; speed?: number; }) {
-  const doubled = [...cards, ...cards];
-  return (
-    <div style={{ position: "relative", overflow: "hidden", width: "100%" }}>
-      <div style={{ position: "absolute", left: 0, top: 0, width: "clamp(40px,6vw,100px)", height: "100%", background: "linear-gradient(to right, var(--bg), transparent)", zIndex: 2, pointerEvents: "none" }} />
-      <div style={{ position: "absolute", right: 0, top: 0, width: "clamp(40px,6vw,100px)", height: "100%", background: "linear-gradient(to left, var(--bg), transparent)", zIndex: 2, pointerEvents: "none" }} />
-      <div style={{ display: "flex", width: "max-content", animation: `mq-${dir} ${speed}s linear infinite` }}>
-        {doubled.map((c, i) => <MarqueeCard key={i} card={c} />)}
-      </div>
-    </div>
-  );
-}
-
-function PremiumTestimonialsSection() {
-  const half = Math.ceil(ALL_TESTIMONIALS.length / 2);
+function ClosingTestimonials() {
   return (
     <section style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", paddingTop: "clamp(6rem,10vw,12rem)", paddingBottom: "clamp(6rem,10vw,12rem)", overflow: "hidden", position: "relative" }}>
-      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "480px", height: "480px", background: "radial-gradient(ellipse at center, rgba(168,136,90,0.022) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "560px", height: "560px", background: "radial-gradient(ellipse at center, rgba(168,136,90,0.03) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       {/* Header */}
-      <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)", marginBottom: "clamp(3.5rem,6vw,7rem)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end" }} className="prem-header-grid">
-          <Reveal delay={0}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.8rem" }}>
-              <div style={{ width: "28px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.56rem", letterSpacing: "0.52em", textTransform: "uppercase", color: "#A8885A", fontWeight: 300 }}>Client Voices</p>
-            </div>
-            <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.2rem,4.5vw,5rem)", color: "var(--text-loud)", lineHeight: 1.04, letterSpacing: "-0.01em" }}>
-              What architects<br /><span style={{ color: "var(--text-mid)", fontStyle: "normal" }}>& developers say.</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <GoldRule delay={0.2} width="40px" />
-            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.85rem,1.2vw,0.95rem)", color: "var(--text-muted)", lineHeight: 1.9, maxWidth: "420px", marginTop: "2rem" }}>Across five continents, the studios and developers who choose ArchViz Craft return for the same reason: our work is indistinguishable from the best architectural photography of finished spaces — made before construction begins.</p>
-          </Reveal>
-        </div>
+      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)", marginBottom: "clamp(4rem,7vw,7rem)", textAlign: "center" }}>
+        <Reveal delay={0}>
+          <div style={{ marginBottom: "1.8rem", display: "flex", justifyContent: "center" }}><Eyebrow center>Client Voices</Eyebrow></div>
+          <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.2rem,4.5vw,5rem)", color: "var(--text-loud)", lineHeight: 1.06, letterSpacing: "-0.01em" }}>
+            What architects <span style={{ color: "var(--text-mid)", fontStyle: "normal" }}>& developers say.</span>
+          </h2>
+          <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.92rem,1.2vw,1rem)", color: "var(--text-soft)", lineHeight: 1.85, maxWidth: "560px", margin: "2rem auto 0" }}>Across five continents, the studios and developers who choose ArchViz Craft return for the same reason: our work is indistinguishable from the finest architectural photography of finished spaces — made before construction begins.</p>
+        </Reveal>
       </div>
 
-      {/* Rows */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "clamp(0.7rem,1.2vw,1.2rem)" }}>
-        <MarqueeRow cards={ALL_TESTIMONIALS.slice(0, half)} dir="left"  speed={54} />
-        <MarqueeRow cards={ALL_TESTIMONIALS.slice(half)}    dir="right" speed={48} />
+      {/* Circular carousel — all clients */}
+      <div style={{ padding: "0 clamp(2rem,7vw,8rem)" }}>
+        <Reveal delay={0.1}>
+          <CircularTestimonials testimonials={ALL_TESTIMONIALS} eyebrow="" />
+        </Reveal>
       </div>
 
       {/* CTA */}
-      <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(3.5rem,6vw,6rem) clamp(2rem,7vw,8rem) 0", display: "flex", justifyContent: "center" }}>
+      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "clamp(4rem,6vw,6rem) clamp(2rem,7vw,8rem) 0", display: "flex", justifyContent: "center" }}>
         <Reveal delay={0.1}>
           <div style={{ textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", justifyContent: "center", marginBottom: "1.8rem" }}>
-              <div style={{ width: "32px", height: "1px", backgroundColor: "#A8885A", opacity: 0.28 }} />
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", letterSpacing: "0.36em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 300 }}>{ALL_TESTIMONIALS.length} verified client testimonials</p>
-              <div style={{ width: "32px", height: "1px", backgroundColor: "#A8885A", opacity: 0.28 }} />
+              <div style={{ width: "32px", height: "1px", backgroundColor: "#A8885A", opacity: 0.3 }} />
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 400 }}>{ALL_TESTIMONIALS.length} verified client testimonials</p>
+              <div style={{ width: "32px", height: "1px", backgroundColor: "#A8885A", opacity: 0.3 }} />
             </div>
             <a href="/#contact"
-              style={{ display: "inline-flex", alignItems: "center", gap: "1rem", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--text-loud)", textDecoration: "none", border: "1px solid var(--border)", padding: "1rem 2.8rem", transition: "all 0.4s ease" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "1rem", fontFamily: "var(--font-dm),sans-serif", fontSize: "0.66rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-loud)", textDecoration: "none", border: "1px solid var(--border)", padding: "1.05rem 2.9rem", transition: "all 0.4s ease", fontWeight: 400 }}
               onMouseEnter={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.backgroundColor = "#A8885A"; el.style.borderColor = "#A8885A"; el.style.color = "var(--bg)"; }}
               onMouseLeave={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.backgroundColor = "transparent"; el.style.borderColor = "var(--border)"; el.style.color = "var(--text-loud)"; }}>
               Begin a Project <span style={{ display: "inline-block", width: "18px", height: "1px", backgroundColor: "currentColor" }} />
@@ -780,16 +664,6 @@ function PremiumTestimonialsSection() {
           </div>
         </Reveal>
       </div>
-
-      <style>{`
-        @keyframes mq-left  { 0%{transform:translateX(0)}    100%{transform:translateX(-50%)} }
-        @keyframes mq-right { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
-        .prem-header-grid{grid-template-columns:1fr 1fr!important}
-        @media(max-width:768px){.prem-header-grid{grid-template-columns:1fr!important;gap:2.5rem!important}}
-        :root.light-mode .mq-quote { color: #1a1410 !important; }
-        :root.light-mode .mq-name  { color: #2a2018 !important; }
-        :root.light-mode .mq-sub   { color: #6b5e50 !important; }
-      `}</style>
     </section>
   );
 }
@@ -805,13 +679,13 @@ function Footer() {
           {[{ label: "View Portfolio", href: "/work" }, { label: "The Studio", href: "/studio" }, { label: "Contact", href: "/#contact" }].map((link, i) => (
             <span key={link.label} style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
               {i > 0 && <span style={{ color: "var(--border)", fontSize: "7px" }}>·</span>}
-              <a href={link.href} style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", fontWeight: 300, transition: "color 0.3s" }}
+              <a href={link.href} style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", fontWeight: 400, transition: "color 0.3s" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-muted)"; }}>{link.label}</a>
             </span>
           ))}
         </div>
-        <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.52rem", letterSpacing: "0.14em", color: "var(--border)", fontWeight: 300 }}>© {new Date().getFullYear()} Archviz Craft · Dubai</p>
+        <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", fontWeight: 300 }}>© {new Date().getFullYear()} Archviz Craft · Dubai</p>
       </div>
     </footer>
   );
@@ -849,41 +723,41 @@ export default function HomePage() {
       <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="01" label="Selected Work · Private Sanctuaries" headline="The private suite," subheadline="before the walls exist." />
         <EditorialGallery slides={BEDROOM_SLIDES} activeSlide={activeBedroomSlide} setActiveSlide={setActiveBedroomSlide} flip={false} />
-        <Testimonials testimonials={TESTIMONIALS_BEDROOMS} />
+        <SectionTestimonials testimonials={TESTIMONIALS_BEDROOMS} />
       </section>
 
       {/* 02 · KITCHENS — image RIGHT, caption LEFT */}
       <section id="kitchens" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="02" label="Culinary Theaters" headline="Where service intelligence" subheadline="becomes spatial architecture." body="A kitchen is not a room — it is an operational system. We render culinary spaces from a position of genuine hospitality knowledge: service flow, brigade movement, mise en place logic, and the psychology of the guest threshold." />
         <EditorialGallery slides={KITCHEN_SLIDES} activeSlide={activeKitchenSlide} setActiveSlide={setActiveKitchenSlide} flip={true} />
-        <Testimonials testimonials={TESTIMONIALS_KITCHENS} />
+        <SectionTestimonials testimonials={TESTIMONIALS_KITCHENS} />
       </section>
 
       {/* 03 · LIVING SPACES — image LEFT, caption RIGHT */}
       <section id="living-spaces" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="03" label="Social Landscapes" headline="The living room as statement" subheadline="of how you receive the world." body="Every living space communicates a social register before a guest sits down. We render arrival sequences, conversation geometries, sightline hierarchies, and the emotional temperature of a room at its intended hour of use." />
         <EditorialGallery slides={LIVING_SPACE_SLIDES} activeSlide={activeLivingSlide} setActiveSlide={setActiveLivingSlide} flip={false} />
-        <Testimonials testimonials={TESTIMONIALS_LIVING} />
+        <SectionTestimonials testimonials={TESTIMONIALS_LIVING} />
       </section>
 
       {/* 04 · VILLAS & EXTERIORS — image RIGHT, caption LEFT */}
       <section id="villas-exteriors" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="04" label="Villas & Exteriors" headline="Architecture in landscape," subheadline="before the first stone is laid." body="The exterior render is the most complex visualisation we produce — site topography, seasonal light, material ageing, landscape maturity, and the psychology of arrival all rendered in a single frame." />
         <EditorialGallery slides={VILLA_EXTERIOR_SLIDES} activeSlide={activeVillaSlide} setActiveSlide={setActiveVillaSlide} flip={true} />
-        <Testimonials testimonials={TESTIMONIALS_VILLAS} />
+        <SectionTestimonials testimonials={TESTIMONIALS_VILLAS} />
       </section>
 
       {/* 05 · WASHROOMS — image LEFT, caption RIGHT */}
       <section id="washrooms" style={{ borderBottom: "1px solid var(--border)" }}>
         <SectionHeader index="05" label="Spa & Washrooms" headline="Where material craft" subheadline="becomes a private ceremony." body="The finest washrooms are not cleaned — they are entered. We render spa suites, hammams, and master bathrooms with the same hospitality intelligence applied to a five-star arrival sequence." />
         <EditorialGallery slides={WASHROOM_SLIDES} activeSlide={activeWashroomSlide} setActiveSlide={setActiveWashroomSlide} flip={false} />
-        <Testimonials testimonials={TESTIMONIALS_WASHROOMS} />
+        <SectionTestimonials testimonials={TESTIMONIALS_WASHROOMS} />
       </section>
 
       <ServicesSection />
       <AboutSection />
       <ContactSection />
-      <PremiumTestimonialsSection />
+      <ClosingTestimonials />
       <Footer />
     </div>
   );
