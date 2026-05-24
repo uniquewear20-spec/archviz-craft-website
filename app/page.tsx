@@ -218,7 +218,7 @@ function ThemeToggle() {
   return (
     <div style={{ position: "fixed", top: 0, right: 0, zIndex: 50, padding: "1.6rem clamp(2.5rem,5vw,5rem) 0", opacity: atTop ? 1 : 0, pointerEvents: atTop ? "auto" : "none", transition: "opacity 0.4s" }}>
       <button onClick={toggle} aria-label="toggle theme"
-        style={{ display: "flex", alignItems: "center", gap: "7px", background: "transparent", border: "none", cursor: "pointer", padding: "4px 0", color: "rgba(255,255,255,0.4)" }}
+        style={{ display: "flex", alignItems: "center", gap: "7px", background: "transparent", border: "none", cursor: "pointer", padding: "4px 0", color: "rgba(236,227,213,0.4)" }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#A8885A"; }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.4)"; }}>
         <div style={{ position: "relative", width: "30px", height: "16px", borderRadius: "8px", border: `1px solid ${isDark ? "#2A2520" : "#C4A882"}`, backgroundColor: isDark ? "#0E0C0A" : "#F0EBE3", transition: "all 0.4s", flexShrink: 0 }}>
@@ -344,7 +344,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
       }} className="editorial-grid">
 
         {/* ── Image panel: clean edge-to-edge cover, no backdrop, no bars ── */}
-        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "#070503" }}>
+        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "#1A130C" }}>
           <AnimatePresence mode="wait">
             <motion.img key={activeSlide} src={current.src} alt={current.title}
               initial={{ opacity: 0, scale: 1.04 }}
@@ -355,7 +355,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
           </AnimatePresence>
 
           {/* Subtle bottom gradient so the counter stays legible */}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(7,5,3,0.45) 0%, transparent 30%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,19,12,0.55) 0%, transparent 30%)", pointerEvents: "none" }} />
 
           {/* Counter */}
           <div style={{ position: "absolute", bottom: "1.6rem", left: "1.6rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4 }}>
@@ -420,7 +420,7 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
       <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none" }}>
         {slides.map((s, i) => (
           <button key={i} onClick={() => setActiveSlide(i)} title={s.title}
-            style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "#070503", overflow: "hidden", transition: "all 0.3s ease" }}
+            style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "#1A130C", overflow: "hidden", transition: "all 0.3s ease" }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}>
             <img src={s.src} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />

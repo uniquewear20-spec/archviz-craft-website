@@ -1,35 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════════
-   ARCHVIZ CRAFT — THEME VARIABLES
-   Paste this at the BOTTOM of your globals.css
+   ARCHVIZ CRAFT — THEME VARIABLES  ·  LIVOORA warm-espresso restyle
+   Colors only. Structure, sizing, and component logic unchanged.
+   Paste this at the BOTTOM of your globals.css (replaces the old block)
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── Dark mode (default) ───────────────────────────────────────────── */
+/* ── Dark mode (default) — warm espresso brown, sand text ──────────── */
 :root,
 html.dark-mode {
-  --bg:          #080808;
-  --bg-subtle:   #0E0C0A;
-  --border:      #141210;
-  --border-mid:  #2A2520;
-  --text-loud:   #F0EBE3;
-  --text-mid:    #4A4540;
-  --text-soft:   #3A342E;
-  --text-muted:  #1E1A16;
-  --gold:        #A8885A;
-  --gold-light:  #C4A882;
+  --bg:          #241C15;  /* warm espresso (was #080808) */
+  --bg-subtle:   #2E251C;  /* lifted surface (was #0E0C0A) */
+  --border:      #34291E;  /* low-contrast warm border (was #141210) */
+  --border-mid:  #4A3B2C;  /* warmer mid border (was #2A2520) */
+  --text-loud:   #ECE3D5;  /* soft sand (was #F0EBE3) */
+  --text-mid:    #6E6051;  /* warm taupe (was #4A4540) */
+  --text-soft:   #574A3C;  /* deeper taupe (was #3A342E) */
+  --text-muted:  #3A2F23;  /* muted warm brown (was #1E1A16) */
+  --gold:        #A8885A;  /* unchanged — matches LIVOORA gold */
+  --gold-light:  #C4A882;  /* unchanged */
 }
 
-/* ── Light mode ────────────────────────────────────────────────────── */
+/* ── Light mode — warm cream counterpart ───────────────────────────── */
 html.light-mode {
-  --bg:          #F5F0E8;
-  --bg-subtle:   #EDE8DF;
-  --border:      #DDD8CE;
-  --border-mid:  #C8C0B4;
-  --text-loud:   #0E0C0A;
-  --text-mid:    #4A4540;
-  --text-soft:   #7A7268;
-  --text-muted:  #A09890;
-  --gold:        #8C6E42;
-  --gold-light:  #A8885A;
+  --bg:          #EFE7D9;  /* warm cream (was #F5F0E8) */
+  --bg-subtle:   #E6DBCA;  /* (was #EDE8DF) */
+  --border:      #D8CBB6;  /* warm border (was #DDD8CE) */
+  --border-mid:  #C2B299;  /* (was #C8C0B4) */
+  --text-loud:   #2A2018;  /* warm espresso text (was #0E0C0A) */
+  --text-mid:    #5C4F40;  /* (was #4A4540) */
+  --text-soft:   #7E7060;  /* (was #7A7268) */
+  --text-muted:  #A89A86;  /* (was #A09890) */
+  --gold:        #8C6E42;  /* unchanged */
+  --gold-light:  #A8885A;  /* unchanged */
 }
 
 /* ── Smooth transition ─────────────────────────────────────────────── */
@@ -42,8 +43,7 @@ body {
   color: var(--text-loud);
 }
 
-/* ── CRITICAL: Hero section must always stay black/dark ────────────── */
-/* The Hero has its own bg-black and overlay — never let theme affect it */
+/* ── Hero transitions still suppressed (color now themed warm) ─────── */
 section.hero-section,
 section.hero-section * {
   transition: none !important;

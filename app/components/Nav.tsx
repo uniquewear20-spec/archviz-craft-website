@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FaBed, FaBuilding, FaEnvelope, FaCogs } from "react-icons/fa";
@@ -34,7 +34,7 @@ export default function Nav({ scrolled }: { scrolled?: boolean }) {
       {/* ── Logo — ABSOLUTE (stays in hero only, does not follow scroll) ── */}
       <div
         style={{
-          position: "absolute",   // ← changed from "fixed" to "absolute"
+          position: "absolute",
           top: 0,
           left: 0,
           zIndex: 50,
@@ -119,7 +119,7 @@ function NavLink({
         alignItems: "center",
         gap: "0.42rem",
         textDecoration: "none",
-        color: hovered ? "#A8885A" : "rgba(255,255,255,0.55)",
+        color: hovered ? "#A8885A" : "rgba(236,227,213,0.55)",
         transition: "color 0.4s ease",
         fontFamily: "var(--font-dm), sans-serif",
         fontSize: "clamp(9px, 0.9vw, 11px)",

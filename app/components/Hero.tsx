@@ -48,7 +48,7 @@ export default function Hero() {
         height: "100vh",
         minHeight: "640px",
         overflow: "hidden",
-        backgroundColor: "#000",
+        backgroundColor: "#1A130C",
       }}
     >
       {/* ── Cinematic background slideshow ─────────────────────────────── */}
@@ -95,7 +95,7 @@ export default function Hero() {
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.65) 100%)",
+            "linear-gradient(to bottom, rgba(26,19,12,0.35) 0%, rgba(26,19,12,0.45) 50%, rgba(26,19,12,0.68) 100%)",
           zIndex: 10,
         }}
       />
@@ -106,7 +106,7 @@ export default function Hero() {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)",
+            "radial-gradient(ellipse at center, transparent 40%, rgba(26,19,12,0.5) 100%)",
           zIndex: 11,
         }}
       />
@@ -155,7 +155,7 @@ export default function Hero() {
                 fontSize: "clamp(8px,0.85vw,10px)",
                 letterSpacing: "0.38em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.48)",
+                color: "rgba(236,227,213,0.52)",
                 fontWeight: 300,
               }}
             >
@@ -179,7 +179,7 @@ export default function Hero() {
             <span
               style={{
                 display: "block",
-                color: "#fff",
+                color: "#F3ECE0",
                 fontSize: "clamp(2.8rem, 7.5vw, 6.5rem)",
                 fontWeight: 300,
                 marginBottom: "0.1em",
@@ -219,7 +219,7 @@ export default function Hero() {
           <motion.p
             style={{
               fontFamily: "var(--font-dm), sans-serif",
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(236,227,213,0.62)",
               fontWeight: 300,
               letterSpacing: "0.06em",
               marginTop: "1.6rem",
@@ -270,7 +270,7 @@ export default function Hero() {
                   cursor: "pointer",
                   padding: 0,
                   backgroundColor:
-                    i === index ? "#A8885A" : "rgba(255,255,255,0.25)",
+                    i === index ? "#A8885A" : "rgba(236,227,213,0.28)",
                   transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
                   flexShrink: 0,
                 }}
@@ -299,7 +299,7 @@ export default function Hero() {
                 fontSize: "8px",
                 letterSpacing: "0.3em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.28)",
+                color: "rgba(236,227,213,0.30)",
                 writingMode: "vertical-rl",
                 fontWeight: 300,
               }}
@@ -347,7 +347,7 @@ function HeroCTA() {
         alignItems: "center",
         gap: "0.85rem",
         fontFamily: "var(--font-dm), sans-serif",
-        color: hovered ? "#0E0C0A" : "#fff",
+        color: hovered ? "#1A130C" : "#F3ECE0",
         fontWeight: 300,
         letterSpacing: "0.18em",
         fontSize: "clamp(9px,0.9vw,11px)",
