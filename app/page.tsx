@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
+import FeatureBlocks from "./components/FeatureBlocks";
 import TestimonialsMarquee, { MarqueeTestimonial } from "./components/TestimonialsMarquee";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -693,6 +694,8 @@ export default function HomePage() {
       <Nav scrolled={false} />
       <ThemeToggle />
       <Hero />
+
+      <FeatureBlocks />
 
       <StatsManifesto />
 
