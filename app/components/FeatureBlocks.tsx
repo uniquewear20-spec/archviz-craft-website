@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 
-// ── omegarender-style feature blocks — LIVOORA warm palette ─────────────────
-// Warm brown background, sand text, gold buttons, two alternating blocks with
-// TALL portrait edge-bleeding images, floating "Schedule a call" pill.
+// ── omegarender-style feature section — LIVOORA warm palette ────────────────
+// Alternating text/image rows (Interior, Exterior) then a full-bleed
+// ultra-wide 3D ANIMATION video row beneath. Warm brown bg, sand/gold text.
 
 const BLOCKS = [
   {
@@ -16,7 +16,7 @@ const BLOCKS = [
     href: "#villas-exteriors",
     img: "/images/feature/feature-exterior.jpg",
     textSide: "left" as const,
-    aspect: "3 / 4",
+    aspect: "4 / 5",
   },
   {
     id: "interior",
@@ -37,10 +37,13 @@ export default function FeatureBlocks() {
         position: "relative",
         backgroundColor: "var(--bg)",
         color: "var(--text-loud)",
-        padding: "clamp(3rem, 6vw, 6rem) clamp(1.5rem, 5vw, 5.5rem) clamp(4rem, 9vw, 9rem)",
+        paddingTop: "clamp(3rem, 6vw, 6rem)",
+        paddingBottom: "clamp(4rem, 9vw, 9rem)",
         borderBottom: "1px solid var(--border)",
+        overflow: "hidden",
       }}
     >
+      {/* Image rows — within content width */}
       <div
         style={{
           display: "flex",
@@ -48,11 +51,90 @@ export default function FeatureBlocks() {
           gap: "clamp(3.5rem, 8vw, 7rem)",
           maxWidth: "1600px",
           margin: "0 auto",
+          padding: "0 clamp(1.5rem, 5vw, 5.5rem)",
         }}
       >
         {BLOCKS.map((b) => (
           <FeatureRow key={b.id} block={b} />
         ))}
+      </div>
+
+      {/* 3D ANIMATION row — heading within content width, video full-bleed */}
+      <div
+        style={{
+          maxWidth: "1600px",
+          margin: "clamp(3.5rem, 8vw, 7rem) auto clamp(2rem, 4vw, 3rem)",
+          padding: "0 clamp(1.5rem, 5vw, 5.5rem)",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: "1.5rem",
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "var(--font-dm), sans-serif",
+            fontWeight: 700,
+            fontSize: "clamp(1.5rem, 2.6vw, 2.5rem)",
+            letterSpacing: "0.01em",
+            lineHeight: 1.1,
+            margin: 0,
+            color: "var(--text-loud)",
+          }}
+        >
+          3D ANIMATION
+        </h2>
+        <a
+          href="#contact"
+          style={{
+            display: "inline-block",
+            backgroundColor: "var(--gold)",
+            color: "#1A130C",
+            fontFamily: "var(--font-dm), sans-serif",
+            fontWeight: 500,
+            fontSize: "clamp(0.7rem, 0.9vw, 0.82rem)",
+            letterSpacing: "0.12em",
+            padding: "1rem 2.4rem",
+            textDecoration: "none",
+            transition: "opacity 0.3s ease",
+          }}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.82")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
+        >
+          SEE MORE
+        </a>
+      </div>
+
+      {/* Full-bleed ultra-wide video band */}
+      <div
+        style={{
+          position: "relative",
+          width: "100vw",
+          left: "50%",
+          right: "50%",
+          marginLeft: "-50vw",
+          marginRight: "-50vw",
+          aspectRatio: "1722 / 788",
+          maxHeight: "70vh",
+          overflow: "hidden",
+          backgroundColor: "#1A130C",
+        }}
+      >
+        <video
+          src="/videos/feature-animation.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
       </div>
 
       {/* Floating Schedule a call pill */}
@@ -65,12 +147,9 @@ export default function FeatureBlocks() {
           gap: clamp(2rem, 5vw, 5rem);
           align-items: start;
         }
-        .feature-row .feature-text {
-          align-self: center;
-        }
+        .feature-row .feature-text { align-self: center; }
         .feature-row.text-right .feature-text { order: 2; }
         .feature-row.text-right .feature-img  { order: 1; }
-        /* Interior row image pulled up to match omegarender's stagger */
         .feature-row.text-right .feature-img {
           margin-top: clamp(-3rem, -4vw, -1.5rem);
         }
@@ -79,7 +158,7 @@ export default function FeatureBlocks() {
           .feature-row .feature-text { align-self: auto; }
           .feature-row.text-right .feature-text { order: 1; }
           .feature-row.text-right .feature-img  { order: 2; margin-top: 0 !important; }
-          .feature-img { aspect-ratio: 3 / 4 !important; }
+          .feature-img { aspect-ratio: 4 / 5 !important; }
         }
       `}</style>
     </section>
