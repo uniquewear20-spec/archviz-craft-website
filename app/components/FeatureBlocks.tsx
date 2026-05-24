@@ -16,6 +16,7 @@ const BLOCKS = [
     href: "#villas-exteriors",
     img: "/images/feature/feature-exterior.jpg",
     textSide: "left" as const,
+    aspect: "3 / 4",
   },
   {
     id: "interior",
@@ -25,6 +26,7 @@ const BLOCKS = [
     href: "#bedrooms",
     img: "/images/feature/feature-interior.png",
     textSide: "right" as const,
+    aspect: "4 / 5",
   },
 ];
 
@@ -61,14 +63,22 @@ export default function FeatureBlocks() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: clamp(2rem, 5vw, 5rem);
-          align-items: center;
+          align-items: start;
+        }
+        .feature-row .feature-text {
+          align-self: center;
         }
         .feature-row.text-right .feature-text { order: 2; }
         .feature-row.text-right .feature-img  { order: 1; }
+        /* Interior row image pulled up to match omegarender's stagger */
+        .feature-row.text-right .feature-img {
+          margin-top: clamp(-3rem, -4vw, -1.5rem);
+        }
         @media (max-width: 860px) {
           .feature-row { grid-template-columns: 1fr !important; gap: 1.75rem !important; }
+          .feature-row .feature-text { align-self: auto; }
           .feature-row.text-right .feature-text { order: 1; }
-          .feature-row.text-right .feature-img  { order: 2; }
+          .feature-row.text-right .feature-img  { order: 2; margin-top: 0 !important; }
           .feature-img { aspect-ratio: 3 / 4 !important; }
         }
       `}</style>
@@ -137,7 +147,7 @@ function FeatureRow({ block }: { block: (typeof BLOCKS)[number] }) {
       style={{
         position: "relative",
         width: "100%",
-        aspectRatio: "3 / 4",
+        aspectRatio: block.aspect,
         overflow: "hidden",
       }}
     >
