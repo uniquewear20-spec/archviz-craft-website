@@ -3,14 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 
-// ── omegarender-style feature blocks ────────────────────────────────────────
-// White background, black text/buttons, two alternating image/text blocks,
-// floating "Schedule a call" pill. Placed right after the Hero.
+// ── omegarender-style feature blocks — LIVOORA warm palette ─────────────────
+// Warm brown background, sand text, gold buttons, two alternating blocks with
+// TALL portrait edge-bleeding images, floating "Schedule a call" pill.
 
 const BLOCKS = [
   {
     id: "exterior",
-    eyebrow: "",
     title: "EXTERIOR 3D VISUALIZATION",
     body: "BRING ARCHITECTURAL DESIGNS TO LIFE WITH STUNNING EXTERIOR 3D RENDERINGS. SHOWCASE YOUR PROJECTS IN PHOTOREALISTIC DETAIL FROM EVERY ANGLE.",
     cta: "SEE MORE",
@@ -20,7 +19,6 @@ const BLOCKS = [
   },
   {
     id: "interior",
-    eyebrow: "",
     title: "INTERIOR 3D RENDERINGS",
     body: "TRANSFORM IDEAS INTO BREATHTAKING INTERIOR VISUALS. SEE EVERY DETAIL OF YOUR DESIGN COME ALIVE.",
     cta: "SEE MORE",
@@ -35,17 +33,18 @@ export default function FeatureBlocks() {
     <section
       style={{
         position: "relative",
-        backgroundColor: "#ffffff",
-        color: "#0a0a0a",
-        padding: "clamp(4rem, 9vw, 9rem) clamp(1.5rem, 5vw, 5.5rem)",
+        backgroundColor: "var(--bg)",
+        color: "var(--text-loud)",
+        padding: "clamp(3rem, 6vw, 6rem) clamp(1.5rem, 5vw, 5.5rem) clamp(4rem, 9vw, 9rem)",
+        borderBottom: "1px solid var(--border)",
       }}
     >
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "clamp(3.5rem, 8vw, 8rem)",
-          maxWidth: "1500px",
+          gap: "clamp(3.5rem, 8vw, 7rem)",
+          maxWidth: "1600px",
           margin: "0 auto",
         }}
       >
@@ -70,6 +69,7 @@ export default function FeatureBlocks() {
           .feature-row { grid-template-columns: 1fr !important; gap: 1.75rem !important; }
           .feature-row.text-right .feature-text { order: 1; }
           .feature-row.text-right .feature-img  { order: 2; }
+          .feature-img { aspect-ratio: 3 / 4 !important; }
         }
       `}</style>
     </section>
@@ -89,7 +89,7 @@ function FeatureRow({ block }: { block: (typeof BLOCKS)[number] }) {
           letterSpacing: "0.01em",
           lineHeight: 1.1,
           margin: 0,
-          color: "#0a0a0a",
+          color: "var(--text-loud)",
         }}
       >
         {block.title}
@@ -101,7 +101,7 @@ function FeatureRow({ block }: { block: (typeof BLOCKS)[number] }) {
           fontSize: "clamp(0.82rem, 1.05vw, 1rem)",
           letterSpacing: "0.04em",
           lineHeight: 1.75,
-          color: "#1a1a1a",
+          color: "var(--text-mid)",
           marginTop: "1.4rem",
           marginBottom: "2.2rem",
           maxWidth: "30rem",
@@ -113,8 +113,8 @@ function FeatureRow({ block }: { block: (typeof BLOCKS)[number] }) {
         href={block.href}
         style={{
           display: "inline-block",
-          backgroundColor: "#0a0a0a",
-          color: "#ffffff",
+          backgroundColor: "var(--gold)",
+          color: "#1A130C",
           fontFamily: "var(--font-dm), sans-serif",
           fontWeight: 500,
           fontSize: "clamp(0.7rem, 0.9vw, 0.82rem)",
@@ -123,7 +123,7 @@ function FeatureRow({ block }: { block: (typeof BLOCKS)[number] }) {
           textDecoration: "none",
           transition: "opacity 0.3s ease",
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.78")}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.82")}
         onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
       >
         {block.cta}
@@ -137,7 +137,7 @@ function FeatureRow({ block }: { block: (typeof BLOCKS)[number] }) {
       style={{
         position: "relative",
         width: "100%",
-        aspectRatio: "4 / 3",
+        aspectRatio: "3 / 4",
         overflow: "hidden",
       }}
     >
@@ -174,18 +174,18 @@ function ScheduleCall() {
         display: "inline-flex",
         alignItems: "center",
         gap: "0.5rem",
-        backgroundColor: "#0a0a0a",
-        color: "#ffffff",
+        backgroundColor: "var(--gold)",
+        color: "#1A130C",
         fontFamily: "var(--font-dm), sans-serif",
-        fontWeight: 500,
+        fontWeight: 600,
         fontSize: "clamp(0.78rem, 1vw, 0.95rem)",
         letterSpacing: "0.02em",
         padding: "0.95rem 1.8rem",
         borderRadius: "9999px",
         textDecoration: "none",
         boxShadow: hovered
-          ? "0 10px 34px rgba(0,0,0,0.32)"
-          : "0 6px 22px rgba(0,0,0,0.22)",
+          ? "0 10px 34px rgba(0,0,0,0.4)"
+          : "0 6px 22px rgba(0,0,0,0.3)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
       }}
