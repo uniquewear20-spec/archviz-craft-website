@@ -540,8 +540,8 @@ function ContactSection() {
             <Reveal delay={0.1}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginTop: "3rem" }}>
                 {[
-                  { label: "WhatsApp", value: "+971 50 000 0000", href: "https://wa.me/971500000000" },
-                  { label: "Email", value: "studio@archvizcraft.com", href: "mailto:studio@archvizcraft.com" },
+                  { label: "WhatsApp", value: "+971 52 278 3784", href: "https://wa.me/971522783784" },
+                  { label: "Email", value: "archvizcraft.in@gmail.com", href: "mailto:archvizcraft.in@gmail.com" },
                   { label: "Location", value: "By Appointment · Dubai", href: undefined },
                 ].map(item => (
                   <div key={item.label}>
