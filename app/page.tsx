@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import FeatureBlocks from "./components/FeatureBlocks";
+import { SocialRow, FloatingContact } from "./components/SocialContact";
 import TestimonialsMarquee, { MarqueeTestimonial } from "./components/TestimonialsMarquee";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -733,7 +734,9 @@ export default function HomePage() {
       <AboutSection />
       <ContactSection />
       <ClosingTestimonials />
+      <SocialRow />
       <Footer />
+      <FloatingContact />
     </div>
   );
 }
