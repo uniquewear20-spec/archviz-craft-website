@@ -16,7 +16,7 @@ const BLOCKS = [
     href: "#villas-exteriors",
     img: "/images/feature/feature-exterior.jpg",
     textSide: "left" as const,
-    aspect: "4 / 5",
+    aspect: "1402 / 1122",
   },
   {
     id: "interior",
@@ -26,7 +26,7 @@ const BLOCKS = [
     href: "#bedrooms",
     img: "/images/feature/feature-interior.png",
     textSide: "right" as const,
-    aspect: "4 / 5",
+    aspect: "1402 / 1122",
   },
 ];
 
@@ -158,7 +158,7 @@ export default function FeatureBlocks() {
           .feature-row .feature-text { align-self: auto; padding-top: 0 !important; }
           .feature-row.text-right .feature-text { order: 1; }
           .feature-row.text-right .feature-img  { order: 2; margin-top: 0 !important; }
-          .feature-img { aspect-ratio: 4 / 5 !important; }
+          .feature-img { aspect-ratio: 1402 / 1122 !important; }
         }
       `}</style>
     </section>
