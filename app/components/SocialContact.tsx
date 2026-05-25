@@ -78,6 +78,7 @@ const SOCIALS: { id: string; name: string; href: string; icon: React.ReactNode }
 export function SocialRow() {
   return (
     <section
+      id="follow"
       style={{
         backgroundColor: "var(--bg)",
         borderTop: "1px solid var(--border)",

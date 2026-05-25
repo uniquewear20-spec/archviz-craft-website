@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { label: "Work",    href: "/#bedrooms", icon: FaBuilding },
   { label: "Studio",  href: "/studio",    icon: FaBed      },
   { label: "Process", href: "/#process",  icon: FaCogs     },
-  { label: "Contact", href: "/#contact",  icon: FaEnvelope },
+  { label: "Contact", href: "/#follow",   icon: FaEnvelope },
 ];
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -117,23 +117,24 @@ function NavLink({
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "0.42rem",
+        gap: "0.5rem",
         textDecoration: "none",
-        color: hovered ? "#A8885A" : "rgba(236,227,213,0.55)",
+        color: hovered ? "#A8885A" : "rgba(236,227,213,0.82)",
         transition: "color 0.4s ease",
         fontFamily: "var(--font-dm), sans-serif",
-        fontSize: "clamp(9px, 0.9vw, 11px)",
-        fontWeight: 300,
-        letterSpacing: "0.22em",
+        fontSize: "clamp(12px, 1.1vw, 15px)",
+        fontWeight: 400,
+        letterSpacing: "0.2em",
         textTransform: "uppercase",
         position: "relative",
-        paddingBottom: "2px",
+        paddingBottom: "3px",
+        textShadow: "0 1px 12px rgba(0,0,0,0.45)",
       }}
     >
       <span
         style={{
-          fontSize: "9px",
-          opacity: hovered ? 0.9 : 0.45,
+          fontSize: "12px",
+          opacity: hovered ? 0.95 : 0.6,
           transition: "opacity 0.4s ease",
           flexShrink: 0,
         }}
