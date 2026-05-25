@@ -37,7 +37,7 @@ export default function FeatureBlocks() {
         position: "relative",
         backgroundColor: "var(--bg)",
         color: "var(--text-loud)",
-        paddingTop: "clamp(3rem, 6vw, 6rem)",
+        paddingTop: "clamp(1.5rem, 3vw, 3rem)",
         paddingBottom: "clamp(4rem, 9vw, 9rem)",
         borderBottom: "1px solid var(--border)",
         overflow: "hidden",
@@ -63,7 +63,7 @@ export default function FeatureBlocks() {
       <div
         style={{
           maxWidth: "1600px",
-          margin: "clamp(3.5rem, 8vw, 7rem) auto clamp(2rem, 4vw, 3rem)",
+          margin: "clamp(3.5rem, 8vw, 7rem) auto clamp(1rem, 2vw, 1.5rem)",
           padding: "0 clamp(1.5rem, 5vw, 5.5rem)",
           display: "flex",
           flexWrap: "wrap",
@@ -147,15 +147,15 @@ export default function FeatureBlocks() {
           gap: clamp(2rem, 5vw, 5rem);
           align-items: start;
         }
-        .feature-row .feature-text { align-self: center; }
+        .feature-row .feature-text {
+          align-self: start;
+          padding-top: clamp(1rem, 4vw, 4rem);
+        }
         .feature-row.text-right .feature-text { order: 2; }
         .feature-row.text-right .feature-img  { order: 1; }
-        .feature-row.text-right .feature-img {
-          margin-top: clamp(-3rem, -4vw, -1.5rem);
-        }
         @media (max-width: 860px) {
-          .feature-row { grid-template-columns: 1fr !important; gap: 1.75rem !important; }
-          .feature-row .feature-text { align-self: auto; }
+          .feature-row { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
+          .feature-row .feature-text { align-self: auto; padding-top: 0 !important; }
           .feature-row.text-right .feature-text { order: 1; }
           .feature-row.text-right .feature-img  { order: 2; margin-top: 0 !important; }
           .feature-img { aspect-ratio: 4 / 5 !important; }
