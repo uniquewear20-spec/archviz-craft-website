@@ -22,8 +22,8 @@ export default function StudioPage() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#080808",
-        color: "#F0EBE3",
+        backgroundColor: "var(--bg)",
+        color: "var(--text-loud)",
         fontFamily: "var(--font-cormorant), serif",
       }}
     >
@@ -46,7 +46,7 @@ export default function StudioPage() {
             position: "relative",
             overflow: "hidden",
             minHeight: "100vh",
-            backgroundColor: "#050505",
+            backgroundColor: "var(--bg-subtle)",
           }}
         >
           <motion.div
@@ -77,7 +77,7 @@ export default function StudioPage() {
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to right, transparent 60%, #080808 100%)",
+                "linear-gradient(to right, transparent 60%, var(--bg) 100%)",
               zIndex: 2,
             }}
           />
@@ -88,7 +88,8 @@ export default function StudioPage() {
               left: 0,
               right: 0,
               height: "30%",
-              background: "linear-gradient(to top, #080808 0%, transparent 100%)",
+              background:
+                "linear-gradient(to top, var(--bg) 0%, transparent 100%)",
               zIndex: 2,
             }}
           />
@@ -111,7 +112,7 @@ export default function StudioPage() {
                 fontSize: "clamp(8px,0.75vw,10px)",
                 letterSpacing: "0.44em",
                 textTransform: "uppercase",
-                color: "#A8885A",
+                color: "var(--gold)",
                 fontWeight: 300,
               }}
             >
@@ -149,7 +150,7 @@ export default function StudioPage() {
                 style={{
                   display: "block",
                   fontSize: "clamp(3rem,5.5vw,5rem)",
-                  color: "#F0EBE3",
+                  color: "var(--text-loud)",
                   letterSpacing: "-0.01em",
                 }}
               >
@@ -159,7 +160,7 @@ export default function StudioPage() {
                 style={{
                   display: "block",
                   fontSize: "clamp(3rem,5.5vw,5rem)",
-                  color: "#A8885A",
+                  color: "var(--gold)",
                   fontStyle: "italic",
                   letterSpacing: "-0.01em",
                 }}
@@ -174,7 +175,7 @@ export default function StudioPage() {
             style={{
               fontFamily: "var(--font-dm), sans-serif",
               fontSize: "clamp(9px,0.8vw,11px)",
-              color: "#4A4540",
+              color: "var(--text-mid)",
               letterSpacing: "0.18em",
               textTransform: "uppercase",
               fontWeight: 300,
@@ -193,7 +194,7 @@ export default function StudioPage() {
             style={{
               height: "1px",
               width: "48px",
-              backgroundColor: "#A8885A",
+              backgroundColor: "var(--gold)",
               marginTop: "2rem",
               marginBottom: "2rem",
               opacity: 0.65,
@@ -208,7 +209,7 @@ export default function StudioPage() {
             style={{
               fontFamily: "var(--font-dm), sans-serif",
               fontSize: "clamp(0.82rem,1.1vw,0.92rem)",
-              color: "#6B6560",
+              color: "var(--text-soft)",
               lineHeight: 1.95,
               fontWeight: 300,
               maxWidth: "480px",
@@ -248,21 +249,21 @@ export default function StudioPage() {
                   letterSpacing: "0.16em",
                   textTransform: "uppercase",
                   fontWeight: 300,
-                  color: "#3A342E",
-                  border: "1px solid #1C1916",
+                  color: "var(--text-mid)",
+                  border: "1px solid var(--border)",
                   padding: "0.4rem 0.85rem",
                   transition: "color 0.35s ease, border-color 0.35s ease",
                   cursor: "default",
                 }}
                 onMouseEnter={e => {
                   const el = e.currentTarget as HTMLSpanElement;
-                  el.style.color = "#A8885A";
+                  el.style.color = "var(--gold)";
                   el.style.borderColor = "rgba(168,136,90,0.3)";
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget as HTMLSpanElement;
-                  el.style.color = "#3A342E";
-                  el.style.borderColor = "#1C1916";
+                  el.style.color = "var(--text-mid)";
+                  el.style.borderColor = "var(--border)";
                 }}
               >
                 {skill}
@@ -285,15 +286,15 @@ export default function StudioPage() {
                 letterSpacing: "0.3em",
                 textTransform: "uppercase",
                 fontWeight: 300,
-                color: "#2A2520",
+                color: "var(--text-mid)",
                 textDecoration: "none",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.6rem",
                 transition: "color 0.35s ease",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#2A2520"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}
             >
               <span style={{ display: "inline-block", width: "20px", height: "1px", backgroundColor: "currentColor" }} />
               Back to Home
@@ -305,7 +306,7 @@ export default function StudioPage() {
       {/* Philosophy section */}
       <motion.section
         style={{
-          borderTop: "1px solid #141210",
+          borderTop: "1px solid var(--border)",
           padding: "clamp(5rem,8vw,8rem) clamp(2rem,6vw,6rem)",
         }}
         initial={{ opacity: 0, y: 24 }}
@@ -321,7 +322,7 @@ export default function StudioPage() {
               fontSize: "clamp(8px,0.75vw,10px)",
               letterSpacing: "0.44em",
               textTransform: "uppercase",
-              color: "#A8885A",
+              color: "var(--gold)",
               fontWeight: 300,
               marginBottom: "2.5rem",
             }}
@@ -334,7 +335,7 @@ export default function StudioPage() {
               fontWeight: 300,
               fontStyle: "italic",
               fontSize: "clamp(1.4rem,2.8vw,2.2rem)",
-              color: "#F0EBE3",
+              color: "var(--text-loud)",
               lineHeight: 1.35,
               margin: 0,
             }}
@@ -349,7 +350,7 @@ export default function StudioPage() {
             style={{
               height: "1px",
               width: "40px",
-              backgroundColor: "#A8885A",
+              backgroundColor: "var(--gold)",
               opacity: 0.5,
               margin: "2.5rem auto 0",
             }}
@@ -360,7 +361,7 @@ export default function StudioPage() {
       {/* Footer */}
       <footer
         style={{
-          borderTop: "1px solid #141210",
+          borderTop: "1px solid var(--border)",
           padding: "2rem clamp(2rem,6vw,6rem)",
           display: "flex",
           alignItems: "center",
@@ -375,12 +376,12 @@ export default function StudioPage() {
             letterSpacing: "0.3em",
             textTransform: "uppercase",
             fontWeight: 300,
-            color: "#2A2520",
+            color: "var(--text-mid)",
             textDecoration: "none",
             transition: "color 0.35s ease",
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#A8885A"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#2A2520"; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)"; }}
         >
           Back to Home
         </a>
@@ -388,7 +389,7 @@ export default function StudioPage() {
           style={{
             fontFamily: "var(--font-dm), sans-serif",
             fontSize: "clamp(8px,0.75vw,10px)",
-            color: "#1C1916",
+            color: "var(--text-muted)",
             letterSpacing: "0.14em",
             fontWeight: 300,
           }}

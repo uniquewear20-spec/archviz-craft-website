@@ -8,7 +8,7 @@ import { FaBed, FaBuilding, FaEnvelope, FaCogs } from "react-icons/fa";
 
 const NAV_LINKS = [
   { label: "Work",    href: "/#bedrooms", icon: FaBuilding },
-  { label: "Studio",  href: "/studio",    icon: FaBed      },
+  { label: "About",   href: "/studio",    icon: FaBed      },
   { label: "Process", href: "/#process",  icon: FaCogs     },
   { label: "Contact", href: "/#follow",   icon: FaEnvelope },
 ];
