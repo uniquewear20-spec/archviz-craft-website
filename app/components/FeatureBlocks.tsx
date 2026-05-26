@@ -211,7 +211,7 @@ export default function FeatureBlocks() {
           flex-direction: column;
         }
         .feat-interior-text {
-          padding-top: clamp(1rem, 4vw, 4rem);
+          padding-top: 0;
         }
         /* Push the exterior block down so it interlocks beside the tall
            right-hand interior image (which extends past the interior text). */
