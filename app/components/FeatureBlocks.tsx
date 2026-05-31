@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 
 // ── omegarender-style feature section — LIVOORA warm palette ────────────────
@@ -91,6 +91,17 @@ function Cta({ href, label }: { href: string; label: string }) {
 }
 
 export default function FeatureBlocks() {
+  const [isMuted, setIsMuted] = useState(true);
+  const [btnHovered, setBtnHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
   return (
     <section
       style={{
@@ -190,6 +201,7 @@ export default function FeatureBlocks() {
         }}
       >
         <video
+          ref={videoRef}
           src="/videos/feature-animation.mp4"
           autoPlay
           loop
@@ -203,6 +215,41 @@ export default function FeatureBlocks() {
             display: "block",
           }}
         />
+
+        {/* Minimalist Premium Audio Control */}
+        <button
+          onClick={toggleMute}
+          onMouseEnter={() => setBtnHovered(true)}
+          onMouseLeave={() => setBtnHovered(false)}
+          style={{
+            position: "absolute",
+            bottom: "1.5rem",
+            right: "clamp(1.5rem, 5vw, 4rem)",
+            background: "transparent",
+            border: "none",
+            color: btnHovered ? "var(--gold)" : "rgba(255, 255, 255, 0.6)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            cursor: "pointer",
+            fontFamily: "var(--font-dm), sans-serif",
+            fontSize: "9px",
+            fontWeight: 400,
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            transition: "color 0.3s ease",
+            zIndex: 10,
+          }}
+        >
+          <span>{isMuted ? "Sound Off" : "Sound On"}</span>
+          
+          {/* Elegant audio status indicator */}
+          <div style={{ display: "flex", alignItems: "center", gap: "2px", height: "8px" }}>
+            <span style={{ width: "1px", height: isMuted ? "2px" : "8px", backgroundColor: "currentColor", transition: "height 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+            <span style={{ width: "1px", height: isMuted ? "2px" : "5px", backgroundColor: "currentColor", transition: "height 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+            <span style={{ width: "1px", height: isMuted ? "2px" : "7px", backgroundColor: "currentColor", transition: "height 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+          </div>
+        </button>
       </div>
 
       {/* Floating Schedule a call pill */}
