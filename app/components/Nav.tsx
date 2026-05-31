@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FaBed, FaBuilding, FaEnvelope, FaCogs } from "react-icons/fa";
+import WAMonogram from "./WAMonogram";
 
 const NAV_LINKS = [
   { label: "Work",    href: "/#bedrooms", icon: FaBuilding },
@@ -104,59 +105,70 @@ export default function Nav({ scrolled }: { scrolled?: boolean }) {
         ))}
       </nav>
 
-      {/* Theme toggle (right) */}
-      {mounted && (
-        <button
-          onClick={toggleTheme}
-          aria-label="toggle theme"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "7px",
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            padding: "4px 0",
-            flexShrink: 0,
-            color: "rgba(236,227,213,0.5)",
-          }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A8885A"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(236,227,213,0.5)"; }}
-        >
-          <div
+      {/* Wasim Akram portfolio + theme toggle (right) */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "clamp(0.9rem,2vw,1.5rem)",
+          flexShrink: 0,
+        }}
+      >
+        <WAMonogram size={42} />
+
+        {mounted && (
+          <button
+            onClick={toggleTheme}
+            aria-label="toggle theme"
             style={{
-              position: "relative",
-              width: "30px",
-              height: "16px",
-              borderRadius: "8px",
-              border: `1px solid ${isDark ? "#2A2520" : "#C4A882"}`,
-              backgroundColor: isDark ? "#0E0C0A" : "#F0EBE3",
-              transition: "all 0.4s",
+              display: "flex",
+              alignItems: "center",
+              gap: "7px",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: "4px 0",
               flexShrink: 0,
+              color: "rgba(236,227,213,0.5)",
             }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#A8885A"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(236,227,213,0.5)"; }}
           >
             <div
               style={{
-                position: "absolute",
-                top: "2px",
-                left: isDark ? "16px" : "2px",
-                width: "10px",
-                height: "10px",
-                borderRadius: "50%",
-                backgroundColor: "#A8885A",
-                transition: "left 0.35s cubic-bezier(0.4,2,0.3,1)",
+                position: "relative",
+                width: "30px",
+                height: "16px",
+                borderRadius: "8px",
+                border: `1px solid ${isDark ? "#2A2520" : "#C4A882"}`,
+                backgroundColor: isDark ? "#0E0C0A" : "#F0EBE3",
+                transition: "all 0.4s",
+                flexShrink: 0,
               }}
-            />
-          </div>
-          <span style={{ fontSize: "11px", lineHeight: 1 }}>
-            {isDark ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" /></svg>
-            ) : (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="22" /><line x1="4.22" y1="4.22" x2="6.34" y2="6.34" /><line x1="17.66" y1="17.66" x2="19.78" y2="19.78" /><line x1="2" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="22" y2="12" /><line x1="4.22" y1="19.78" x2="6.34" y2="17.66" /><line x1="17.66" y1="6.34" x2="19.78" y2="4.22" /></svg>
-            )}
-          </span>
-        </button>
-      )}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "2px",
+                  left: isDark ? "16px" : "2px",
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                  backgroundColor: "#A8885A",
+                  transition: "left 0.35s cubic-bezier(0.4,2,0.3,1)",
+                }}
+              />
+            </div>
+            <span style={{ fontSize: "11px", lineHeight: 1 }}>
+              {isDark ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" /></svg>
+              ) : (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="22" /><line x1="4.22" y1="4.22" x2="6.34" y2="6.34" /><line x1="17.66" y1="17.66" x2="19.78" y2="19.78" /><line x1="2" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="22" y2="12" /><line x1="4.22" y1="19.78" x2="6.34" y2="17.66" /><line x1="17.66" y1="6.34" x2="19.78" y2="4.22" /></svg>
+              )}
+            </span>
+          </button>
+        )}
+      </div>
 
       <style>{`
         @media (max-width: 640px) {

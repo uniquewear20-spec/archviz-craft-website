@@ -11,66 +11,81 @@ import Image from "next/image";
 
 const INTERIOR = {
   id: "interior",
-  title: "INTERIOR 3D RENDERINGS",
-  body: "TRANSFORM IDEAS INTO BREATHTAKING INTERIOR VISUALS. SEE EVERY DETAIL OF YOUR DESIGN COME ALIVE.",
-  cta: "SEE MORE",
+  title: "Interior 3D Renderings",
+  body: "Transform ideas into breathtaking interior visuals. Every detail of your design, rendered alive.",
+  cta: "See More",
   href: "#bedrooms",
   img: "/images/feature/feature-interior.png",
 };
 
 const EXTERIOR = {
   id: "exterior",
-  title: "EXTERIOR 3D VISUALIZATION",
-  body: "BRING ARCHITECTURAL DESIGNS TO LIFE WITH STUNNING EXTERIOR 3D RENDERINGS. SHOWCASE YOUR PROJECTS IN PHOTOREALISTIC DETAIL FROM EVERY ANGLE.",
-  cta: "SEE MORE",
+  title: "Exterior 3D Visualization",
+  body: "Bring architectural designs to life with photorealistic exterior renderings — your project shown in full conviction, from every angle.",
+  cta: "See More",
   href: "#villas-exteriors",
   img: "/images/feature/feature-exterior.jpg",
 };
 
+// Cormorant display heading — single voice shared with the rest of the site.
 const headingStyle: React.CSSProperties = {
-  fontFamily: "var(--font-dm), sans-serif",
-  fontWeight: 700,
-  fontSize: "clamp(1.5rem, 2.6vw, 2.5rem)",
-  letterSpacing: "0.01em",
-  lineHeight: 1.1,
+  fontFamily: "var(--font-cormorant), serif",
+  fontWeight: 300,
+  fontSize: "clamp(2rem, 3.6vw, 3.4rem)",
+  letterSpacing: "-0.01em",
+  lineHeight: 1.05,
   margin: 0,
   color: "var(--text-loud)",
 };
 
 const bodyStyle: React.CSSProperties = {
   fontFamily: "var(--font-dm), sans-serif",
-  fontWeight: 400,
-  fontSize: "clamp(0.82rem, 1.05vw, 1rem)",
-  letterSpacing: "0.04em",
-  lineHeight: 1.75,
-  color: "var(--text-mid)",
-  marginTop: "1.4rem",
-  marginBottom: "2.2rem",
+  fontWeight: 300,
+  fontSize: "clamp(0.88rem, 1.05vw, 1rem)",
+  letterSpacing: "0.01em",
+  lineHeight: 1.85,
+  color: "var(--text-soft)",
+  marginTop: "1.5rem",
+  marginBottom: "2.4rem",
   maxWidth: "30rem",
 };
 
-const ctaStyle: React.CSSProperties = {
-  display: "inline-block",
-  backgroundColor: "var(--gold)",
-  color: "#1A130C",
-  fontFamily: "var(--font-dm), sans-serif",
-  fontWeight: 500,
-  fontSize: "clamp(0.7rem, 0.9vw, 0.82rem)",
-  letterSpacing: "0.12em",
-  padding: "1rem 2.4rem",
-  textDecoration: "none",
-  transition: "opacity 0.3s ease",
-};
-
 function Cta({ href, label }: { href: string; label: string }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <a
       href={href}
-      style={ctaStyle}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.82")}
-      onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.85rem",
+        backgroundColor: "transparent",
+        color: hovered ? "var(--gold-light)" : "var(--gold)",
+        fontFamily: "var(--font-dm), sans-serif",
+        fontWeight: 400,
+        fontSize: "clamp(0.62rem, 0.8vw, 0.7rem)",
+        letterSpacing: "0.28em",
+        textTransform: "uppercase",
+        textDecoration: "none",
+        paddingBottom: "4px",
+        borderBottom: `1px solid ${hovered ? "var(--gold-light)" : "rgba(168,136,90,0.35)"}`,
+        transition: "color 0.4s ease, border-color 0.4s ease, transform 0.4s ease",
+        transform: hovered ? "translateY(-1px)" : "translateY(0)",
+      }}
     >
       {label}
+      <span
+        style={{
+          display: "inline-block",
+          width: "20px",
+          height: "1px",
+          backgroundColor: "currentColor",
+          transition: "transform 0.4s ease",
+          transform: hovered ? "translateX(4px)" : "translateX(0)",
+        }}
+      />
     </a>
   );
 }
@@ -82,8 +97,8 @@ export default function FeatureBlocks() {
         position: "relative",
         backgroundColor: "var(--bg)",
         color: "var(--text-loud)",
-        paddingTop: "clamp(1.5rem, 3vw, 3rem)",
-        paddingBottom: "clamp(4rem, 9vw, 9rem)",
+        paddingTop: "clamp(2rem, 4vw, 4rem)",
+        paddingBottom: "clamp(5rem, 8vw, 9rem)",
         borderBottom: "1px solid var(--border)",
         overflow: "hidden",
       }}
@@ -92,9 +107,9 @@ export default function FeatureBlocks() {
       <div
         className="feat-stagger"
         style={{
-          maxWidth: "1600px",
+          maxWidth: "1440px",
           margin: "0 auto",
-          padding: "0 clamp(1.5rem, 5vw, 5.5rem)",
+          padding: "0 clamp(2rem, 7vw, 8rem)",
         }}
       >
         {/* LEFT COLUMN — INTERIOR text (top), EXTERIOR text + image (offset down) */}
@@ -119,6 +134,7 @@ export default function FeatureBlocks() {
               src={EXTERIOR.img}
               alt={EXTERIOR.title}
               fill
+              quality={90}
               sizes="(max-width: 860px) 100vw, 40vw"
               style={{ objectFit: "cover" }}
             />
@@ -132,6 +148,7 @@ export default function FeatureBlocks() {
               src={INTERIOR.img}
               alt={INTERIOR.title}
               fill
+              quality={90}
               sizes="(max-width: 860px) 100vw, 56vw"
               style={{ objectFit: "cover" }}
               priority
@@ -143,9 +160,9 @@ export default function FeatureBlocks() {
       {/* 3D ANIMATION row — heading within content width, video full-bleed */}
       <div
         style={{
-          maxWidth: "1600px",
-          margin: "clamp(3.5rem, 8vw, 7rem) auto clamp(1rem, 2vw, 1.5rem)",
-          padding: "0 clamp(1.5rem, 5vw, 5.5rem)",
+          maxWidth: "1440px",
+          margin: "clamp(4rem, 8vw, 7rem) auto clamp(1.25rem, 2vw, 1.75rem)",
+          padding: "0 clamp(2rem, 7vw, 8rem)",
           display: "flex",
           flexWrap: "wrap",
           alignItems: "baseline",
@@ -153,8 +170,8 @@ export default function FeatureBlocks() {
           gap: "1.5rem",
         }}
       >
-        <h2 style={headingStyle}>3D ANIMATION</h2>
-        <Cta href="#contact" label="SEE MORE" />
+        <h2 style={headingStyle}>3D Animation</h2>
+        <Cta href="#contact" label="See More" />
       </div>
 
       {/* Full-bleed ultra-wide video band */}
@@ -169,7 +186,7 @@ export default function FeatureBlocks() {
           aspectRatio: "1722 / 788",
           maxHeight: "70vh",
           overflow: "hidden",
-          backgroundColor: "#1A130C",
+          backgroundColor: "var(--bg-subtle)",
         }}
       >
         <video
@@ -203,7 +220,7 @@ export default function FeatureBlocks() {
         .feat-stagger {
           display: grid;
           grid-template-columns: 40% 60%;
-          column-gap: clamp(2rem, 5vw, 5rem);
+          column-gap: clamp(2.5rem, 5vw, 5.5rem);
           align-items: start;
         }
         .feat-left {
@@ -231,7 +248,7 @@ export default function FeatureBlocks() {
         @media (max-width: 860px) {
           .feat-stagger {
             grid-template-columns: 1fr !important;
-            row-gap: 1.25rem;
+            row-gap: 1.5rem;
           }
           /* Mobile reading order: interior text -> interior image ->
              exterior text -> exterior image. */
@@ -240,7 +257,7 @@ export default function FeatureBlocks() {
           }
           .feat-interior-text { order: 1; padding-top: 0 !important; }
           .feat-right         { order: 2; }
-          .feat-exterior-text { order: 3; margin-top: 1.5rem !important; }
+          .feat-exterior-text { order: 3; margin-top: 2rem !important; }
           .feat-exterior-img  { order: 4; margin-top: 1.25rem !important; }
         }
       `}</style>
@@ -264,22 +281,23 @@ function ScheduleCall() {
         alignItems: "center",
         gap: "0.5rem",
         backgroundColor: "var(--gold)",
-        color: "#1A130C",
+        color: "var(--bg)",
         fontFamily: "var(--font-dm), sans-serif",
-        fontWeight: 600,
-        fontSize: "clamp(0.78rem, 1vw, 0.95rem)",
-        letterSpacing: "0.02em",
-        padding: "0.95rem 1.8rem",
+        fontWeight: 500,
+        fontSize: "clamp(0.72rem, 0.95vw, 0.88rem)",
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        padding: "0.95rem 1.9rem",
         borderRadius: "9999px",
         textDecoration: "none",
         boxShadow: hovered
-          ? "0 10px 34px rgba(0,0,0,0.4)"
+          ? "0 12px 38px rgba(0,0,0,0.42)"
           : "0 6px 22px rgba(0,0,0,0.3)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        transition: "transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease",
       }}
     >
-      Schedule a call
+      Schedule a Call
     </a>
   );
 }

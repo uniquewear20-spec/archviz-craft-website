@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import WAMonogram from "./WAMonogram";
 
 // ── Social links row + Zenith-style floating Email & WhatsApp buttons ────────
 // Social row: professional, centered, warm LIVOORA palette.
@@ -75,6 +76,51 @@ const SOCIALS: { id: string; name: string; href: string; icon: React.ReactNode }
   },
 ];
 
+function SocialLink({ s }: { s: typeof SOCIALS[number] }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <a
+      href={s.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={s.name}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.55rem",
+        textDecoration: "none",
+        color: hovered ? "var(--gold)" : "var(--text-mid)",
+        fontFamily: "var(--font-dm), sans-serif",
+        fontSize: "0.62rem",
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+        transition: "color 0.4s ease",
+        padding: "4px 0",
+        position: "relative",
+      }}
+    >
+      <span style={{ color: "inherit", display: "flex" }}>{s.icon}</span>
+      {s.name}
+      <span
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "1px",
+          backgroundColor: "var(--gold)",
+          opacity: 0.7,
+          transformOrigin: "left",
+          transform: `scaleX(${hovered ? 1 : 0})`,
+          transition: "transform 0.35s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      />
+    </a>
+  );
+}
+
 export function SocialRow() {
   return (
     <section
@@ -83,18 +129,18 @@ export function SocialRow() {
         backgroundColor: "var(--bg)",
         borderTop: "1px solid var(--border)",
         borderBottom: "1px solid var(--border)",
-        padding: "clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 5vw, 5.5rem)",
+        padding: "clamp(3rem, 5vw, 4.5rem) clamp(2rem, 7vw, 8rem)",
       }}
     >
       <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
         <p
           style={{
             fontFamily: "var(--font-dm), sans-serif",
-            fontSize: "0.62rem",
-            letterSpacing: "0.4em",
+            fontSize: "0.66rem",
+            letterSpacing: "0.34em",
             textTransform: "uppercase",
             color: "var(--gold)",
-            marginBottom: "2rem",
+            marginBottom: "2.4rem",
           }}
         >
           Follow Our Work
@@ -109,36 +155,9 @@ export function SocialRow() {
           }}
         >
           {SOCIALS.map((s) => (
-            <a
-              key={s.id}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={s.name}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.55rem",
-                textDecoration: "none",
-                color: "var(--text-mid)",
-                fontFamily: "var(--font-dm), sans-serif",
-                fontSize: "0.62rem",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                transition: "color 0.3s ease",
-                padding: "4px 0",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold-light)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-mid)";
-              }}
-            >
-              <span style={{ color: "inherit", display: "flex" }}>{s.icon}</span>
-              {s.name}
-            </a>
+            <SocialLink key={s.id} s={s} />
           ))}
+          <WAMonogram size={36} />
         </div>
       </div>
     </section>
@@ -171,7 +190,7 @@ export function FloatingContact() {
         onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.06)")}
         onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)")}
       >
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#1A130C" strokeWidth="1.8">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bg)" strokeWidth="1.8">
           <rect x="3" y="5" width="18" height="14" rx="2" />
           <path d="m3 7 9 6 9-6" />
         </svg>

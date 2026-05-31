@@ -60,18 +60,19 @@ export default function StudioPage() {
               alt="Wasim Akram — ArchViz Craft"
               fill
               priority
+              quality={90}
               sizes="50vw"
               className="studio-photo"
               style={{
                 objectFit: "cover",
-                objectPosition: "center 8%",
+                objectPosition: "center 20%",
                 filter: "grayscale(100%)",
                 transition: "filter 0.9s cubic-bezier(0.16,1,0.3,1)",
               }}
             />
           </motion.div>
 
-          {/* Bottom fade into background */}
+          {/* Right-edge fade into background */}
           <div
             style={{
               position: "absolute",
