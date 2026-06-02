@@ -1,6 +1,7 @@
 "use client";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import FeatureBlocks from "./components/FeatureBlocks";
@@ -63,69 +64,85 @@ const ALL_TESTIMONIALS: MarqueeTestimonial[] = [
 interface PortfolioSlide { src: string; title: string; desc: string; }
 
 const BEDROOM_SLIDES: PortfolioSlide[] = [
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg", title: "Master Suite · Neutral Palette", desc: "Warm oak tones, cove lighting, and floor-to-ceiling curtains. Rendered at golden hour — the moment a suite transitions from functional to emotional." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg", title: "Guest Suite · Mineral Restraint", desc: "Clean lines, pendant lighting, and layered textiles. The restraint here is deliberate — every absence is considered." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg", title: "Primary Bedroom · Classical Detail", desc: "Boiserie panelling, botanical pendant lights, and a wave-form headboard in stone linen. Architecture as sleeping ritual." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom4.jpg", title: "Study Retreat · Northern Light", desc: "Built-in shelving, herringbone floor, soft northern diffusion through sheer curtains — the room breathes." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg", title: "Grand Suite · Serene Atmosphere", desc: "Sculptural headboard, dual pendant drops, and silk bedding rendered in full depth. Stillness made architectural." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom6.jpg", title: "Corridor Suite · Deep Perspective", desc: "Long-axis composition revealing layered spaces — study, dressing, and sleeping zone — in a single frame." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom7.jpg", title: "Bedside Detail · Dusk Render", desc: "Tulip pendants, dark oak nightstand, marble slab top. Rendered at dusk — the hour when rooms acquire atmosphere." },
-  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg", title: "Evening Suite · Cinematic Shadow", desc: "Leather headboard, cylinder pendant, ambient wall light — the render studies shadow as a spatial material." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom1.jpg",  title: "Master Suite · Neutral Palette",   desc: "Warm oak tones, cove lighting, and floor-to-ceiling curtains. Rendered at golden hour — the moment a suite transitions from functional to emotional." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom2.jpg",  title: "Guest Suite · Mineral Restraint",   desc: "Clean lines, pendant lighting, and layered textiles. The restraint here is deliberate — every absence is considered." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom3.jpg",  title: "Primary Bedroom · Classical Detail", desc: "Boiserie panelling, botanical pendant lights, and a wave-form headboard in stone linen. Architecture as sleeping ritual." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom4.jpg",  title: "Study Retreat · Northern Light",     desc: "Built-in shelving, herringbone floor, soft northern diffusion through sheer curtains — the room breathes." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom5.jpg",  title: "Grand Suite · Serene Atmosphere",    desc: "Sculptural headboard, dual pendant drops, and silk bedding rendered in full depth. Stillness made architectural." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom6.jpg",  title: "Corridor Suite · Deep Perspective",  desc: "Long-axis composition revealing layered spaces — study, dressing, and sleeping zone — in a single frame." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom9.jpg",  title: "Evening Suite · Cinematic Shadow",   desc: "Leather headboard, cylinder pendant, ambient wall light — the render studies shadow as a spatial material." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom10.jpg", title: "Dawn Suite · Soft Diffusion",        desc: "First light across linen and pale oak. The render captures the quiet hour before a room is occupied." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom11.jpg", title: "Panelled Suite · Tonal Depth",       desc: "Floor-to-ceiling joinery in warm walnut, lit to reveal grain and shadow as architectural texture." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom13.jpg", title: "Dressing Suite · Mirrored Light",    desc: "The dressing zone rendered as ceremony — mirrored surfaces multiplying a single source of warm light." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom14.jpg", title: "Canopy Bedroom · Vertical Drama",    desc: "A four-poster reinterpreted in slender bronze. The render studies how vertical line reshapes a low room." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom15.jpg", title: "Terrace Suite · Borrowed Landscape", desc: "Glazing dissolves the wall between suite and terrace — interior and view rendered as one continuous space." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom17.jpg", title: "Reading Suite · Warm Enclosure",     desc: "A bedroom built around a single deep armchair and lamp — intimacy rendered through the smallest gesture." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom18.jpg", title: "Pavilion Bedroom · Open Plan",       desc: "The suite as pavilion — sleeping, bathing, and dressing zones flowing without partition, rendered in full light." },
+  { src: "/images/portfolio/bedrooms/elegant-master-bedroom19.jpg", title: "Nocturne Suite · Low Light Study",   desc: "The bedroom rendered at its most private hour — point sources of warm light against deep, absorbing shadow." },
 ];
 
 const KITCHEN_SLIDES: PortfolioSlide[] = [
   { src: "/images/portfolio/kitchens/luxury-chef-kitchen1.jpg",  title: "Chef's Kitchen · Brigade Composition", desc: "Designed for choreography. The island proportions reflect service flow — three simultaneous workstations without spatial collision." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen2.jpg",  title: "Culinary Suite · Dawn Render", desc: "Rendered at first light, when countertops hold the warmth of the day ahead. Marble veining selected for how it reads at breakfast." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen3.jpg",  title: "Private Kitchen · Obsidian and Oak", desc: "The tension between dark lacquered cabinetry and warm oak grain communicates a kitchen that operates in two registers." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen4.jpg",  title: "Island Kitchen · Negative Space", desc: "Where most kitchens accumulate, this one subtracts. Every surface is a decision about absence." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen5.jpg",  title: "Open-Plan Kitchen · Social Geometry", desc: "The kitchen as drawing room. Seating integrated at the island allows conversation without interrupting preparation." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen6.jpg",  title: "Bespoke Pantry · Storage as Ritual", desc: "Full-height shelving with pull-out spice drawers and concealed appliance bays." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen7.jpg",  title: "Galley Kitchen · Linear Precision", desc: "The galley form — unsentimentally professional. Two parallel runs at correct working heights." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen8.jpg",  title: "Kitchen-Dining · Transitional Moment", desc: "The frame captures the moment of invitation — when a meal prepared becomes a meal offered." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen9.jpg",  title: "Evening Kitchen · Candlelight Study", desc: "An uncommon render — the kitchen at evening, when ambient lighting takes over from task." },
-  { src: "/images/portfolio/kitchens/luxury-chef-kitchen10.jpg", title: "Peninsula Kitchen · Lateral Light", desc: "Lateral window light across stone work surfaces — a study in how natural illumination affects material perception." },
-  { src: "/images/portfolio/kitchens/grand-dining-hall.jpg",     title: "Grand Dining Hall · Ceremonial Scale", desc: "Hospitality operating at its most elevated register. A dining hall designed for the experience before the meal." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen2.jpg",  title: "Culinary Suite · Dawn Render",          desc: "Rendered at first light, when countertops hold the warmth of the day ahead. Marble veining selected for how it reads at breakfast." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen3.jpg",  title: "Private Kitchen · Obsidian and Oak",    desc: "The tension between dark lacquered cabinetry and warm oak grain communicates a kitchen that operates in two registers." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen4.jpg",  title: "Island Kitchen · Negative Space",       desc: "Where most kitchens accumulate, this one subtracts. Every surface is a decision about absence." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen5.jpg",  title: "Open-Plan Kitchen · Social Geometry",   desc: "The kitchen as drawing room. Seating integrated at the island allows conversation without interrupting preparation." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen6.jpg",  title: "Bespoke Pantry · Storage as Ritual",    desc: "Full-height shelving with pull-out spice drawers and concealed appliance bays." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen7.jpg",  title: "Galley Kitchen · Linear Precision",     desc: "The galley form — unsentimentally professional. Two parallel runs at correct working heights." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen8.jpg",  title: "Kitchen-Dining · Transitional Moment",  desc: "The frame captures the moment of invitation — when a meal prepared becomes a meal offered." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen9.jpg",  title: "Evening Kitchen · Candlelight Study",   desc: "An uncommon render — the kitchen at evening, when ambient lighting takes over from task." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen10.jpg", title: "Peninsula Kitchen · Lateral Light",     desc: "Lateral window light across stone work surfaces — a study in how natural illumination affects material perception." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen11.jpg", title: "Marble Kitchen · Veined Continuity",    desc: "Bookmatched stone carried from splashback to island — the render communicates material weight and vein continuity." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen12.jpg", title: "Show Kitchen · Theatrical Scale",       desc: "A kitchen scaled for performance — generous clearances and a hero island rendered for an audience." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen13.jpg", title: "Scullery · Working Backstage",          desc: "The concealed scullery behind the show kitchen — function rendered with the same care as display." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen14.jpg", title: "Breakfast Kitchen · Morning Warmth",    desc: "Soft east light across timber and brass — the kitchen rendered at its most domestic and inviting hour." },
+  { src: "/images/portfolio/kitchens/luxury-chef-kitchen15.jpg", title: "Grand Dining Kitchen · Ceremonial Scale", desc: "Hospitality at its most elevated register — a kitchen and dining hall designed for the experience before the meal." },
 ];
 
 const LIVING_SPACE_SLIDES: PortfolioSlide[] = [
-  { src: "/images/portfolio/living-spaces/luxury-modern-salon1.jpg",     title: "Grand Salon · Afternoon Study", desc: "The afternoon render was chosen deliberately — when lateral light creates the longest shadows and most legible spatial depth." },
-  { src: "/images/portfolio/living-spaces/luxury-modern-salon2.jpg",     title: "Drawing Room · Conversation Zones", desc: "Three distinct seating configurations within a single room, each with its own acoustic quality and sightline logic." },
-  { src: "/images/portfolio/living-spaces/luxury-modern-salon3.jpg",     title: "Salon · Vertical Emphasis", desc: "The double-height ceiling transformed from architectural feature to spatial experience through furniture scale calibration." },
-  { src: "/images/portfolio/living-spaces/luxury-modern-salon4.jpg",     title: "Living Suite · Material Warmth", desc: "Linen, limewash, travertine. The palette was built to perform at dusk — when a room either becomes warm or reveals its indifference." },
-  { src: "/images/portfolio/living-spaces/luxury-modern-salon5.jpg",     title: "Open Living · Threshold Moments", desc: "The render captures the threshold between reception and living — how a guest moves, pauses, orients." },
-  { src: "/images/portfolio/living-spaces/luxury-dining-room1.jpg",      title: "Formal Dining · Ceremonial Light", desc: "Overhead pendant scaled to the table below, not the ceiling above." },
-  { src: "/images/portfolio/living-spaces/luxury-dining-room2.jpg",      title: "Dining Room · Evening Atmosphere", desc: "Rendered at the hour when a dining room must perform. The warm tungsten of pendants against cooled daylight." },
-  { src: "/images/portfolio/living-spaces/marble-entryway-salon1.jpg",   title: "Marble Entry · First Impression", desc: "An arrival sequence rendered with the same attention given to a hotel lobby." },
-  { src: "/images/portfolio/living-spaces/marble-entryway-salon2.jpg",   title: "Entryway · Axial Composition", desc: "The long axis of arrival — a composition that communicates architectural intention within three seconds of entry." },
-  { src: "/images/portfolio/living-spaces/marble-entryway-salon3.jpg",   title: "Foyer · Material Hierarchy", desc: "Marble, brass, and deep-pile textile — a material hierarchy that communicates the register of a residence." },
-  { src: "/images/portfolio/living-spaces/marble-entryway-salon4.jpg",   title: "Reception Hall · Scale and Silence", desc: "The render was commissioned specifically to communicate silence — the architectural quality most difficult to convey." },
-  { src: "/images/portfolio/living-spaces/spiral-staircase-detail1.jpg", title: "Spiral Stair · Structural Elegance", desc: "A staircase designed to be descended — the experience of movement through space considered before the structural engineer." },
-  { src: "/images/portfolio/living-spaces/spiral-staircase-detail2.jpg", title: "Stair Detail · Light and Form", desc: "The render isolates the stair as a sculptural object — in a residence of this quality, circulation is never merely functional." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon1.jpg",   title: "Grand Salon · Afternoon Study",    desc: "The afternoon render was chosen deliberately — when lateral light creates the longest shadows and most legible spatial depth." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon2.jpg",   title: "Drawing Room · Conversation Zones", desc: "Three distinct seating configurations within a single room, each with its own acoustic quality and sightline logic." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon3.jpg",   title: "Salon · Vertical Emphasis",        desc: "The double-height ceiling transformed from architectural feature to spatial experience through furniture scale calibration." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon4.jpg",   title: "Living Suite · Material Warmth",    desc: "Linen, limewash, travertine. The palette was built to perform at dusk — when a room either becomes warm or reveals its indifference." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon5.jpg",   title: "Open Living · Threshold Moments",   desc: "The render captures the threshold between reception and living — how a guest moves, pauses, orients." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon6.jpg",   title: "Lounge · Layered Neutrals",        desc: "Tonal layering across textile and stone — a room composed almost entirely in the space between two close colours." },
+  { src: "/images/portfolio/living-spaces/luxury-modern-salon7.jpg",   title: "Salon · Sculptural Seating",       desc: "Furniture treated as sculpture — the render isolates form and shadow before colour enters the conversation." },
+  { src: "/images/portfolio/living-spaces/luxury-dining-room2.jpg",    title: "Dining Room · Evening Atmosphere", desc: "Rendered at the hour when a dining room must perform. The warm tungsten of pendants against cooled daylight." },
+  { src: "/images/portfolio/living-spaces/elegant-bedroom-hallway.jpg",title: "Gallery Hall · Processional Light", desc: "The connecting hall rendered as an event in itself — a measured sequence of light, art, and threshold." },
+  { src: "/images/portfolio/living-spaces/marble-entryway-salon1.jpg", title: "Marble Entry · First Impression",  desc: "An arrival sequence rendered with the same attention given to a hotel lobby." },
+  { src: "/images/portfolio/living-spaces/marble-entryway-salon2.jpg", title: "Entryway · Axial Composition",     desc: "The long axis of arrival — a composition that communicates architectural intention within three seconds of entry." },
+  { src: "/images/portfolio/living-spaces/marble-entryway-salon3.jpg", title: "Foyer · Material Hierarchy",       desc: "Marble, brass, and deep-pile textile — a material hierarchy that communicates the register of a residence." },
+  { src: "/images/portfolio/living-spaces/marble-entryway-salon4.jpg", title: "Reception Hall · Scale and Silence", desc: "The render was commissioned specifically to communicate silence — the architectural quality most difficult to convey." },
+  { src: "/images/portfolio/living-spaces/luxury-wardrobe-closet1.jpg",title: "Dressing Room · Ordered Luxury",   desc: "Full-height joinery, integrated lighting, and a central island — storage rendered as a private gallery." },
+  { src: "/images/portfolio/living-spaces/luxury-wardrobe-closet2.jpg",title: "Walk-In Wardrobe · Warm Display",  desc: "Backlit shelving and brushed metal — the wardrobe rendered to present a collection, not merely contain it." },
 ];
 
 const VILLA_EXTERIOR_SLIDES: PortfolioSlide[] = [
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior1.jpg", title: "Hillside Villa · Golden Hour", desc: "The render was commissioned at the precise solar angle that communicates the relationship between roof overhang and shaded terrace." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior2.jpg", title: "Desert Compound · Dawn Light", desc: "Mass and void at their most elemental. The render studies how desert light at dawn reveals the weight of a wall." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior3.jpg", title: "Coastal Residence · Sea Prospect", desc: "Approach sequence and pool terrace in one frame — the composition communicates the hierarchy of outdoor spaces." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior4.jpg", title: "Estate · Arrival Court", desc: "The arrival court as a formal gesture — the architecture of reception rendered before a guest steps from a vehicle." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior5.jpg", title: "Garden Villa · Landscape Integration", desc: "The structure disappears into planting — a building that has learned to belong to its site." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior6.jpg", title: "Contemporary Villa · Night Study", desc: "Interior warmth against exterior darkness — the evening render as a study in private comfort and the public face of a residence." },
-  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior7.jpg", title: "Pool Pavilion · Reflected Light", desc: "Still water as a secondary architecture — doubling the building, extending the sky." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior1.jpg", title: "Hillside Villa · Golden Hour",          desc: "The render was commissioned at the precise solar angle that communicates the relationship between roof overhang and shaded terrace." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior2.jpg", title: "Desert Compound · Dawn Light",          desc: "Mass and void at their most elemental. The render studies how desert light at dawn reveals the weight of a wall." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior3.jpg", title: "Coastal Residence · Sea Prospect",      desc: "Approach sequence and pool terrace in one frame — the composition communicates the hierarchy of outdoor spaces." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior4.jpg", title: "Estate · Arrival Court",                desc: "The arrival court as a formal gesture — the architecture of reception rendered before a guest steps from a vehicle." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior5.jpg", title: "Garden Villa · Landscape Integration",  desc: "The structure disappears into planting — a building that has learned to belong to its site." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior6.jpg", title: "Contemporary Villa · Night Study",      desc: "Interior warmth against exterior darkness — the evening render as a study in private comfort and the public face of a residence." },
+  { src: "/images/portfolio/villas-exteriors/luxury-villa-exterior7.jpg", title: "Pool Pavilion · Reflected Light",       desc: "Still water as a secondary architecture — doubling the building, extending the sky." },
 ];
 
 const WASHROOM_SLIDES: PortfolioSlide[] = [
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom1.jpg",  title: "Master Spa · Stone and Steam", desc: "The washroom rendered as a thermal sequence — cold stone, warm water, diffused steam light." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom1.jpg",  title: "Master Spa · Stone and Steam",       desc: "The washroom rendered as a thermal sequence — cold stone, warm water, diffused steam light." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom2.jpg",  title: "Freestanding Bath · Meridian Light", desc: "The freestanding bath as a sculptural object rendered in the quality of light that communicates why it was specified." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom3.jpg",  title: "Wet Room · Linear Precision", desc: "The wet room as a study in linear drainage, controlled humidity, and the performance of stone under water." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom4.jpg",  title: "Double Vanity · Morning Ritual", desc: "Two basins, one composition — the render captures the social dimension of a shared morning ritual." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom3.jpg",  title: "Wet Room · Linear Precision",        desc: "The wet room as a study in linear drainage, controlled humidity, and the performance of stone under water." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom4.jpg",  title: "Double Vanity · Morning Ritual",     desc: "Two basins, one composition — the render captures the social dimension of a shared morning ritual." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom5.jpg",  title: "Suite Bathroom · Candlelit Evening", desc: "The bathroom at its most atmospheric — when overhead light is extinguished and ambient warmth takes over." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom6.jpg",  title: "Powder Room · Compressed Luxury", desc: "A room of four square metres rendered as a study in material concentration." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom7.jpg",  title: "Spa Hammam · Thermal Sequence", desc: "Hot room, cold plunge, and rest area rendered as a complete thermal journey." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom8.jpg",  title: "Open Bath · Garden Prospect", desc: "The bath positioned for the view — vulnerability as architectural intention." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom9.jpg",  title: "Monolith Vanity · Dark Marble", desc: "A single slab of bookmatched marble — the render communicates material weight and vein continuity." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom10.jpg", title: "Suite En-Suite · Oblique Light", desc: "Oblique natural light revealing texture in stone — material selection is inseparable from the direction of light." },
-  { src: "/images/portfolio/washrooms/premium-suite-bathroom11.jpg", title: "Japanese Soaking Bath · Stillness", desc: "The ofuro as a meditation on still water — preparation, entry, and contemplation as distinct architectural moments." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom6.jpg",  title: "Powder Room · Compressed Luxury",    desc: "A room of four square metres rendered as a study in material concentration." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom7.jpg",  title: "Spa Hammam · Thermal Sequence",      desc: "Hot room, cold plunge, and rest area rendered as a complete thermal journey." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom8.jpg",  title: "Open Bath · Garden Prospect",        desc: "The bath positioned for the view — vulnerability as architectural intention." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom9.jpg",  title: "Monolith Vanity · Dark Marble",      desc: "A single slab of bookmatched marble — the render communicates material weight and vein continuity." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom10.jpg", title: "Suite En-Suite · Oblique Light",     desc: "Oblique natural light revealing texture in stone — material selection is inseparable from the direction of light." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom11.jpg", title: "Japanese Soaking Bath · Stillness",  desc: "The ofuro as a meditation on still water — preparation, entry, and contemplation as distinct architectural moments." },
   { src: "/images/portfolio/washrooms/premium-suite-bathroom12.jpg", title: "Midnight Suite · Dramatic Contrast", desc: "Dark stone against white ceramic, deep shadow against point source light." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom13.jpg", title: "Twin Vanity · Symmetrical Calm",     desc: "A perfectly mirrored composition — the render uses symmetry to communicate order and repose." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom14.jpg", title: "Shower Suite · Rain and Stone",      desc: "A walk-in rainfall enclosure rendered to show water as a moving, light-catching material." },
+  { src: "/images/portfolio/washrooms/premium-suite-bathroom15.jpg", title: "Spa Retreat · Warm Minimalism",      desc: "Pared-back surfaces and concealed lighting — the most restrained washroom, rendered for serenity." },
 ];
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -164,6 +181,7 @@ function GoldRule({ delay = 0, width = "48px" }: { delay?: number; width?: strin
 }
 
 // Reusable eyebrow label — single source of truth for the gold section labels.
+// Locked to one tracking value (0.34em) site-wide for editorial consistency.
 function Eyebrow({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: center ? "center" : "flex-start" }}>
@@ -202,7 +220,7 @@ function CountUp({ target, suffix }: { target: string; suffix: string }) {
 // ══════════════════════════════════════════════════════════════════════════
 function StatsManifesto() {
   return (
-    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(3.5rem,5.5vw,6rem)", paddingBottom: "clamp(3.5rem,5.5vw,6rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
+    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(5rem,8vw,9rem)", paddingBottom: "clamp(5rem,8vw,9rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <Reveal delay={0}>
           <div style={{ marginBottom: "clamp(2rem,3vw,2.8rem)" }}>
@@ -251,7 +269,7 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
   index: string; label: string; headline: string; subheadline?: string; body?: string;
 }) {
   return (
-    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(3rem,5vw,5.5rem) clamp(2rem,7vw,8rem) clamp(2rem,3vw,3rem)" }}>
+    <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "clamp(4rem,6vw,6rem) clamp(2rem,7vw,8rem) clamp(2.5rem,3.5vw,3.5rem)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(3rem,6vw,8rem)" }} className="section-header-grid">
         <Reveal delay={0}>
           <div style={{ paddingTop: "0.4rem", flexShrink: 0 }}>
@@ -282,9 +300,17 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// EDITORIAL GALLERY — full uncropped render on a blurred backdrop of itself.
-// ZERO cropping: the sharp image uses object-fit:contain; the blur layer fills
-// any leftover space so there are no hard black bars. flip alternates the side.
+// EDITORIAL GALLERY — drop-in rebuild
+//
+// • Image panel locked to a fixed frame so swapping/adding images never shifts
+//   the layout (the core Change-2 problem).
+// • objectFit: contain on espresso matting — the whole render is always
+//   visible, never cropped; letterboxing reads as intentional gallery matting.
+// • Subtle 3D depth transition (perspective + rotateY + scale), GPU-only,
+//   with a prefers-reduced-motion fallback to a flat fade.
+// • Click the main image → full-screen Lightbox with backdrop blur,
+//   fade+scale entry, ← → / Esc keyboard nav, caption alongside.
+// • Thumbnail strip uses contain on --bg-subtle so thumbs stay uniform.
 // ══════════════════════════════════════════════════════════════════════════
 function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }: {
   slides: PortfolioSlide[];
@@ -294,8 +320,36 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
 }) {
   const n = slides.length;
   const current = slides[activeSlide];
-  const prev = () => setActiveSlide(p => (p - 1 + n) % n);
-  const next = () => setActiveSlide(p => (p + 1) % n);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [direction, setDirection] = useState(1); // 1 = next, -1 = prev (for 3D push)
+  const reduceMotion = useReducedMotion();
+
+  const prev = () => { setDirection(-1); setActiveSlide(p => (p - 1 + n) % n); };
+  const next = () => { setDirection(1);  setActiveSlide(p => (p + 1) % n); };
+
+  // Subtle 3D depth variants — perspective push, not a spinning carousel.
+  // Disabled (flat fade) when the user prefers reduced motion.
+  const imageVariants = reduceMotion
+    ? {
+        enter: { opacity: 0 },
+        center: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        enter: (dir: number) => ({
+          opacity: 0,
+          scale: 1.04,
+          rotateY: dir > 0 ? 6 : -6,
+          z: -60,
+        }),
+        center: { opacity: 1, scale: 1, rotateY: 0, z: 0 },
+        exit: (dir: number) => ({
+          opacity: 0,
+          scale: 0.99,
+          rotateY: dir > 0 ? -4 : 4,
+          z: -30,
+        }),
+      };
 
   return (
     <div style={{ borderTop: "1px solid var(--border)" }}>
@@ -306,25 +360,56 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
         direction: flip ? "rtl" : "ltr",
       }} className="editorial-grid">
 
-        {/* ── Image panel: clean edge-to-edge cover, no backdrop, no bars ── */}
-        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "#1A130C" }}>
-          <AnimatePresence mode="wait">
-            <motion.img key={activeSlide} src={current.src} alt={current.title}
-              initial={{ opacity: 0, scale: 1.04 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: EASE_SOFT }}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-          </AnimatePresence>
+        {/* ── Image panel: fixed frame, full render, espresso matting ── */}
+        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "var(--bg)" }}>
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label={`Open ${current.title} full screen`}
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              padding: 0, border: "none", background: "var(--bg)",
+              cursor: "zoom-in", perspective: "1400px", overflow: "hidden",
+            }}
+          >
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.img
+                key={activeSlide}
+                src={current.src}
+                alt={current.title}
+                custom={direction}
+                variants={imageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.7, ease: EASE_SOFT }}
+                style={{
+                  position: "absolute", inset: 0,
+                  width: "100%", height: "100%",
+                  objectFit: "contain", objectPosition: "center",
+                  display: "block", transformStyle: "preserve-3d",
+                  willChange: "transform, opacity",
+                }}
+              />
+            </AnimatePresence>
+          </button>
 
           {/* Subtle bottom gradient so the counter stays legible */}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,19,12,0.55) 0%, transparent 30%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,15,10,0.55) 0%, transparent 30%)", pointerEvents: "none" }} />
 
           {/* Counter */}
-          <div style={{ position: "absolute", bottom: "1.6rem", left: "1.6rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4 }}>
+          <div style={{ position: "absolute", bottom: "1.6rem", left: "1.6rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4, pointerEvents: "none" }}>
             <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.65rem", fontWeight: 200, color: "rgba(255,255,255,0.92)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
             <div style={{ width: "1px", height: "20px", backgroundColor: "rgba(255,255,255,0.28)" }} />
             <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.55)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
+          </div>
+
+          {/* Expand hint — top right */}
+          <div style={{ position: "absolute", top: "1.4rem", right: "1.4rem", display: "flex", alignItems: "center", gap: "0.5rem", zIndex: 4, pointerEvents: "none", opacity: 0.7 }}>
+            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontWeight: 400 }}>Expand</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
           </div>
         </div>
 
@@ -379,27 +464,173 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
         </div>
       </div>
 
-      {/* Thumbnail strip */}
+      {/* Thumbnail strip — contain on subtle surface so thumbs stay uniform */}
       <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none" }}>
         {slides.map((s, i) => (
-          <button key={i} onClick={() => setActiveSlide(i)} title={s.title}
-            style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "#1A130C", overflow: "hidden", transition: "all 0.3s ease" }}
+          <button key={i}
+            onClick={() => { setDirection(i > activeSlide ? 1 : -1); setActiveSlide(i); }}
+            title={s.title}
+            aria-label={`View ${s.title}`}
+            style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "var(--bg-subtle)", overflow: "hidden", transition: "all 0.3s ease" }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}>
-            <img src={s.src} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <img src={s.src} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
           </button>
         ))}
       </div>
+
+      {/* ── Lightbox ── */}
+      <Lightbox
+        open={lightboxOpen}
+        slides={slides}
+        index={activeSlide}
+        setIndex={setActiveSlide}
+        onClose={() => setLightboxOpen(false)}
+      />
 
       <style>{`.editorial-grid{grid-template-columns:1.25fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important;min-height:0!important}.editorial-grid>div:first-child{min-height:clamp(300px,70vw,440px)}}`}</style>
     </div>
   );
 }
 
+// ── Full-screen lightbox ────────────────────────────────────────────────────
+// Backdrop blur, fade+scale entry, ← → / Esc keyboard nav, caption alongside.
+function Lightbox({ open, slides, index, setIndex, onClose }: {
+  open: boolean;
+  slides: PortfolioSlide[];
+  index: number;
+  setIndex: React.Dispatch<React.SetStateAction<number>>;
+  onClose: () => void;
+}) {
+  const n = slides.length;
+  const current = slides[index];
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") setIndex(p => (p + 1) % n);
+      else if (e.key === "ArrowLeft") setIndex(p => (p - 1 + n) % n);
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, n, onClose, setIndex]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: EASE_SOFT }}
+          onClick={onClose}
+          style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            backgroundColor: "rgba(20,15,10,0.82)",
+            backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            padding: "clamp(1.5rem,5vw,4rem)",
+          }}
+        >
+          {/* Close */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            aria-label="Close full screen view"
+            style={{
+              position: "absolute", top: "clamp(1.2rem,3vw,2.2rem)", right: "clamp(1.2rem,3vw,2.2rem)",
+              width: "44px", height: "44px", borderRadius: "50%",
+              border: "1px solid rgba(168,136,90,0.45)", background: "transparent",
+              color: "var(--text-loud)", cursor: "pointer", zIndex: 2,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "border-color 0.3s, background-color 0.3s",
+            }}
+            onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = "#A8885A"; el.style.backgroundColor = "rgba(168,136,90,0.12)"; }}
+            onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = "rgba(168,136,90,0.45)"; el.style.backgroundColor = "transparent"; }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+
+          {/* Image */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ position: "relative", flex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0 }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={index}
+                src={current.src}
+                alt={current.title}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.45, ease: EASE_SOFT }}
+                style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block", boxShadow: "0 30px 80px rgba(0,0,0,0.5)" }}
+              />
+            </AnimatePresence>
+
+            {/* Prev / Next */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setIndex(p => (p - 1 + n) % n); }}
+              aria-label="Previous image"
+              style={lightboxArrowStyle("left")}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#A8885A"; e.currentTarget.style.backgroundColor = "rgba(168,136,90,0.12)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(168,136,90,0.45)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setIndex(p => (p + 1) % n); }}
+              aria-label="Next image"
+              style={lightboxArrowStyle("right")}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#A8885A"; e.currentTarget.style.backgroundColor = "rgba(168,136,90,0.12)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(168,136,90,0.45)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </div>
+
+          {/* Caption */}
+          <div onClick={(e) => e.stopPropagation()} style={{ flexShrink: 0, textAlign: "center", maxWidth: "640px", marginTop: "clamp(1.2rem,2.5vw,2rem)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", justifyContent: "center", marginBottom: "0.9rem" }}>
+              <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.3rem", fontWeight: 200, color: "rgba(255,255,255,0.92)", lineHeight: 1 }}>{String(index + 1).padStart(2, "0")}</span>
+              <div style={{ width: "1px", height: "16px", backgroundColor: "rgba(255,255,255,0.28)" }} />
+              <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.58rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
+            </div>
+            <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.3rem,2vw,1.9rem)", color: "var(--text-loud)", lineHeight: 1.2, marginBottom: "0.7rem" }}>{current.title}</h3>
+            <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.82rem,1vw,0.92rem)", color: "rgba(236,227,213,0.62)", lineHeight: 1.75 }}>{current.desc}</p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+}
+
+function lightboxArrowStyle(side: "left" | "right"): React.CSSProperties {
+  return {
+    position: "absolute", top: "50%", transform: "translateY(-50%)",
+    [side]: "clamp(0.5rem,2vw,1.5rem)",
+    width: "46px", height: "46px", borderRadius: "50%",
+    border: "1px solid rgba(168,136,90,0.45)", background: "transparent",
+    color: "var(--text-loud)", cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "border-color 0.3s, background-color 0.3s",
+  };
+}
+
 function ArrowButton({ onClick, direction }: { onClick: () => void; direction: "prev" | "next" }) {
   const [hovered, setHovered] = useState(false);
   return (
-    <button onClick={onClick} aria-label={direction}
+    <button onClick={onClick} aria-label={direction === "prev" ? "Previous image" : "Next image"}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       style={{ width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${hovered ? "#A8885A" : "var(--border)"}`, borderRadius: "50%", backgroundColor: hovered ? "#A8885A" : "transparent", color: hovered ? "var(--bg)" : "var(--text-mid)", cursor: "pointer", fontSize: "0.85rem", transition: "all 0.3s ease", flexShrink: 0 }}>
       {direction === "prev" ? "←" : "→"}
@@ -414,7 +645,7 @@ function ServicesSection() {
   return (
     <section style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end", padding: "clamp(5rem,8vw,8.5rem) 0 clamp(3rem,4.5vw,5rem)", borderBottom: "1px solid var(--border)" }} className="services-header">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end", padding: "clamp(5rem,8vw,9rem) 0 clamp(3rem,4.5vw,5rem)", borderBottom: "1px solid var(--border)" }} className="services-header">
           <Reveal>
             <div style={{ marginBottom: "1.6rem" }}><Eyebrow>What We Deliver</Eyebrow></div>
             <h2 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 200, fontStyle: "italic", fontSize: "clamp(2.5rem,5vw,5rem)", color: "var(--text-loud)", lineHeight: 1.0, letterSpacing: "-0.01em" }}>Services</h2>
@@ -616,7 +847,7 @@ function Footer() {
     <footer style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "clamp(2.5rem,4vw,4rem) clamp(2rem,7vw,8rem)" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "2.5rem", flexWrap: "wrap" }}>
-          {[{ label: "View Portfolio", href: "/work" }, { label: "The Studio", href: "/studio" }, { label: "Contact", href: "/#contact" }].map((link, i) => (
+          {[{ label: "View Portfolio", href: "/work" }, { label: "The Studio", href: "/studio" }, { label: "Contact", href: "/#follow" }].map((link, i) => (
             <span key={link.label} style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
               {i > 0 && <span style={{ color: "var(--border)", fontSize: "7px" }}>·</span>}
               <a href={link.href} style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.62rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-muted)", textDecoration: "none", fontWeight: 400, transition: "color 0.3s" }}
@@ -625,7 +856,7 @@ function Footer() {
             </span>
           ))}
         </div>
-        <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", fontWeight: 300 }}>© {new Date().getFullYear()} Archviz Craft · Dubai</p>
+        <p style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.12em", color: "var(--text-muted)", fontWeight: 300 }}>© {new Date().getFullYear()} ArchViz Craft · Dubai</p>
       </div>
     </footer>
   );
