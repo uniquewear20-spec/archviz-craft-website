@@ -318,6 +318,14 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
 // the espresso ground. Click center (or "Expand") → full-screen Lightbox.
 // Drag / arrows / thumbnails to navigate. prefers-reduced-motion → flat fade.
 // ══════════════════════════════════════════════════════════════════════════
+// EDITORIAL GALLERY — refined split (one side image, one side caption).
+// The luxury-house pattern (Apple / Rolex / Prada): one large, fully-visible
+// render on espresso matting, a quiet caption opposite, alternating L/R per
+// section. Motion is cinematic and restrained — a slow cross-dissolve with a
+// breath of scale, a hairline gold system, and word-by-word caption reveal.
+// Full uncropped image (contain). Click image → full-screen Lightbox.
+// prefers-reduced-motion → instant, no transform.
+// ══════════════════════════════════════════════════════════════════════════
 function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }: {
   slides: PortfolioSlide[];
   activeSlide: number;
@@ -329,168 +337,138 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const reduceMotion = useReducedMotion();
 
-  const go = (dir: number) => setActiveSlide(p => (p + dir + n) % n);
-  const prev = () => go(-1);
-  const next = () => go(1);
+  const prev = () => setActiveSlide(p => (p - 1 + n) % n);
+  const next = () => setActiveSlide(p => (p + 1) % n);
 
-  // Shortest circular offset of slide i from the active one, range roughly [-n/2, n/2].
-  const offsetOf = (i: number) => {
-    let d = i - activeSlide;
-    if (d > n / 2) d -= n;
-    if (d < -n / 2) d += n;
-    return d;
-  };
-
-  // Only render the active slide and 2 neighbours each side (the rest are hidden).
-  const VISIBLE = 2;
-
-  // 3D placement for a given signed offset.
-  const transformFor = (offset: number) => {
-    if (reduceMotion) {
-      return { x: 0, rotateY: 0, z: 0, scale: offset === 0 ? 1 : 0.9, opacity: offset === 0 ? 1 : 0 };
-    }
-    const abs = Math.abs(offset);
-    const sign = Math.sign(offset);
-    return {
-      x: offset * 190,                       // lateral fan-out
-      rotateY: -sign * Math.min(abs, VISIBLE) * 34, // angle neighbours away
-      z: -abs * 220,                          // push back in depth
-      scale: offset === 0 ? 1 : 0.82 - (abs - 1) * 0.06,
-      opacity: abs > VISIBLE ? 0 : offset === 0 ? 1 : 0.55 - (abs - 1) * 0.18,
-    };
-  };
+  const imgInit  = reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.06 };
+  const imgAnim  = reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 };
+  const imgExit  = reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 };
 
   return (
     <div style={{ borderTop: "1px solid var(--border)" }}>
-      <div className="cf-shell" style={{ direction: "ltr" }}>
-        {/* ── Stage ── */}
-        <div
-          className="cf-stage"
-          style={{ perspective: "2000px" }}
-          role="group"
-          aria-roledescription="carousel"
-          aria-label="Project gallery"
-        >
-          {slides.map((s, i) => {
-            const offset = offsetOf(i);
-            if (Math.abs(offset) > VISIBLE) return null;
-            const t = transformFor(offset);
-            const isCenter = offset === 0;
-            return (
-              <motion.button
-                key={i}
-                type="button"
-                aria-label={isCenter ? `Open ${s.title} full screen` : `Go to ${s.title}`}
-                onClick={() => (isCenter ? setLightboxOpen(true) : setActiveSlide(i))}
-                animate={{ x: t.x, rotateY: t.rotateY, z: t.z, scale: t.scale, opacity: t.opacity }}
-                transition={{ duration: 0.7, ease: EASE_SOFT }}
-                style={{
-                  position: "absolute",
-                  width: "min(46vw, 620px)",
-                  height: "clamp(360px, 46vw, 600px)",
-                  transformStyle: "preserve-3d",
-                  transformOrigin: "center center",
-                  zIndex: 100 - Math.abs(offset),
-                  border: "none",
-                  padding: 0,
-                  background: "var(--bg-subtle)",
-                  cursor: isCenter ? "zoom-in" : "pointer",
-                  overflow: "hidden",
-                  boxShadow: isCenter
-                    ? "0 40px 90px rgba(0,0,0,0.55)"
-                    : "0 20px 50px rgba(0,0,0,0.4)",
-                  willChange: "transform, opacity",
-                }}
-              >
-                <img
-                  src={s.src}
-                  alt={s.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
-                {/* Dim veil on side cards so the centre reads as hero */}
-                <div
-                  aria-hidden
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1.35fr 1fr",
+        minHeight: "clamp(440px,52vw,680px)",
+        direction: flip ? "rtl" : "ltr",
+      }} className="editorial-grid">
+
+        {/* ── Image side — full uncropped render, espresso matting ── */}
+        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "var(--bg)" }}>
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label={`Open ${current.title} full screen`}
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              padding: "clamp(1.5rem,3vw,3.5rem)", border: "none", background: "var(--bg)",
+              cursor: "zoom-in", overflow: "hidden",
+            }}
+          >
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+              <AnimatePresence mode="sync">
+                <motion.img
+                  key={activeSlide}
+                  src={current.src}
+                  alt={current.title}
+                  initial={imgInit}
+                  animate={imgAnim}
+                  exit={imgExit}
+                  transition={{ duration: 1.4, ease: EASE }}
                   style={{
                     position: "absolute", inset: 0,
-                    backgroundColor: "rgba(20,15,10,0.45)",
-                    opacity: isCenter ? 0 : 1,
-                    transition: "opacity 0.6s ease",
-                    pointerEvents: "none",
+                    width: "100%", height: "100%",
+                    objectFit: "contain", objectPosition: "center",
+                    display: "block", willChange: "transform, opacity",
                   }}
                 />
-                {/* Expand hint on the centre card */}
-                {isCenter && (
-                  <div style={{ position: "absolute", top: "1.2rem", right: "1.2rem", display: "flex", alignItems: "center", gap: "0.5rem", pointerEvents: "none", opacity: 0.8 }}>
-                    <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.78)", fontWeight: 400 }}>Expand</span>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
-                  </div>
-                )}
-              </motion.button>
-            );
-          })}
+              </AnimatePresence>
+            </div>
+          </button>
+
+          {/* Hairline frame inset */}
+          <div aria-hidden style={{ position: "absolute", inset: "clamp(1.5rem,3vw,3.5rem)", border: "1px solid rgba(168,136,90,0.14)", pointerEvents: "none" }} />
+
+          {/* Counter — bottom left */}
+          <div style={{ position: "absolute", bottom: "clamp(1.6rem,3vw,2.6rem)", left: "clamp(1.6rem,3vw,2.6rem)", display: "flex", alignItems: "center", gap: "0.7rem", zIndex: 4, pointerEvents: "none" }}>
+            <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.7rem", fontWeight: 200, color: "var(--text-loud)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
+            <div style={{ width: "22px", height: "1px", backgroundColor: "rgba(168,136,90,0.5)" }} />
+            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.22em", color: "var(--text-muted)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
+          </div>
+
+          {/* Expand hint — top right */}
+          <div style={{ position: "absolute", top: "clamp(1.6rem,3vw,2.6rem)", right: "clamp(1.6rem,3vw,2.6rem)", display: "flex", alignItems: "center", gap: "0.5rem", zIndex: 4, pointerEvents: "none", opacity: 0.7 }}>
+            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.24em", textTransform: "uppercase", color: "var(--text-mid)", fontWeight: 400 }}>Expand</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-mid)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+          </div>
         </div>
 
-        {/* ── Caption + controls below the stage ── */}
-        <div className="cf-caption">
+        {/* ── Caption side ── */}
+        <div style={{
+          backgroundColor: "var(--bg)",
+          borderLeft: flip ? "none" : "1px solid var(--border)",
+          borderRight: flip ? "1px solid var(--border)" : "none",
+          display: "flex", flexDirection: "column", justifyContent: "space-between",
+          padding: "clamp(3rem,5vw,5.5rem) clamp(2.2rem,4.5vw,5rem)",
+          direction: "ltr",
+        }}>
           <AnimatePresence mode="wait">
             <motion.div key={activeSlide}
-              initial={{ opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5, ease: EASE }}
-              style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto" }}>
-              <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6, margin: "0 auto 1.1rem" }} />
-              <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.5rem,2.4vw,2.2rem)", color: "var(--text-loud)", lineHeight: 1.16, letterSpacing: "-0.01em", marginBottom: "0.9rem" }}>{current.title}</h3>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.05vw,0.96rem)", color: "var(--text-soft)", lineHeight: 1.85 }}>{current.desc}</p>
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.6rem" }}>
+              <div style={{ width: "26px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
+              <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.6rem,2.6vw,2.5rem)", color: "var(--text-loud)", lineHeight: 1.12, letterSpacing: "-0.01em" }}>{current.title}</h3>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.9rem,1.1vw,1rem)", color: "var(--text-soft)", lineHeight: 1.9 }}>
+                {current.desc.split(" ").map((word, wi) => (
+                  <motion.span key={`${activeSlide}-${wi}`}
+                    initial={reduceMotion ? { opacity: 1 } : { filter: "blur(6px)", opacity: 0 }}
+                    animate={{ filter: "blur(0px)", opacity: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut", delay: reduceMotion ? 0 : 0.18 + 0.014 * wi }}
+                    style={{ display: "inline-block", marginRight: "0.26em" }}>{word}
+                  </motion.span>
+                ))}
+              </p>
             </motion.div>
           </AnimatePresence>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem", marginTop: "2rem" }}>
-            <ArrowButton onClick={prev} direction="prev" />
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.5rem", fontWeight: 200, color: "var(--text-loud)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
-              <div style={{ width: "1px", height: "18px", backgroundColor: "var(--border-mid)" }} />
-              <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "var(--text-muted)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
+          <div>
+            <div style={{ height: "1px", backgroundColor: "var(--border)", marginBottom: "1.6rem", position: "relative" }}>
+              <motion.div style={{ position: "absolute", top: 0, left: 0, height: "100%", backgroundColor: "#A8885A", transformOrigin: "left" }}
+                animate={{ scaleX: (activeSlide + 1) / n }}
+                transition={{ duration: 0.7, ease: EASE_SOFT }} />
             </div>
-            <ArrowButton onClick={next} direction="next" />
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ height: "1px", backgroundColor: "var(--border)", margin: "1.8rem auto 0", maxWidth: "320px", position: "relative" }}>
-            <motion.div style={{ position: "absolute", top: 0, left: 0, height: "100%", backgroundColor: "#A8885A", transformOrigin: "left", width: "100%" }}
-              animate={{ scaleX: (activeSlide + 1) / n }}
-              transition={{ duration: 0.5, ease: EASE_SOFT }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <ArrowButton onClick={prev} direction="prev" />
+                <ArrowButton onClick={next} direction="next" />
+              </div>
+              <a href="/work"
+                style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.24em", textTransform: "uppercase", color: "#A8885A", textDecoration: "none", borderBottom: "1px solid rgba(168,136,90,0.3)", paddingBottom: "2px", transition: "opacity 0.3s", fontWeight: 400 }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.5"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}>View All →</a>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Thumbnail strip */}
-      <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none", justifyContent: "center" }}>
+      {/* Thumbnail strip — uniform contain framing */}
+      <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none" }}>
         {slides.map((s, i) => (
           <button key={i} onClick={() => setActiveSlide(i)} title={s.title} aria-label={`View ${s.title}`}
             style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "var(--bg-subtle)", overflow: "hidden", transition: "all 0.3s ease" }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}>
-            <img src={s.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <img src={s.src} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
           </button>
         ))}
       </div>
 
       <Lightbox open={lightboxOpen} slides={slides} index={activeSlide} setIndex={setActiveSlide} onClose={() => setLightboxOpen(false)} />
 
-      <style>{`
-        .cf-shell { background: var(--bg); padding: clamp(2.5rem,5vw,5rem) clamp(1rem,4vw,4rem) clamp(2.5rem,4vw,4rem); }
-        .cf-stage {
-          position: relative;
-          height: clamp(360px, 46vw, 600px);
-          display: flex; align-items: center; justify-content: center;
-          margin-bottom: clamp(2rem,3.5vw,3.5rem);
-        }
-        .cf-caption { max-width: 1100px; margin: 0 auto; }
-        @media (max-width: 860px) {
-          .cf-stage { height: clamp(300px, 70vw, 440px); }
-        }
-      `}</style>
+      <style>{`.editorial-grid{grid-template-columns:1.35fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important;min-height:0!important}.editorial-grid>div:first-child{min-height:clamp(320px,75vw,460px)}}`}</style>
     </div>
   );
 }
@@ -911,16 +889,16 @@ export default function HomePage() {
         <EditorialGallery slides={LIVING_SPACE_SLIDES} activeSlide={activeLivingSlide} setActiveSlide={setActiveLivingSlide} flip={false} />
       </section>
 
-      {/* 04 · VILLAS & EXTERIORS — image RIGHT, caption LEFT */}
-      <section id="villas-exteriors" style={{ borderBottom: "1px solid var(--border)" }}>
-        <SectionHeader index="04" label="Villas & Exteriors" headline="Architecture in landscape," subheadline="before the first stone is laid." body="The exterior render is the most complex visualisation we produce — site topography, seasonal light, material ageing, landscape maturity, and the psychology of arrival all rendered in a single frame." />
-        <EditorialGallery slides={VILLA_EXTERIOR_SLIDES} activeSlide={activeVillaSlide} setActiveSlide={setActiveVillaSlide} flip={true} />
+      {/* 04 · WASHROOMS — image RIGHT, caption LEFT */}
+      <section id="washrooms" style={{ borderBottom: "1px solid var(--border)" }}>
+        <SectionHeader index="04" label="Spa & Washrooms" headline="Where material craft" subheadline="becomes a private ceremony." body="The finest washrooms are not cleaned — they are entered. We render spa suites, hammams, and master bathrooms with the same hospitality intelligence applied to a five-star arrival sequence." />
+        <EditorialGallery slides={WASHROOM_SLIDES} activeSlide={activeWashroomSlide} setActiveSlide={setActiveWashroomSlide} flip={true} />
       </section>
 
-      {/* 05 · WASHROOMS — image LEFT, caption RIGHT */}
-      <section id="washrooms" style={{ borderBottom: "1px solid var(--border)" }}>
-        <SectionHeader index="05" label="Spa & Washrooms" headline="Where material craft" subheadline="becomes a private ceremony." body="The finest washrooms are not cleaned — they are entered. We render spa suites, hammams, and master bathrooms with the same hospitality intelligence applied to a five-star arrival sequence." />
-        <EditorialGallery slides={WASHROOM_SLIDES} activeSlide={activeWashroomSlide} setActiveSlide={setActiveWashroomSlide} flip={false} />
+      {/* 05 · VILLAS & EXTERIORS — image LEFT, caption RIGHT */}
+      <section id="villas-exteriors" style={{ borderBottom: "1px solid var(--border)" }}>
+        <SectionHeader index="05" label="Villas & Exteriors" headline="Architecture in landscape," subheadline="before the first stone is laid." body="The exterior render is the most complex visualisation we produce — site topography, seasonal light, material ageing, landscape maturity, and the psychology of arrival all rendered in a single frame." />
+        <EditorialGallery slides={VILLA_EXTERIOR_SLIDES} activeSlide={activeVillaSlide} setActiveSlide={setActiveVillaSlide} flip={false} />
       </section>
 
       <ServicesSection />
