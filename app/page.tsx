@@ -223,7 +223,7 @@ function CountUp({ target, suffix }: { target: string; suffix: string }) {
 // ══════════════════════════════════════════════════════════════════════════
 function StatsManifesto() {
   return (
-    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(5rem,8vw,9rem)", paddingBottom: "clamp(5rem,8vw,9rem)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
+    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(4rem,6vw,7rem)", paddingBottom: "clamp(3rem,5vw,5.5rem)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <Reveal delay={0}>
           <div style={{ marginBottom: "clamp(2rem,3vw,2.8rem)" }}>
@@ -626,7 +626,7 @@ function ArrowButton({ onClick, direction }: { onClick: () => void; direction: "
 // ══════════════════════════════════════════════════════════════════════════
 function ServicesSection() {
   return (
-    <section style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
+    <section style={{ backgroundColor: "var(--bg)" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(2rem,7vw,8rem)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(3rem,6vw,8rem)", alignItems: "end", padding: "clamp(5rem,8vw,9rem) 0 clamp(3rem,4.5vw,5rem)", borderBottom: "1px solid var(--border)" }} className="services-header">
           <Reveal>
@@ -667,7 +667,7 @@ function ServiceRow({ svc, delay }: { svc: typeof SERVICES[0]; delay: number }) 
 // ══════════════════════════════════════════════════════════════════════════
 function AboutSection() {
   return (
-    <section style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
+    <section style={{ backgroundColor: "var(--bg)", overflow: "hidden" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(440px,58vw,680px)" }} className="about-grid">
           <div style={{ padding: "clamp(4.5rem,7.5vw,8.5rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", overflow: "hidden" }}>
@@ -704,7 +704,7 @@ function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   return (
-    <section id="contact" style={{ backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
+    <section id="contact" style={{ backgroundColor: "var(--bg)" }}>
       <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "clamp(500px,62vw,740px)" }} className="contact-grid">
           <div style={{ padding: "clamp(4.5rem,7.5vw,9rem) clamp(2rem,7vw,8rem)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -783,7 +783,7 @@ function SubmitButton() {
 function ClosingTestimonials() {
   const half = Math.ceil(ALL_TESTIMONIALS.length / 2);
   return (
-    <section style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", paddingTop: "clamp(5rem,8vw,9rem)", paddingBottom: "clamp(5rem,8vw,9rem)", overflow: "hidden", position: "relative" }}>
+    <section style={{ backgroundColor: "var(--bg)", paddingTop: "clamp(4rem,6vw,7rem)", paddingBottom: "clamp(4rem,6vw,7rem)", overflow: "hidden", position: "relative" }}>
       <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "560px", height: "560px", background: "radial-gradient(ellipse at center, rgba(168,136,90,0.03) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       {/* Header */}
