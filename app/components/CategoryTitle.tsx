@@ -57,7 +57,7 @@ export default function CategoryTitle({
         position: "relative",
         maxWidth: "1440px",
         margin: "0 auto",
-        padding: "clamp(4.5rem,7vw,7.5rem) clamp(2rem,7vw,8rem) clamp(2.5rem,3.5vw,3.5rem)",
+        padding: "clamp(2.5rem,4vw,4rem) clamp(2rem,7vw,8rem) clamp(2.5rem,3.5vw,3.5rem)",
         perspective: "1200px",
         overflow: "hidden",
       }}

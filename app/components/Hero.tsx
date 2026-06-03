@@ -202,36 +202,41 @@ export default function Hero() {
             <HeroCTA />
           </motion.div>
 
-          <motion.div
-            style={{
-              position: "absolute", bottom: "2.4rem",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: "0.7rem",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.4, duration: 1.0 }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-dm), sans-serif",
-                fontSize: "8px",
-                letterSpacing: "0.32em",
-                textTransform: "uppercase",
-                color: "rgba(236,227,213,0.34)",
-                fontWeight: 300,
-              }}
-            >
-              Scroll
-            </span>
-            <div
-              style={{
-                width: "1px", height: "40px",
-                background: "linear-gradient(to bottom, rgba(168,136,90,0.65), transparent)",
-                animation: "scrollline 2.4s ease-in-out infinite",
-              }}
-            />
-          </motion.div>
         </div>
+      )}
+
+      {/* Scroll cue — bottom-right corner (out of the centered content column) */}
+      {mounted && (
+        <motion.div
+          style={{
+            position: "absolute", bottom: "2.4rem", right: "clamp(1.6rem,3vw,2.8rem)", zIndex: 20,
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "0.7rem",
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.4, duration: 1.0 }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: "8px",
+              letterSpacing: "0.32em",
+              textTransform: "uppercase",
+              color: "rgba(236,227,213,0.34)",
+              fontWeight: 300,
+              writingMode: "vertical-rl",
+            }}
+          >
+            Scroll
+          </span>
+          <div
+            style={{
+              width: "1px", height: "40px",
+              background: "linear-gradient(to bottom, rgba(168,136,90,0.65), transparent)",
+              animation: "scrollline 2.4s ease-in-out infinite",
+            }}
+          />
+        </motion.div>
       )}
 
       <style>{`

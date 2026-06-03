@@ -27,7 +27,6 @@ const EXTERIOR = {
   img: "/images/feature/feature-exterior.jpg",
 };
 
-// Cormorant display heading — single voice shared with the rest of the site.
 const headingStyle: React.CSSProperties = {
   fontFamily: "var(--font-cormorant), serif",
   fontWeight: 300,
@@ -110,8 +109,9 @@ export default function FeatureBlocks() {
         color: "var(--text-loud)",
         paddingTop: "clamp(2rem, 4vw, 4rem)",
         paddingBottom: "clamp(5rem, 8vw, 9rem)",
-        borderBottom: "1px solid var(--border)",
         overflow: "hidden",
+        width: "100%",
+        maxWidth: "100vw",
       }}
     >
       {/* ── Interlocking stagger ── */}
@@ -120,26 +120,23 @@ export default function FeatureBlocks() {
         style={{
           maxWidth: "1440px",
           margin: "0 auto",
-          padding: "0 clamp(2rem, 7vw, 8rem)",
+          padding: "0 clamp(1.4rem, 7vw, 8rem)",
         }}
       >
-        {/* LEFT COLUMN — INTERIOR text (top), EXTERIOR text + image (offset down) */}
+        {/* LEFT COLUMN */}
         <div className="feat-left">
-          {/* INTERIOR text */}
           <div className="feat-interior-text">
             <h2 style={headingStyle}>{INTERIOR.title}</h2>
             <p style={bodyStyle}>{INTERIOR.body}</p>
             <Cta href={INTERIOR.href} label={INTERIOR.cta} />
           </div>
 
-          {/* EXTERIOR text */}
           <div className="feat-exterior-text">
             <h2 style={headingStyle}>{EXTERIOR.title}</h2>
             <p style={bodyStyle}>{EXTERIOR.body}</p>
             <Cta href={EXTERIOR.href} label={EXTERIOR.cta} />
           </div>
 
-          {/* EXTERIOR image — bottom-left */}
           <div className="feat-exterior-img feat-img-box" style={{ aspectRatio: "4 / 5" }}>
             <Image
               src={EXTERIOR.img}
@@ -152,7 +149,7 @@ export default function FeatureBlocks() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN — big tall INTERIOR image, spans the stack */}
+        {/* RIGHT COLUMN */}
         <div className="feat-right">
           <div className="feat-interior-img feat-img-box" style={{ aspectRatio: "4 / 5" }}>
             <Image
@@ -168,12 +165,12 @@ export default function FeatureBlocks() {
         </div>
       </div>
 
-      {/* 3D ANIMATION row — heading within content width, video full-bleed */}
+      {/* 3D ANIMATION row */}
       <div
         style={{
           maxWidth: "1440px",
           margin: "clamp(4rem, 8vw, 7rem) auto clamp(1.25rem, 2vw, 1.75rem)",
-          padding: "0 clamp(2rem, 7vw, 8rem)",
+          padding: "0 clamp(1.4rem, 7vw, 8rem)",
           display: "flex",
           flexWrap: "wrap",
           alignItems: "baseline",
@@ -185,15 +182,11 @@ export default function FeatureBlocks() {
         <Cta href="#contact" label="See More" />
       </div>
 
-      {/* Full-bleed ultra-wide video band */}
+      {/* Full-bleed ultra-wide video band — clamped so it can't cause x-overflow */}
       <div
         style={{
           position: "relative",
-          width: "100vw",
-          left: "50%",
-          right: "50%",
-          marginLeft: "-50vw",
-          marginRight: "-50vw",
+          width: "100%",
           aspectRatio: "1722 / 788",
           maxHeight: "70vh",
           overflow: "hidden",
@@ -216,7 +209,6 @@ export default function FeatureBlocks() {
           }}
         />
 
-        {/* Minimalist Premium Audio Control */}
         <button
           onClick={toggleMute}
           onMouseEnter={() => setBtnHovered(true)}
@@ -242,8 +234,6 @@ export default function FeatureBlocks() {
           }}
         >
           <span>{isMuted ? "Sound Off" : "Sound On"}</span>
-          
-          {/* Elegant audio status indicator */}
           <div style={{ display: "flex", alignItems: "center", gap: "2px", height: "8px" }}>
             <span style={{ width: "1px", height: isMuted ? "2px" : "8px", backgroundColor: "currentColor", transition: "height 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }} />
             <span style={{ width: "1px", height: isMuted ? "2px" : "5px", backgroundColor: "currentColor", transition: "height 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }} />
@@ -262,8 +252,6 @@ export default function FeatureBlocks() {
           overflow: hidden;
         }
 
-        /* Desktop: two columns. Right = big interior image (60%).
-           Left (40%) stacks: interior text, then exterior text, then exterior image. */
         .feat-stagger {
           display: grid;
           grid-template-columns: 40% 60%;
@@ -277,8 +265,6 @@ export default function FeatureBlocks() {
         .feat-interior-text {
           padding-top: 0;
         }
-        /* Push the exterior block down so it interlocks beside the tall
-           right-hand interior image (which extends past the interior text). */
         .feat-exterior-text {
           margin-top: clamp(6rem, 16vw, 16rem);
         }
@@ -286,8 +272,6 @@ export default function FeatureBlocks() {
           margin-top: clamp(1.5rem, 3vw, 2.5rem);
           aspect-ratio: 4 / 5;
         }
-        /* The big interior image on the right pulls up to sit beside the
-           interior text and run down past it. */
         .feat-right {
           align-self: stretch;
         }
@@ -297,14 +281,12 @@ export default function FeatureBlocks() {
             grid-template-columns: 1fr !important;
             row-gap: 1.5rem;
           }
-          /* Mobile reading order: interior text -> interior image ->
-             exterior text -> exterior image. */
           .feat-left {
             display: contents;
           }
           .feat-interior-text { order: 1; padding-top: 0 !important; }
           .feat-right         { order: 2; }
-          .feat-exterior-text { order: 3; margin-top: 2rem !important; }
+          .feat-exterior-text { order: 3; margin-top: 2.5rem !important; }
           .feat-exterior-img  { order: 4; margin-top: 1.25rem !important; }
         }
       `}</style>
@@ -323,7 +305,7 @@ function ScheduleCall() {
         position: "fixed",
         bottom: "clamp(1.2rem, 3vw, 2.2rem)",
         right: "clamp(1.2rem, 3vw, 2.2rem)",
-        zIndex: 60,
+        zIndex: 40,
         display: "inline-flex",
         alignItems: "center",
         gap: "0.5rem",

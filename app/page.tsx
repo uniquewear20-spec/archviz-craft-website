@@ -9,6 +9,7 @@ import { SocialRow, FloatingContact } from "./components/SocialContact";
 import TestimonialsMarquee, { MarqueeTestimonial } from "./components/TestimonialsMarquee";
 import EditorialInterlude from "./components/EditorialInterlude";
 import CategoryTitle from "./components/CategoryTitle";
+import SectionSeam from "./components/SectionSeam";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const EASE_SOFT: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -874,7 +875,7 @@ export default function HomePage() {
       <StatsManifesto />
 
       {/* 01 · BEDROOMS — image LEFT, caption RIGHT */}
-      <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
+      <section id="bedrooms" style={{ position: "relative", paddingBottom: "clamp(2rem,4vw,4rem)" }}>
         <CategoryTitle index="01" label="Selected Work · Private Sanctuaries" headline="The private suite," subheadline="before the walls exist." ghost="BEDROOMS" />
         <EditorialGallery slides={BEDROOM_SLIDES} activeSlide={activeBedroomSlide} setActiveSlide={setActiveBedroomSlide} flip={false} />
       </section>
@@ -887,13 +888,15 @@ export default function HomePage() {
       />
 
       {/* 02 · KITCHENS — image RIGHT, caption LEFT */}
-      <section id="kitchens" style={{ borderBottom: "1px solid var(--border)" }}>
+      <section id="kitchens" style={{ position: "relative", paddingBottom: "clamp(2rem,4vw,4rem)" }}>
         <CategoryTitle index="02" label="Culinary Theaters" headline="Where service intelligence" subheadline="becomes spatial architecture." body="A kitchen is not a room — it is an operational system. We render culinary spaces from a position of genuine hospitality knowledge: service flow, brigade movement, mise en place logic, and the psychology of the guest threshold." ghost="KITCHENS" />
         <EditorialGallery slides={KITCHEN_SLIDES} activeSlide={activeKitchenSlide} setActiveSlide={setActiveKitchenSlide} flip={true} />
       </section>
 
+      <SectionSeam toChapter="III" toName="Living Spaces" />
+
       {/* 03 · LIVING SPACES — image LEFT, caption RIGHT */}
-      <section id="living-spaces" style={{ borderBottom: "1px solid var(--border)" }}>
+      <section id="living-spaces" style={{ position: "relative", paddingBottom: "clamp(2rem,4vw,4rem)" }}>
         <CategoryTitle index="03" label="Social Landscapes" headline="The living room as statement" subheadline="of how you receive the world." body="Every living space communicates a social register before a guest sits down. We render arrival sequences, conversation geometries, sightline hierarchies, and the emotional temperature of a room at its intended hour of use." ghost="LIVING" />
         <EditorialGallery slides={LIVING_SPACE_SLIDES} activeSlide={activeLivingSlide} setActiveSlide={setActiveLivingSlide} flip={false} />
       </section>
@@ -906,13 +909,15 @@ export default function HomePage() {
       />
 
       {/* 04 · WASHROOMS — image RIGHT, caption LEFT */}
-      <section id="washrooms" style={{ borderBottom: "1px solid var(--border)" }}>
+      <section id="washrooms" style={{ position: "relative", paddingBottom: "clamp(2rem,4vw,4rem)" }}>
         <CategoryTitle index="04" label="Spa & Washrooms" headline="Where material craft" subheadline="becomes a private ceremony." body="The finest washrooms are not cleaned — they are entered. We render spa suites, hammams, and master bathrooms with the same hospitality intelligence applied to a five-star arrival sequence." ghost="WASHROOMS" />
         <EditorialGallery slides={WASHROOM_SLIDES} activeSlide={activeWashroomSlide} setActiveSlide={setActiveWashroomSlide} flip={true} />
       </section>
 
+      <SectionSeam toChapter="V" toName="Villas & Exteriors" />
+
       {/* 05 · VILLAS & EXTERIORS — image LEFT, caption RIGHT */}
-      <section id="villas-exteriors" style={{ borderBottom: "1px solid var(--border)" }}>
+      <section id="villas-exteriors" style={{ position: "relative", paddingBottom: "clamp(2rem,4vw,4rem)" }}>
         <CategoryTitle index="05" label="Villas & Exteriors" headline="Architecture in landscape," subheadline="before the first stone is laid." body="The exterior render is the most complex visualisation we produce — site topography, seasonal light, material ageing, landscape maturity, and the psychology of arrival all rendered in a single frame." ghost="VILLAS" />
         <EditorialGallery slides={VILLA_EXTERIOR_SLIDES} activeSlide={activeVillaSlide} setActiveSlide={setActiveVillaSlide} flip={false} />
       </section>

@@ -64,8 +64,6 @@ export default function EditorialInterlude({
         height: "118vh",
         minHeight: "760px",
         backgroundColor: "var(--bg)",
-        borderTop: "1px solid var(--border)",
-        borderBottom: "1px solid var(--border)",
         overflow: "hidden",
         display: "flex",
         alignItems: "center",
