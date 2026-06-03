@@ -1,43 +1,25 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 
-// ── Slide data ─────────────────────────────────────────────────────────────
-const SLIDES = [
-  { id: 1, src: "/images/hero/hero-1.png", scale: [1.0, 1.07] as [number, number], x: ["0%", "0%"]   as [string, string] },
-  { id: 2, src: "/images/hero/hero-2.png", scale: [1.08, 1.0] as [number, number], x: ["0%", "0%"]   as [string, string] },
-  { id: 3, src: "/images/hero/hero-3.png", scale: [1.04, 1.04] as [number, number], x: ["-2%", "2%"] as [string, string] },
-  { id: 4, src: "/images/hero/hero-4.png", scale: [1.04, 1.04] as [number, number], x: ["2%", "-2%"] as [string, string] },
-  { id: 5, src: "/images/hero/hero-5.png", scale: [1.0, 1.07] as [number, number], x: ["0%", "0%"]   as [string, string] },
-];
+// ══════════════════════════════════════════════════════════════════════════
+// HERO — the opening frame of a film, not a slideshow.
+// One commanding still render, held. A very slow Ken Burns drift so it
+// breathes rather than slides. Massive editorial typography arriving
+// line-by-line with a long, confident stagger. A long quiet beat before the
+// eye is asked to move. Minimal copy. Maximum stillness.
+// ══════════════════════════════════════════════════════════════════════════
 
-const SLIDE_DURATION = 7000;
-const TRANSITION_DURATION = 2.0; // seconds
-const KEN_BURNS_DURATION = SLIDE_DURATION / 1000 + TRANSITION_DURATION;
+// The single hero render. Choose the strongest frame in the library.
+const HERO_SRC = "/images/hero/hero-1.png";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export default function Hero() {
-  const [index, setIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setIndex((p) => (p + 1) % SLIDES.length);
-    }, SLIDE_DURATION);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  const slide = SLIDES[index];
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <section
@@ -46,261 +28,164 @@ export default function Hero() {
         position: "relative",
         width: "100%",
         height: "100vh",
-        minHeight: "640px",
+        minHeight: "660px",
         overflow: "hidden",
         backgroundColor: "#1A130C",
       }}
     >
-      {/* ── Cinematic background slideshow ─────────────────────────────── */}
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={slide.id}
-          style={{ position: "absolute", inset: 0 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: TRANSITION_DURATION, ease: "easeInOut" }}
-        >
-          {/* Ken Burns layer — no layout shifts, pure transform */}
-          <motion.div
-            style={{
-              position: "absolute",
-              inset: "-5%",
-              width: "110%",
-              height: "110%",
-              willChange: "transform",
-            }}
-            initial={{ scale: slide.scale[0], x: slide.x[0] }}
-            animate={{ scale: slide.scale[1], x: slide.x[1] }}
-            transition={{
-              duration: KEN_BURNS_DURATION,
-              ease: "linear",
-            }}
-          >
-            <Image
-              src={slide.src}
-              alt="ArchViz Craft"
-              fill
-              priority={index === 0}
-              sizes="100vw"
-              style={{ objectFit: "cover", objectPosition: "center" }}
-            />
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
+      {/* ── Single held render with a very slow drift (breathes, never slides) ── */}
+      <motion.div
+        style={{ position: "absolute", inset: "-4%", width: "108%", height: "108%", willChange: "transform" }}
+        initial={{ scale: 1.08 }}
+        animate={{ scale: 1.0 }}
+        transition={{ duration: 18, ease: "linear" }}
+      >
+        <Image
+          src={HERO_SRC}
+          alt="ArchViz Craft — architectural visualization"
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: "cover", objectPosition: "center" }}
+        />
+      </motion.div>
 
-      {/* ── Cinematic gradient overlay ──────────────────────────────────── */}
+      {/* ── Cinematic gradient + vignette ── */}
       <div
         style={{
-          position: "absolute",
-          inset: 0,
+          position: "absolute", inset: 0, zIndex: 10,
           background:
-            "linear-gradient(to bottom, rgba(26,19,12,0.35) 0%, rgba(26,19,12,0.45) 50%, rgba(26,19,12,0.68) 100%)",
-          zIndex: 10,
+            "linear-gradient(to bottom, rgba(26,19,12,0.42) 0%, rgba(26,19,12,0.40) 45%, rgba(26,19,12,0.74) 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute", inset: 0, zIndex: 11,
+          background:
+            "radial-gradient(ellipse at center, transparent 38%, rgba(26,19,12,0.55) 100%)",
         }}
       />
 
-      {/* ── Vignette ───────────────────────────────────────────────────── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse at center, transparent 40%, rgba(26,19,12,0.5) 100%)",
-          zIndex: 11,
-        }}
-      />
-
-      {/* ── Hero content ───────────────────────────────────────────────── */}
+      {/* ── Content ── */}
       {mounted && (
         <div
           style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 20,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            position: "absolute", inset: 0, zIndex: 20,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
             textAlign: "center",
             padding: "0 clamp(1.5rem, 6vw, 4rem)",
           }}
         >
           {/* Eyebrow */}
           <motion.div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.6rem",
-              marginBottom: "2.5rem",
-            }}
-            initial={{ opacity: 0, y: 12 }}
+            style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "clamp(2rem,4vw,3rem)" }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, delay: 0.2, ease: EASE }}
+            transition={{ duration: 1.1, delay: 0.4, ease: EASE }}
           >
-            <span
-              style={{
-                width: "5px",
-                height: "5px",
-                borderRadius: "50%",
-                backgroundColor: "#A8885A",
-                display: "inline-block",
-                animation: "heropulse 2.5s cubic-bezier(0.4,0,0.6,1) infinite",
-                flexShrink: 0,
-              }}
-            />
+            <span style={{ width: "5px", height: "5px", borderRadius: "50%", backgroundColor: "#A8885A", display: "inline-block", flexShrink: 0 }} />
             <span
               style={{
                 fontFamily: "var(--font-dm), sans-serif",
                 fontSize: "clamp(8px,0.85vw,10px)",
-                letterSpacing: "0.38em",
+                letterSpacing: "0.42em",
                 textTransform: "uppercase",
-                color: "rgba(236,227,213,0.52)",
+                color: "rgba(236,227,213,0.58)",
                 fontWeight: 300,
               }}
             >
-              By Appointment Only · Dubai
+              Architectural Visualization · Dubai
             </span>
           </motion.div>
 
-          {/* Headline */}
-          <motion.h1
+          {/* Headline — two words, then two. Arrives line-by-line, long stagger. */}
+          <h1
             style={{
               fontFamily: "var(--font-cormorant), serif",
               fontWeight: 300,
-              lineHeight: 1.0,
+              lineHeight: 0.96,
               margin: 0,
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.015em",
             }}
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, delay: 0.35, ease: EASE }}
           >
-            <span
-              style={{
-                display: "block",
-                color: "#F3ECE0",
-                fontSize: "clamp(2.8rem, 7.5vw, 6.5rem)",
-                fontWeight: 300,
-                marginBottom: "0.1em",
-              }}
-            >
-              The Power of Architectural
+            <span style={{ display: "block", overflow: "hidden" }}>
+              <motion.span
+                style={{ display: "block", color: "#F3ECE0", fontSize: "clamp(3.4rem, 11vw, 10rem)", fontWeight: 300 }}
+                initial={{ y: "110%" }}
+                animate={{ y: "0%" }}
+                transition={{ duration: 1.4, delay: 0.55, ease: EASE }}
+              >
+                Unbuilt.
+              </motion.span>
             </span>
-            <span
-              style={{
-                display: "block",
-                fontStyle: "italic",
-                fontWeight: 300,
-                color: "#A8885A",
-                fontSize: "clamp(2.8rem, 7.5vw, 6.5rem)",
-              }}
-            >
-              Visualization
+            <span style={{ display: "block", overflow: "hidden", marginTop: "0.02em" }}>
+              <motion.span
+                style={{ display: "block", fontStyle: "italic", fontWeight: 300, color: "#A8885A", fontSize: "clamp(3.4rem, 11vw, 10rem)" }}
+                initial={{ y: "110%" }}
+                animate={{ y: "0%" }}
+                transition={{ duration: 1.4, delay: 0.95, ease: EASE }}
+              >
+                Made undeniable.
+              </motion.span>
             </span>
-          </motion.h1>
+          </h1>
 
           {/* Gold rule */}
           <motion.div
-            style={{
-              marginTop: "2rem",
-              height: "1px",
-              width: "56px",
-              backgroundColor: "#A8885A",
-              opacity: 0.65,
-              transformOrigin: "center",
-            }}
+            style={{ marginTop: "clamp(2rem,3.5vw,2.8rem)", height: "1px", width: "64px", backgroundColor: "#A8885A", opacity: 0.65, transformOrigin: "center" }}
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 0.65 }}
-            transition={{ duration: 0.9, delay: 0.9, ease: EASE }}
+            transition={{ duration: 1.0, delay: 1.5, ease: EASE }}
           />
 
-          {/* Subtitle */}
+          {/* Subtitle — one calm line */}
           <motion.p
             style={{
               fontFamily: "var(--font-dm), sans-serif",
               color: "rgba(236,227,213,0.62)",
               fontWeight: 300,
-              letterSpacing: "0.06em",
-              marginTop: "1.6rem",
+              letterSpacing: "0.05em",
+              marginTop: "clamp(1.4rem,2.5vw,1.8rem)",
               maxWidth: "34rem",
-              fontSize: "clamp(0.82rem, 1.4vw, 1rem)",
-              lineHeight: 1.7,
+              fontSize: "clamp(0.82rem, 1.3vw, 1rem)",
+              lineHeight: 1.75,
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 1.0, ease: EASE }}
+            transition={{ duration: 1.4, delay: 1.7, ease: EASE }}
           >
-            Bringing visionary developments to life before construction begins
+            A luxury visualization atelier rendering ambitious architecture
+            with cinematic precision — long before the first stone is laid.
           </motion.p>
 
           {/* CTA */}
           <motion.div
-            style={{ marginTop: "3rem" }}
+            style={{ marginTop: "clamp(2.5rem,4vw,3.2rem)" }}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, delay: 1.2, ease: EASE }}
+            transition={{ duration: 1.1, delay: 1.95, ease: EASE }}
           >
             <HeroCTA />
           </motion.div>
 
-          {/* Slide indicators */}
+          {/* Scroll cue — bottom center, quiet */}
           <motion.div
             style={{
-              position: "absolute",
-              bottom: "2.5rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
+              position: "absolute", bottom: "2.4rem",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: "0.7rem",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.6, duration: 0.8 }}
-          >
-            {SLIDES.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIndex(i)}
-                aria-label={`Slide ${i + 1}`}
-                style={{
-                  width: i === index ? "28px" : "6px",
-                  height: "6px",
-                  borderRadius: "9999px",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                  backgroundColor:
-                    i === index ? "#A8885A" : "rgba(236,227,213,0.28)",
-                  transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
-                  flexShrink: 0,
-                }}
-              />
-            ))}
-          </motion.div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            style={{
-              position: "absolute",
-              bottom: "2.5rem",
-              right: "clamp(2rem,4vw,4rem)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.8, duration: 0.8 }}
+            transition={{ delay: 2.4, duration: 1.0 }}
           >
             <span
               style={{
                 fontFamily: "var(--font-dm), sans-serif",
                 fontSize: "8px",
-                letterSpacing: "0.3em",
+                letterSpacing: "0.32em",
                 textTransform: "uppercase",
-                color: "rgba(236,227,213,0.30)",
-                writingMode: "vertical-rl",
+                color: "rgba(236,227,213,0.32)",
                 fontWeight: 300,
               }}
             >
@@ -308,11 +193,9 @@ export default function Hero() {
             </span>
             <div
               style={{
-                width: "1px",
-                height: "36px",
-                background:
-                  "linear-gradient(to bottom, rgba(168,136,90,0.6), transparent)",
-                animation: "scrollline 2s ease-in-out infinite",
+                width: "1px", height: "40px",
+                background: "linear-gradient(to bottom, rgba(168,136,90,0.65), transparent)",
+                animation: "scrollline 2.4s ease-in-out infinite",
               }}
             />
           </motion.div>
@@ -320,10 +203,6 @@ export default function Hero() {
       )}
 
       <style>{`
-        @keyframes heropulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%       { opacity: 0.35; transform: scale(0.9); }
-        }
         @keyframes scrollline {
           0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
           50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
@@ -336,7 +215,6 @@ export default function Hero() {
 
 function HeroCTA() {
   const [hovered, setHovered] = useState(false);
-
   return (
     <a
       href="#bedrooms"
@@ -345,30 +223,30 @@ function HeroCTA() {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: "0.85rem",
+        gap: "0.95rem",
         fontFamily: "var(--font-dm), sans-serif",
         color: hovered ? "#1A130C" : "#F3ECE0",
         fontWeight: 300,
-        letterSpacing: "0.18em",
+        letterSpacing: "0.2em",
         fontSize: "clamp(9px,0.9vw,11px)",
         textTransform: "uppercase",
-        padding: "0.95rem 2.6rem",
+        padding: "1.05rem 2.9rem",
         backgroundColor: hovered ? "#A8885A" : "transparent",
         border: "1px solid rgba(168,136,90,0.55)",
         textDecoration: "none",
-        transition: "background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease",
+        transition: "background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease",
         borderColor: hovered ? "#A8885A" : "rgba(168,136,90,0.55)",
       }}
     >
-      See our work
+      View the Work
       <span
         style={{
           display: "inline-block",
-          width: "20px",
+          width: "22px",
           height: "1px",
           backgroundColor: "currentColor",
-          transition: "transform 0.35s ease",
-          transform: hovered ? "translateX(4px)" : "translateX(0)",
+          transition: "transform 0.4s ease",
+          transform: hovered ? "translateX(5px)" : "translateX(0)",
         }}
       />
     </a>
