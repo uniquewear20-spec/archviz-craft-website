@@ -79,23 +79,38 @@ export default function Nav({ scrolled }: { scrolled?: boolean }) {
           opacity: mounted ? 1 : 0,
         }}
       >
-        {/* Logo (left) */}
+        {/* Logo (left) — wrapped in a gold ring to match the W·A monogram */}
         <Link href="/" style={{ display: "block", lineHeight: 0, flexShrink: 0 }} onClick={() => setMenuOpen(false)}>
-          <Image
-            src="/logo-avc.png"
-            alt="Archviz Craft"
-            width={72}
-            height={72}
-            priority
+          <div
             style={{
-              objectFit: "contain",
-              opacity: isTransparent ? 0.92 : 0.95,
-              transition: "opacity 0.5s ease, width 0.4s ease",
-              width: isTransparent ? "clamp(48px,5.5vw,72px)" : "clamp(42px,4.5vw,56px)",
-              height: "auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "50%",
+              border: "1px solid rgba(168,136,90,0.55)",
+              width: isTransparent ? "clamp(60px,7vw,86px)" : "clamp(54px,5.6vw,68px)",
+              height: isTransparent ? "clamp(60px,7vw,86px)" : "clamp(54px,5.6vw,68px)",
+              transition: "width 0.4s ease, height 0.4s ease, border-color 0.4s ease",
+              backgroundColor: isTransparent ? "rgba(26,19,12,0.18)" : "transparent",
             }}
-          />
+          >
+            <Image
+              src="/logo-avc.png"
+              alt="Archviz Craft"
+              width={72}
+              height={72}
+              priority
+              style={{
+                objectFit: "contain",
+                opacity: isTransparent ? 0.92 : 0.95,
+                transition: "opacity 0.5s ease, width 0.4s ease",
+                width: isTransparent ? "clamp(40px,4.6vw,60px)" : "clamp(36px,3.8vw,48px)",
+                height: "auto",
+              }}
+            />
+          </div>
         </Link>
+
 
         {/* Desktop nav links (center) — hidden on mobile */}
         <nav
