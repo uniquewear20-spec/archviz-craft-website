@@ -1,29 +1,54 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 // ══════════════════════════════════════════════════════════════════════════
-// HERO — the opening frame of a film, not a slideshow.
-// One commanding still render, held. A very slow Ken Burns drift so it
-// breathes rather than slides. Massive editorial typography arriving
-// line-by-line with a long, confident stagger. A long quiet beat before the
-// eye is asked to move. Minimal copy. Maximum stillness.
+// HERO — a cinematic image sequence, not a slideshow.
+//
+// 3–5 of the strongest renders. Each is HELD for a long, confident beat
+// (~7.5s), then dissolves into the next over a slow 2.2s crossfade. Through
+// the whole hold, an almost-imperceptible zoom drifts the frame so it breathes
+// like a film plate. No dots, no arrows, no carousel chrome — the images are
+// the experience. Typography stays minimal and still over the top; only the
+// imagery moves. prefers-reduced-motion → first frame, static.
 // ══════════════════════════════════════════════════════════════════════════
 
-// The single hero render. Choose the strongest frame in the library.
-const HERO_SRC = "/images/hero/hero-1.png";
+const HERO_IMAGES = [
+  "/images/hero/hero-1.png",
+  "/images/hero/hero-2.png",
+  "/images/hero/hero-3.png",
+  "/images/hero/hero-4.png",
+  "/images/hero/hero-5.png",
+];
 
+const HOLD_MS = 7500;       // how long each frame is held
+const CROSSFADE_S = 2.2;    // dissolve duration between frames
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const [index, setIndex] = useState(0);
+  const [reduce, setReduce] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduce(m.matches);
+    const h = () => setReduce(m.matches);
+    m.addEventListener("change", h);
+    return () => m.removeEventListener("change", h);
+  }, []);
+
+  useEffect(() => {
+    if (reduce || HERO_IMAGES.length < 2) return;
+    const t = setInterval(() => setIndex(p => (p + 1) % HERO_IMAGES.length), HOLD_MS);
+    return () => clearInterval(t);
+  }, [reduce]);
 
   return (
     <section
-      className="hero-section"
       style={{
         position: "relative",
         width: "100%",
@@ -33,40 +58,53 @@ export default function Hero() {
         backgroundColor: "#1A130C",
       }}
     >
-      {/* ── Single held render with a very slow drift (breathes, never slides) ── */}
-      <motion.div
-        style={{ position: "absolute", inset: "-4%", width: "108%", height: "108%", willChange: "transform" }}
-        initial={{ scale: 1.08 }}
-        animate={{ scale: 1.0 }}
-        transition={{ duration: 18, ease: "linear" }}
-      >
-        <Image
-          src={HERO_SRC}
-          alt="ArchViz Craft — architectural visualization"
-          fill
-          priority
-          sizes="100vw"
-          style={{ objectFit: "cover", objectPosition: "center" }}
-        />
-      </motion.div>
+      {/* Cinematic image sequence — long holds, slow crossfades, drifting zoom */}
+      <div style={{ position: "absolute", inset: 0 }}>
+        <AnimatePresence>
+          <motion.div
+            key={index}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: CROSSFADE_S, ease: "linear" }}
+            style={{ position: "absolute", inset: 0, willChange: "opacity" }}
+          >
+            <motion.div
+              initial={{ scale: reduce ? 1 : 1.0 }}
+              animate={{ scale: reduce ? 1 : 1.12 }}
+              transition={{ duration: (HOLD_MS + CROSSFADE_S * 1000) / 1000, ease: "linear" }}
+              style={{ position: "absolute", inset: "-4%", width: "108%", height: "108%", willChange: "transform" }}
+            >
+              <Image
+                src={HERO_IMAGES[index]}
+                alt="ArchViz Craft — architectural visualization"
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                style={{ objectFit: "cover", objectPosition: "center" }}
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-      {/* ── Cinematic gradient + vignette ── */}
+      {/* Cinematic gradient + vignette */}
       <div
         style={{
           position: "absolute", inset: 0, zIndex: 10,
           background:
-            "linear-gradient(to bottom, rgba(26,19,12,0.42) 0%, rgba(26,19,12,0.40) 45%, rgba(26,19,12,0.74) 100%)",
+            "linear-gradient(to bottom, rgba(26,19,12,0.45) 0%, rgba(26,19,12,0.32) 45%, rgba(26,19,12,0.78) 100%)",
         }}
       />
       <div
         style={{
           position: "absolute", inset: 0, zIndex: 11,
           background:
-            "radial-gradient(ellipse at center, transparent 38%, rgba(26,19,12,0.55) 100%)",
+            "radial-gradient(ellipse at center, transparent 36%, rgba(26,19,12,0.58) 100%)",
         }}
       />
 
-      {/* ── Content ── */}
+      {/* Content (still; only imagery moves) */}
       {mounted && (
         <div
           style={{
@@ -77,7 +115,6 @@ export default function Hero() {
             padding: "0 clamp(1.5rem, 6vw, 4rem)",
           }}
         >
-          {/* Eyebrow */}
           <motion.div
             style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "clamp(2rem,4vw,3rem)" }}
             initial={{ opacity: 0, y: 14 }}
@@ -91,7 +128,7 @@ export default function Hero() {
                 fontSize: "clamp(8px,0.85vw,10px)",
                 letterSpacing: "0.42em",
                 textTransform: "uppercase",
-                color: "rgba(236,227,213,0.58)",
+                color: "rgba(236,227,213,0.6)",
                 fontWeight: 300,
               }}
             >
@@ -99,7 +136,6 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Headline — two words, then two. Arrives line-by-line, long stagger. */}
           <h1
             style={{
               fontFamily: "var(--font-cormorant), serif",
@@ -131,7 +167,6 @@ export default function Hero() {
             </span>
           </h1>
 
-          {/* Gold rule */}
           <motion.div
             style={{ marginTop: "clamp(2rem,3.5vw,2.8rem)", height: "1px", width: "64px", backgroundColor: "#A8885A", opacity: 0.65, transformOrigin: "center" }}
             initial={{ scaleX: 0, opacity: 0 }}
@@ -139,11 +174,10 @@ export default function Hero() {
             transition={{ duration: 1.0, delay: 1.5, ease: EASE }}
           />
 
-          {/* Subtitle — one calm line */}
           <motion.p
             style={{
               fontFamily: "var(--font-dm), sans-serif",
-              color: "rgba(236,227,213,0.62)",
+              color: "rgba(236,227,213,0.64)",
               fontWeight: 300,
               letterSpacing: "0.05em",
               marginTop: "clamp(1.4rem,2.5vw,1.8rem)",
@@ -159,7 +193,6 @@ export default function Hero() {
             with cinematic precision — long before the first stone is laid.
           </motion.p>
 
-          {/* CTA */}
           <motion.div
             style={{ marginTop: "clamp(2.5rem,4vw,3.2rem)" }}
             initial={{ opacity: 0, y: 14 }}
@@ -169,7 +202,6 @@ export default function Hero() {
             <HeroCTA />
           </motion.div>
 
-          {/* Scroll cue — bottom center, quiet */}
           <motion.div
             style={{
               position: "absolute", bottom: "2.4rem",
@@ -185,7 +217,7 @@ export default function Hero() {
                 fontSize: "8px",
                 letterSpacing: "0.32em",
                 textTransform: "uppercase",
-                color: "rgba(236,227,213,0.32)",
+                color: "rgba(236,227,213,0.34)",
                 fontWeight: 300,
               }}
             >
