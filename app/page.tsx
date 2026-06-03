@@ -7,6 +7,7 @@ import Hero from "./components/Hero";
 import FeatureBlocks from "./components/FeatureBlocks";
 import { SocialRow, FloatingContact } from "./components/SocialContact";
 import TestimonialsMarquee, { MarqueeTestimonial } from "./components/TestimonialsMarquee";
+import EditorialSpread from "./components/EditorialSpread";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const EASE_SOFT: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -871,10 +872,16 @@ export default function HomePage() {
 
       <StatsManifesto />
 
-      {/* 01 · BEDROOMS — image LEFT, caption RIGHT */}
+      {/* 01 · BEDROOMS — EDITORIAL SPREAD (sample of new direction) */}
       <section id="bedrooms" style={{ borderBottom: "1px solid var(--border)" }}>
-        <SectionHeader index="01" label="Selected Work · Private Sanctuaries" headline="The private suite," subheadline="before the walls exist." />
-        <EditorialGallery slides={BEDROOM_SLIDES} activeSlide={activeBedroomSlide} setActiveSlide={setActiveBedroomSlide} flip={false} />
+        <EditorialSpread
+          slides={BEDROOM_SLIDES}
+          index="01"
+          kicker="Selected Work · Private Sanctuaries"
+          title="Bedrooms"
+          statement="The private suite, before the walls exist."
+          heroCount={7}
+        />
       </section>
 
       {/* 02 · KITCHENS — image RIGHT, caption LEFT */}
