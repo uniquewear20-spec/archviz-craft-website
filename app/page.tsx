@@ -312,6 +312,12 @@ function SectionHeader({ index, label, headline, subheadline, body }: {
 //   fade+scale entry, ← → / Esc keyboard nav, caption alongside.
 // • Thumbnail strip uses contain on --bg-subtle so thumbs stay uniform.
 // ══════════════════════════════════════════════════════════════════════════
+// COVERFLOW GALLERY — 3D carousel.
+// Center image large & flat-on; the two neighbours on each side recede in
+// perspective (rotateY + translateZ + scale + dim), casting depth shadows on
+// the espresso ground. Click center (or "Expand") → full-screen Lightbox.
+// Drag / arrows / thumbnails to navigate. prefers-reduced-motion → flat fade.
+// ══════════════════════════════════════════════════════════════════════════
 function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }: {
   slides: PortfolioSlide[];
   activeSlide: number;
@@ -321,174 +327,170 @@ function EditorialGallery({ slides, activeSlide, setActiveSlide, flip = false }:
   const n = slides.length;
   const current = slides[activeSlide];
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [direction, setDirection] = useState(1); // 1 = next, -1 = prev (for 3D push)
   const reduceMotion = useReducedMotion();
 
-  const prev = () => { setDirection(-1); setActiveSlide(p => (p - 1 + n) % n); };
-  const next = () => { setDirection(1);  setActiveSlide(p => (p + 1) % n); };
+  const go = (dir: number) => setActiveSlide(p => (p + dir + n) % n);
+  const prev = () => go(-1);
+  const next = () => go(1);
 
-  // Subtle 3D depth variants — perspective push, not a spinning carousel.
-  // Disabled (flat fade) when the user prefers reduced motion.
-  const imageVariants = reduceMotion
-    ? {
-        enter: { opacity: 0 },
-        center: { opacity: 1 },
-        exit: { opacity: 0 },
-      }
-    : {
-        enter: (dir: number) => ({
-          opacity: 0,
-          scale: 1.04,
-          rotateY: dir > 0 ? 6 : -6,
-          z: -60,
-        }),
-        center: { opacity: 1, scale: 1, rotateY: 0, z: 0 },
-        exit: (dir: number) => ({
-          opacity: 0,
-          scale: 0.99,
-          rotateY: dir > 0 ? -4 : 4,
-          z: -30,
-        }),
-      };
+  // Shortest circular offset of slide i from the active one, range roughly [-n/2, n/2].
+  const offsetOf = (i: number) => {
+    let d = i - activeSlide;
+    if (d > n / 2) d -= n;
+    if (d < -n / 2) d += n;
+    return d;
+  };
+
+  // Only render the active slide and 2 neighbours each side (the rest are hidden).
+  const VISIBLE = 2;
+
+  // 3D placement for a given signed offset.
+  const transformFor = (offset: number) => {
+    if (reduceMotion) {
+      return { x: 0, rotateY: 0, z: 0, scale: offset === 0 ? 1 : 0.9, opacity: offset === 0 ? 1 : 0 };
+    }
+    const abs = Math.abs(offset);
+    const sign = Math.sign(offset);
+    return {
+      x: offset * 190,                       // lateral fan-out
+      rotateY: -sign * Math.min(abs, VISIBLE) * 34, // angle neighbours away
+      z: -abs * 220,                          // push back in depth
+      scale: offset === 0 ? 1 : 0.82 - (abs - 1) * 0.06,
+      opacity: abs > VISIBLE ? 0 : offset === 0 ? 1 : 0.55 - (abs - 1) * 0.18,
+    };
+  };
 
   return (
     <div style={{ borderTop: "1px solid var(--border)" }}>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1.25fr 1fr",
-        minHeight: "clamp(380px,42vw,560px)",
-        direction: flip ? "rtl" : "ltr",
-      }} className="editorial-grid">
-
-        {/* ── Image panel: fixed frame, full render, espresso matting ── */}
-        <div style={{ position: "relative", overflow: "hidden", direction: "ltr", backgroundColor: "var(--bg)" }}>
-          <button
-            type="button"
-            onClick={() => setLightboxOpen(true)}
-            aria-label={`Open ${current.title} full screen`}
-            style={{
-              position: "absolute", inset: 0, width: "100%", height: "100%",
-              padding: 0, border: "none", background: "var(--bg)",
-              cursor: "zoom-in", perspective: "1400px", overflow: "hidden",
-            }}
-          >
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.img
-                key={activeSlide}
-                src={current.src}
-                alt={current.title}
-                custom={direction}
-                variants={imageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
+      <div className="cf-shell" style={{ direction: "ltr" }}>
+        {/* ── Stage ── */}
+        <div
+          className="cf-stage"
+          style={{ perspective: "2000px" }}
+          role="group"
+          aria-roledescription="carousel"
+          aria-label="Project gallery"
+        >
+          {slides.map((s, i) => {
+            const offset = offsetOf(i);
+            if (Math.abs(offset) > VISIBLE) return null;
+            const t = transformFor(offset);
+            const isCenter = offset === 0;
+            return (
+              <motion.button
+                key={i}
+                type="button"
+                aria-label={isCenter ? `Open ${s.title} full screen` : `Go to ${s.title}`}
+                onClick={() => (isCenter ? setLightboxOpen(true) : setActiveSlide(i))}
+                animate={{ x: t.x, rotateY: t.rotateY, z: t.z, scale: t.scale, opacity: t.opacity }}
                 transition={{ duration: 0.7, ease: EASE_SOFT }}
                 style={{
-                  position: "absolute", inset: 0,
-                  width: "100%", height: "100%",
-                  objectFit: "contain", objectPosition: "center",
-                  display: "block", transformStyle: "preserve-3d",
+                  position: "absolute",
+                  width: "min(46vw, 620px)",
+                  height: "clamp(360px, 46vw, 600px)",
+                  transformStyle: "preserve-3d",
+                  transformOrigin: "center center",
+                  zIndex: 100 - Math.abs(offset),
+                  border: "none",
+                  padding: 0,
+                  background: "var(--bg-subtle)",
+                  cursor: isCenter ? "zoom-in" : "pointer",
+                  overflow: "hidden",
+                  boxShadow: isCenter
+                    ? "0 40px 90px rgba(0,0,0,0.55)"
+                    : "0 20px 50px rgba(0,0,0,0.4)",
                   willChange: "transform, opacity",
                 }}
-              />
-            </AnimatePresence>
-          </button>
-
-          {/* Subtle bottom gradient so the counter stays legible */}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,15,10,0.55) 0%, transparent 30%)", pointerEvents: "none" }} />
-
-          {/* Counter */}
-          <div style={{ position: "absolute", bottom: "1.6rem", left: "1.6rem", display: "flex", alignItems: "center", gap: "0.65rem", zIndex: 4, pointerEvents: "none" }}>
-            <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.65rem", fontWeight: 200, color: "rgba(255,255,255,0.92)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
-            <div style={{ width: "1px", height: "20px", backgroundColor: "rgba(255,255,255,0.28)" }} />
-            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.55)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
-          </div>
-
-          {/* Expand hint — top right */}
-          <div style={{ position: "absolute", top: "1.4rem", right: "1.4rem", display: "flex", alignItems: "center", gap: "0.5rem", zIndex: 4, pointerEvents: "none", opacity: 0.7 }}>
-            <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontWeight: 400 }}>Expand</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-            </svg>
-          </div>
+              >
+                <img
+                  src={s.src}
+                  alt={s.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+                {/* Dim veil on side cards so the centre reads as hero */}
+                <div
+                  aria-hidden
+                  style={{
+                    position: "absolute", inset: 0,
+                    backgroundColor: "rgba(20,15,10,0.45)",
+                    opacity: isCenter ? 0 : 1,
+                    transition: "opacity 0.6s ease",
+                    pointerEvents: "none",
+                  }}
+                />
+                {/* Expand hint on the centre card */}
+                {isCenter && (
+                  <div style={{ position: "absolute", top: "1.2rem", right: "1.2rem", display: "flex", alignItems: "center", gap: "0.5rem", pointerEvents: "none", opacity: 0.8 }}>
+                    <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.78)", fontWeight: 400 }}>Expand</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+                  </div>
+                )}
+              </motion.button>
+            );
+          })}
         </div>
 
-        {/* ── Caption panel ── */}
-        <div style={{
-          backgroundColor: "var(--bg)",
-          borderLeft: flip ? "none" : "1px solid var(--border)",
-          borderRight: flip ? "1px solid var(--border)" : "none",
-          display: "flex", flexDirection: "column", justifyContent: "space-between",
-          padding: "clamp(2.5rem,4.5vw,4.5rem) clamp(2rem,4vw,4.5rem)",
-          direction: "ltr",
-        }}>
+        {/* ── Caption + controls below the stage ── */}
+        <div className="cf-caption">
           <AnimatePresence mode="wait">
             <motion.div key={activeSlide}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.52, ease: EASE }}
-              style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: "1.3rem" }}>
-              <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6 }} />
-              <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.4rem,2.2vw,2.1rem)", color: "var(--text-loud)", lineHeight: 1.16, letterSpacing: "-0.01em" }}>{current.title}</h3>
-              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.05vw,0.96rem)", color: "var(--text-soft)", lineHeight: 1.85 }}>
-                {current.desc.split(" ").map((word, wi) => (
-                  <motion.span key={`${activeSlide}-${wi}`}
-                    initial={{ filter: "blur(5px)", opacity: 0 }}
-                    animate={{ filter: "blur(0px)", opacity: 1 }}
-                    transition={{ duration: 0.2, ease: "easeOut", delay: 0.016 * wi }}
-                    style={{ display: "inline-block", marginRight: "0.25em" }}>{word}
-                  </motion.span>
-                ))}
-              </p>
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5, ease: EASE }}
+              style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto" }}>
+              <div style={{ width: "24px", height: "1px", backgroundColor: "#A8885A", opacity: 0.6, margin: "0 auto 1.1rem" }} />
+              <h3 style={{ fontFamily: "var(--font-cormorant),serif", fontWeight: 300, fontSize: "clamp(1.5rem,2.4vw,2.2rem)", color: "var(--text-loud)", lineHeight: 1.16, letterSpacing: "-0.01em", marginBottom: "0.9rem" }}>{current.title}</h3>
+              <p style={{ fontFamily: "var(--font-dm),sans-serif", fontWeight: 300, fontSize: "clamp(0.88rem,1.05vw,0.96rem)", color: "var(--text-soft)", lineHeight: 1.85 }}>{current.desc}</p>
             </motion.div>
           </AnimatePresence>
 
-          <div>
-            <div style={{ height: "1px", backgroundColor: "var(--border)", marginBottom: "1.4rem", position: "relative" }}>
-              <motion.div style={{ position: "absolute", top: 0, left: 0, height: "100%", backgroundColor: "#A8885A", transformOrigin: "left" }}
-                animate={{ scaleX: (activeSlide + 1) / n }}
-                transition={{ duration: 0.52, ease: EASE_SOFT }} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem", marginTop: "2rem" }}>
+            <ArrowButton onClick={prev} direction="prev" />
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <span style={{ fontFamily: "var(--font-cormorant),serif", fontSize: "1.5rem", fontWeight: 200, color: "var(--text-loud)", lineHeight: 1 }}>{String(activeSlide + 1).padStart(2, "0")}</span>
+              <div style={{ width: "1px", height: "18px", backgroundColor: "var(--border-mid)" }} />
+              <span style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.2em", color: "var(--text-muted)", fontWeight: 300 }}>{String(n).padStart(2, "0")}</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", gap: "0.45rem" }}>
-                <ArrowButton onClick={prev} direction="prev" />
-                <ArrowButton onClick={next} direction="next" />
-              </div>
-              <a href="/work"
-                style={{ fontFamily: "var(--font-dm),sans-serif", fontSize: "0.6rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#A8885A", textDecoration: "none", borderBottom: "1px solid rgba(168,136,90,0.3)", paddingBottom: "2px", transition: "opacity 0.3s", fontWeight: 400 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "0.5"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = "1"; }}>View All →</a>
-            </div>
+            <ArrowButton onClick={next} direction="next" />
+          </div>
+
+          {/* Progress bar */}
+          <div style={{ height: "1px", backgroundColor: "var(--border)", margin: "1.8rem auto 0", maxWidth: "320px", position: "relative" }}>
+            <motion.div style={{ position: "absolute", top: 0, left: 0, height: "100%", backgroundColor: "#A8885A", transformOrigin: "left", width: "100%" }}
+              animate={{ scaleX: (activeSlide + 1) / n }}
+              transition={{ duration: 0.5, ease: EASE_SOFT }} />
           </div>
         </div>
       </div>
 
-      {/* Thumbnail strip — contain on subtle surface so thumbs stay uniform */}
-      <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none" }}>
+      {/* Thumbnail strip */}
+      <div style={{ backgroundColor: "var(--bg)", borderTop: "1px solid var(--border)", padding: "1rem clamp(2rem,7vw,8rem)", display: "flex", gap: "0.4rem", overflowX: "auto", scrollbarWidth: "none", justifyContent: "center" }}>
         {slides.map((s, i) => (
-          <button key={i}
-            onClick={() => { setDirection(i > activeSlide ? 1 : -1); setActiveSlide(i); }}
-            title={s.title}
-            aria-label={`View ${s.title}`}
+          <button key={i} onClick={() => setActiveSlide(i)} title={s.title} aria-label={`View ${s.title}`}
             style={{ flexShrink: 0, width: "clamp(48px,5.5vw,68px)", aspectRatio: "3/2", padding: 0, border: `1.5px solid ${i === activeSlide ? "#A8885A" : "transparent"}`, opacity: i === activeSlide ? 1 : 0.28, cursor: "pointer", background: "var(--bg-subtle)", overflow: "hidden", transition: "all 0.3s ease" }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = i === activeSlide ? "1" : "0.28"; }}>
-            <img src={s.src} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+            <img src={s.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           </button>
         ))}
       </div>
 
-      {/* ── Lightbox ── */}
-      <Lightbox
-        open={lightboxOpen}
-        slides={slides}
-        index={activeSlide}
-        setIndex={setActiveSlide}
-        onClose={() => setLightboxOpen(false)}
-      />
+      <Lightbox open={lightboxOpen} slides={slides} index={activeSlide} setIndex={setActiveSlide} onClose={() => setLightboxOpen(false)} />
 
-      <style>{`.editorial-grid{grid-template-columns:1.25fr 1fr!important}@media(max-width:860px){.editorial-grid{grid-template-columns:1fr!important;direction:ltr!important;min-height:0!important}.editorial-grid>div:first-child{min-height:clamp(300px,70vw,440px)}}`}</style>
+      <style>{`
+        .cf-shell { background: var(--bg); padding: clamp(2.5rem,5vw,5rem) clamp(1rem,4vw,4rem) clamp(2.5rem,4vw,4rem); }
+        .cf-stage {
+          position: relative;
+          height: clamp(360px, 46vw, 600px);
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: clamp(2rem,3.5vw,3.5rem);
+        }
+        .cf-caption { max-width: 1100px; margin: 0 auto; }
+        @media (max-width: 860px) {
+          .cf-stage { height: clamp(300px, 70vw, 440px); }
+        }
+      `}</style>
     </div>
   );
 }
