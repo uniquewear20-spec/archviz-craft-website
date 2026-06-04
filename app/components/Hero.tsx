@@ -1,31 +1,39 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ══════════════════════════════════════════════════════════════════════════
-// HERO — cinematic video sequence. Five 6-second clips play one-by-one, muted,
-// each crossfading into the next with a slow scale drift so the cut never feels
-// mechanical. The next clip is mounted (paused) underneath so the dissolve is
-// seamless. Title overlaid, still. Not a carousel — a directed reel.
+// HERO — four stills with very slow Ken Burns motion, then a motion clip last.
+// Sequence: img1 (slow zoom-in) → img2 (slow zoom-out) → img3 (slow drift L)
+//           → img4 (slow drift R + zoom) → video → loop back to img1.
+// Each still holds ~8.5s. Gentle crossfades. Video plays once, then advances.
+// Muted throughout. Title overlaid, still.
 // ══════════════════════════════════════════════════════════════════════════
 
-const CLIPS = [
-  "/images/hero/hero-1.mp4",
-  "/images/hero/hero-2.mp4",
-  "/images/hero/hero-3.mp4",
-  "/images/hero/hero-4.mp4",
-  "/images/hero/hero-5.mp4",
-];
+type Slide =
+  | { type: "image"; src: string; from: any; to: any }
+  | { type: "video"; src: string };
 
-const CLIP_MS = 6000;       // each clip holds 6s
-const CROSSFADE_S = 1.6;    // dissolve duration
+const IMG_MS = 8500;          // each still holds ~8.5s — very slow
+const CROSSFADE_S = 1.8;      // dissolve duration
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+// Each image gets its own slow camera move. Values are subtle on purpose.
+const SLIDES: Slide[] = [
+  { type: "image", src: "/images/hero/hero-1.jpg", from: { scale: 1.0, x: "0%", y: "0%" },   to: { scale: 1.12, x: "0%", y: "-1.5%" } },   // slow zoom-in, gentle rise
+  { type: "image", src: "/images/hero/hero-2.jpg", from: { scale: 1.12, x: "0%", y: "0%" },  to: { scale: 1.0, x: "0%", y: "0%" } },        // slow zoom-out
+  { type: "image", src: "/images/hero/hero-3.jpg", from: { scale: 1.08, x: "-2.5%", y: "0%" }, to: { scale: 1.08, x: "2.5%", y: "0%" } },   // sideways drift L→R
+  { type: "image", src: "/images/hero/hero-4.jpg", from: { scale: 1.04, x: "2%", y: "0%" },  to: { scale: 1.14, x: "-2%", y: "-1%" } },     // drift R→L + slow zoom-in
+  { type: "video", src: "/images/hero/hero-5.mp4" },
+];
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(0);
   const [reduce, setReduce] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -36,11 +44,26 @@ export default function Hero() {
     return () => m.removeEventListener("change", h);
   }, []);
 
+  const advance = useCallback(() => {
+    setIndex(p => (p + 1) % SLIDES.length);
+  }, []);
+
+  // Drive timing. Images advance on a timer; the video advances when it ends.
   useEffect(() => {
-    if (reduce || CLIPS.length < 2) return;
-    const t = setInterval(() => setIndex(p => (p + 1) % CLIPS.length), CLIP_MS);
-    return () => clearInterval(t);
-  }, [reduce]);
+    if (reduce) return;
+    const current = SLIDES[index];
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    if (current.type === "image") {
+      timerRef.current = setTimeout(advance, IMG_MS);
+    }
+    // for video, onEnded handles the advance (see <video> below)
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [index, reduce, advance]);
+
+  const current = SLIDES[index];
 
   return (
     <section
@@ -49,7 +72,7 @@ export default function Hero() {
         minHeight: "640px", overflow: "hidden", backgroundColor: "#1A130C",
       }}
     >
-      {/* Video sequence */}
+      {/* Slide layer */}
       <div style={{ position: "absolute", inset: 0 }}>
         <AnimatePresence>
           <motion.div
@@ -60,22 +83,33 @@ export default function Hero() {
             transition={{ duration: CROSSFADE_S, ease: "linear" }}
             style={{ position: "absolute", inset: 0, willChange: "opacity" }}
           >
-            <motion.div
-              initial={reduce ? { scale: 1.04 } : { scale: 1.0 }}
-              animate={reduce ? { scale: 1.04 } : { scale: 1.06 }}
-              transition={{ duration: (CLIP_MS + CROSSFADE_S * 1000) / 1000, ease: "linear" }}
-              style={{ position: "absolute", inset: "-3%", willChange: "transform" }}
-            >
-              <video
-                src={CLIPS[index]}
-                autoPlay
-                muted
-                playsInline
-                loop
-                preload="auto"
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            {current.type === "image" ? (
+              <motion.div
+                initial={reduce ? current.to : current.from}
+                animate={current.to}
+                transition={{ duration: (IMG_MS + CROSSFADE_S * 1000) / 1000, ease: "linear" }}
+                style={{
+                  position: "absolute", inset: "-4%",
+                  backgroundImage: `url('${current.src}')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  willChange: "transform",
+                }}
               />
-            </motion.div>
+            ) : (
+              <div style={{ position: "absolute", inset: "-3%" }}>
+                <video
+                  ref={videoRef}
+                  src={current.src}
+                  autoPlay
+                  muted
+                  playsInline
+                  preload="auto"
+                  onEnded={advance}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -127,10 +161,10 @@ export default function Hero() {
         </div>
       )}
 
-      {/* Clip progress ticks — bottom-left */}
+      {/* Slide progress ticks — bottom-left */}
       {mounted && (
         <div style={{ position: "absolute", bottom: "2.6rem", left: "clamp(1.6rem,4vw,3.5rem)", zIndex: 20, display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          {CLIPS.map((_, i) => (
+          {SLIDES.map((_, i) => (
             <div key={i} style={{ width: i === index ? "26px" : "10px", height: "2px", backgroundColor: i === index ? "#A8885A" : "rgba(236,227,213,0.25)", transition: "width 0.5s ease, background-color 0.5s ease" }} />
           ))}
         </div>
