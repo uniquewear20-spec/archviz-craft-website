@@ -58,12 +58,12 @@ export default function Contact() {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
               <p className="text-[9px] tracking-[0.2em] uppercase text-stone-600 mb-4 font-sans">WhatsApp</p>
               <a
-                href="https://wa.me/971500000000"
+                href="https://wa.me/971503050351"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-stone-300 text-lg font-serif hover:text-white transition-colors duration-500 block"
               >
-                +971 50 000 0000
+                +971 50 305 0351
               </a>
             </motion.div>
 
