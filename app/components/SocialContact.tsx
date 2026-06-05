@@ -9,7 +9,7 @@ import WAMonogram from "./WAMonogram";
 // WhatsApp), placed bottom-LEFT so they never collide with the existing
 // "Schedule a call" pill on the bottom-right.
 
-const WA = "971522783784"; // +971 52 278 3784, formatted for wa.me
+const WA = "971503050351"; // +971 50 305 0351, formatted for wa.me
 const EMAIL = "archvizcraft.in@gmail.com";
 const WA_MSG = "Hello ArchViz Craft, I'd like to discuss a visualization project.";
 
