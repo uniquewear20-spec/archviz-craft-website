@@ -715,7 +715,7 @@ function ContactSection() {
             <Reveal delay={0.1}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginTop: "3rem" }}>
                 {[
-                  { label: "WhatsApp", value: "+971 52 278 3784", href: "https://wa.me/971522783784" },
+                  { label: "WhatsApp", value: "+971 50 305 0351", href: "https://wa.me/971503050351" },
                   { label: "Email", value: "archvizcraft.in@gmail.com", href: "mailto:archvizcraft.in@gmail.com" },
                   { label: "Location", value: "By Appointment · Dubai", href: undefined },
                 ].map(item => (
